@@ -168,19 +168,7 @@ interface Router {
  */
 // Called with no arguments - returns a Router instance
 export function route(): Router;
-// Called with a route name and optional additional arguments - returns a URL string
-export function route<T extends RouteName>(
-    name: T,
-    params?: RouteParams<T> | undefined,
-    absolute?: boolean,
-    config?: Config,
-): string;
-export function route<T extends RouteName>(
-    name: T,
-    params?: ParameterValue | undefined,
-    absolute?: boolean,
-    config?: Config,
-): string;
+
 // Called with configuration arguments only - returns a configured Router instance
 export function route(
     name: undefined,
@@ -188,6 +176,21 @@ export function route(
     absolute?: boolean,
     config?: Config,
 ): Router;
+
+// Called with a route name and optional additional arguments - returns a URL string
+export function route<T extends RouteName>(
+    name: T,
+    params?: RouteParams<T> | undefined,
+    absolute?: boolean,
+    config?: Config,
+): string;
+
+export function route<T extends RouteName>(
+    name: T,
+    params?: ParameterValue | undefined,
+    absolute?: boolean,
+    config?: Config,
+): string;
 
 /**
  * Ziggy's Vue plugin.
