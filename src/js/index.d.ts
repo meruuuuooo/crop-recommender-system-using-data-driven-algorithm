@@ -6,6 +6,11 @@
 export interface RouteList {}
 
 /**
+ * Marker interface to configure Ziggy's type checking behavior.
+ */
+export interface TypeConfig {}
+
+/**
  * A route name registered with Ziggy.
  */
 type KnownRouteName = keyof RouteList;
@@ -13,7 +18,9 @@ type KnownRouteName = keyof RouteList;
 /**
  * A route name, or any string.
  */
-type RouteName = KnownRouteName | (string & {});
+type RouteName = TypeConfig extends { strictRouteNames: true }
+    ? KnownRouteName
+    : KnownRouteName | (string & {});
 // `(string & {})` prevents TypeScript from reducing this type to just `string`,
 // which would prevent intellisense from autocompleting known route names.
 // See https://stackoverflow.com/a/61048124/6484459.
