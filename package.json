@@ -56,6 +56,7 @@
         "qs": "~6.9.7"
     },
     "devDependencies": {
+        "@types/qs": "^6.9.17",
         "jsdom": "^25.0.1",
         "microbundle": "^0.15.1",
         "prettier": "^3.3.3",
