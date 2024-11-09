@@ -97,11 +97,8 @@ assertType(route().current('posts.comments.show', { post: 2 }));
 assertType(route().current('posts.comments.show', 2));
 // assertType(route().current('posts.comments.show', [2])); // TODO shouldn't error, only one required param
 assertType(route().current('posts.comments.show', 'foo'));
-assertType<Router>(
-    route(undefined, undefined, undefined, {
-        url: 'http://localhost',
-        port: null,
-        defaults: {},
-        routes: {},
-    } as Config),
-);
+
+// Test route function return types
+assertType<string>(route('optional', { maybe: 'foo' }));
+assertType<string>(route('optional', 'foo'));
+assertType<Router>(route(undefined, undefined, undefined, {} as Config));
