@@ -378,6 +378,16 @@ Now you can use the `route()` function anywhere in your Vue components and templ
 <a class="nav-link" :href="route('home')">Home</a>
 ```
 
+With `<script setup>` in Vue 3 you can use `inject` to make the `route()` function available in your component script:
+
+```vue
+<script setup>
+import { inject } from 'vue';
+
+const route = inject('route');
+</script>
+```
+
 If you are not using the `@routes` Blade directive, import Ziggy's configuration too and pass it to `.use()`:
 
 ```js
