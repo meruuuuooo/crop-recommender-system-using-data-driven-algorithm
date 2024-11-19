@@ -20,12 +20,17 @@ type KnownRouteName = keyof RouteList;
 /**
  * A route name, or any string.
  */
-type RouteName = TypeConfig extends { strictRouteNames: true }
-    ? KnownRouteName
-    : KnownRouteName | (string & {});
+type RouteName = KnownRouteName | (string & {});
 // `(string & {})` prevents TypeScript from reducing this type to just `string`,
 // which would prevent intellisense from autocompleting known route names.
 // See https://stackoverflow.com/a/61048124/6484459.
+
+/**
+ * Valid route names to pass to route().
+ */
+type AllowedRouteName = TypeConfig extends { strictRouteNames: true }
+    ? KnownRouteName
+    : RouteName;
 
 /**
  * Information about a single route parameter.
@@ -187,14 +192,14 @@ export function route(
 ): Router;
 
 // Called with a route name and optional additional arguments - returns a URL string
-export function route<T extends RouteName>(
+export function route<T extends AllowedRouteName>(
     name: T,
     params?: RouteParams<T> | undefined,
     absolute?: boolean,
     config?: Config,
 ): string;
 
-export function route<T extends RouteName>(
+export function route<T extends AllowedRouteName>(
     name: T,
     params?: ParameterValue | undefined,
     absolute?: boolean,
