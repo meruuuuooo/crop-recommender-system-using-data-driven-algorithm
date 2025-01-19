@@ -15,8 +15,8 @@ class CommandRouteGenerator extends Command
                             {--types-only : Generate only a TypeScript declaration file.}
                             {--url=}
                             {--group=}
-                            {--except=}
-                            {--only=}';
+                            {--except= : Comma delimited list of route names to exclude.}
+                            {--only= : Comma delimited list of route names to include.}';
 
     protected $description = 'Generate a JavaScript file containing Ziggy’s routes and configuration.';
 
