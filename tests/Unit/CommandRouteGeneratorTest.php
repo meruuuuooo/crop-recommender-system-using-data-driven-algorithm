@@ -66,6 +66,16 @@ test('generate file respecting config', function () {
     expect(base_path('resources/js/ziggy.js'))->toEqualFile('./tests/fixtures/ziggy.js');
 });
 
+test('generate file respecting exclude options', function () {
+    Route::get('posts/{post}/comments', fn () => '')->name('postComments.index');
+    Route::get('slashes/{slug}', fn () => '')->where('slug', '.*')->name('slashes');
+    Route::get('admin', fn () => '')->name('admin.dashboard'); // Excluded by options
+
+    artisan('ziggy:generate --except=admin.*');
+
+    expect(base_path('resources/js/ziggy.js'))->toEqualFile('./tests/fixtures/ziggy.js');
+});
+
 test('generate file with custom output formatter', function () {
     Route::get('posts/{post}/comments', fn () => '')->name('postComments.index');
     Route::get('admin', fn () => '')->name('admin.dashboard'); // Excluded by config
@@ -162,7 +172,7 @@ test('generate correct routes and dts files based on provided arguments', functi
 
 class CustomFile extends File
 {
-    function __toString(): string
+    public function __toString(): string
     {
         return <<<JAVASCRIPT
         // This is a custom template

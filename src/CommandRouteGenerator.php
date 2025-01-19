@@ -6,7 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Tighten\Ziggy\Output\File;
 use Tighten\Ziggy\Output\Types;
-use Tighten\Ziggy\Ziggy;
 
 class CommandRouteGenerator extends Command
 {
@@ -15,13 +14,20 @@ class CommandRouteGenerator extends Command
                             {--types : Generate a TypeScript declaration file.}
                             {--types-only : Generate only a TypeScript declaration file.}
                             {--url=}
-                            {--group=}';
+                            {--group=}
+                            {--except=}
+                            {--only=}';
 
     protected $description = 'Generate a JavaScript file containing Ziggy’s routes and configuration.';
 
     public function handle(Filesystem $filesystem)
     {
-        $ziggy = new Ziggy($this->option('group'), $this->option('url') ? url($this->option('url')) : null);
+        $ziggy = new Ziggy(
+            $this->option('group'),
+            $this->option('url') ? url($this->option('url')) : null,
+            $this->option('except') ? explode(',', $this->option('except')) : null,
+            $this->option('only') ? explode(',', $this->option('only')) : null,
+        );
 
         $path = $this->argument('path') ?? config('ziggy.output.path', 'resources/js/ziggy.js');
 

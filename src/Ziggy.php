@@ -26,8 +26,12 @@ class Ziggy implements JsonSerializable
     public function __construct(
         protected $group = null,
         protected ?string $url = null,
+        protected ?array $except = null,
+        protected ?array $only = null
     ) {
         $this->url = rtrim($url ?? url('/'), '/');
+        $this->except = $except ?? config('ziggy.except', []);
+        $this->only = $only ?? config('ziggy.only', []);
 
         $this->routes = static::$cache ??= $this->nameKeyedRoutes();
     }
@@ -43,12 +47,12 @@ class Ziggy implements JsonSerializable
             return $this->group($group);
         }
 
-        if (config()->has('ziggy.except') && ! config()->has('ziggy.only')) {
-            return $this->filter(config('ziggy.except'), false)->routes;
+        if (count($this->except) > 0 && count($this->only) === 0) {
+            return $this->filter($this->except, false)->routes;
         }
 
-        if (config()->has('ziggy.only') && ! config()->has('ziggy.except')) {
-            return $this->filter(config('ziggy.only'))->routes;
+        if (count($this->only) > 0 && count($this->except) === 0) {
+            return $this->filter($this->only)->routes;
         }
 
         return $this->routes;
@@ -204,7 +208,7 @@ class Ziggy implements JsonSerializable
 
         // Use existing named Folio routes (instead of searching view files) to respect route caching
         return collect(app(FolioRoutes::class)->routes())->map(function (array $route) {
-            $uri = rtrim($route['baseUri'], '/') . str_replace([$route['mountPath'], '.blade.php'], '', $route['path']);
+            $uri = rtrim($route['baseUri'], '/').str_replace([$route['mountPath'], '.blade.php'], '', $route['path']);
 
             $segments = explode('/', $uri);
             $parameters = [];
