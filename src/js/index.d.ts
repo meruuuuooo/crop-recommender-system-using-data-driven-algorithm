@@ -1,5 +1,3 @@
-import { ParsedQs } from 'qs';
-
 /**
  * A list of routes and their parameters and bindings.
  *
@@ -158,6 +156,11 @@ interface Config {
         pathname?: string;
         search?: string;
     };
+}
+
+// qs's parsed query params type, so we don't have to have qs as a dependency
+interface ParsedQs {
+    [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
 
 /**
