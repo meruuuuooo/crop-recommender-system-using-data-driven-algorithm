@@ -66,13 +66,33 @@ test('generate file respecting config', function () {
     expect(base_path('resources/js/ziggy.js'))->toEqualFile('./tests/fixtures/ziggy.js');
 });
 
-test('generate file respecting exclude options', function () {
+test('generate file using --except option', function () {
     Route::get('posts/{post}/comments', fn () => '')->name('postComments.index');
     Route::get('slashes/{slug}', fn () => '')->where('slug', '.*')->name('slashes');
     Route::get('admin', fn () => '')->name('admin.dashboard'); // Excluded by options
 
     artisan('ziggy:generate --except=admin.*');
 
+    expect(base_path('resources/js/ziggy.js'))->toEqualFile('./tests/fixtures/ziggy.js');
+});
+
+test('generate file using --only option', function () {
+    Route::get('posts/{post}/comments', fn () => '')->name('postComments.index');
+    Route::get('slashes/{slug}', fn () => '')->where('slug', '.*')->name('slashes');
+    Route::get('admin', fn () => '')->name('admin.dashboard'); // Excluded by options
+
+    artisan('ziggy:generate --only=postComments.index,slashes');
+
+    expect(base_path('resources/js/ziggy.js'))->toEqualFile('./tests/fixtures/ziggy.js');
+});
+
+test('generate file using both --only and --except', function () {
+    Route::get('posts/{post}/comments', fn () => '')->name('postComments.index');
+    Route::get('slashes/{slug}', fn () => '')->where('slug', '.*')->name('slashes');
+
+    artisan('ziggy:generate --only=slashes --except=postComments.index');
+
+    // Options cancel each other out and are ignored
     expect(base_path('resources/js/ziggy.js'))->toEqualFile('./tests/fixtures/ziggy.js');
 });
 
