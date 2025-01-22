@@ -26,11 +26,9 @@ type RouteName = KnownRouteName | (string & {});
 // See https://stackoverflow.com/a/61048124/6484459.
 
 /**
- * Valid route names to pass to route().
+ * A valid route name to pass to `route()` to generate a URL.
  */
-type AllowedRouteName = TypeConfig extends { strictRouteNames: true }
-    ? KnownRouteName
-    : RouteName;
+type ValidRouteName = TypeConfig extends { strictRouteNames: true } ? KnownRouteName : RouteName;
 
 /**
  * Information about a single route parameter.
@@ -192,14 +190,14 @@ export function route(
 ): Router;
 
 // Called with a route name and optional additional arguments - returns a URL string
-export function route<T extends AllowedRouteName>(
+export function route<T extends ValidRouteName>(
     name: T,
     params?: RouteParams<T> | undefined,
     absolute?: boolean,
     config?: Config,
 ): string;
 
-export function route<T extends AllowedRouteName>(
+export function route<T extends ValidRouteName>(
     name: T,
     params?: ParameterValue | undefined,
     absolute?: boolean,
