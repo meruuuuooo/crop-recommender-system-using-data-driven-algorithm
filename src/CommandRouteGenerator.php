@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Tighten\Ziggy\Output\File;
 use Tighten\Ziggy\Output\Types;
+use Tighten\Ziggy\Ziggy;
 
 class CommandRouteGenerator extends Command
 {
@@ -15,8 +16,8 @@ class CommandRouteGenerator extends Command
                             {--types-only : Generate only a TypeScript declaration file.}
                             {--url=}
                             {--group=}
-                            {--except= : Comma delimited list of route names to exclude.}
-                            {--only= : Comma delimited list of route names to include.}';
+                            {--except= : Route name patterns to exclude.}
+                            {--only= : Route name patterns to include.}';
 
     protected $description = 'Generate a JavaScript file containing Ziggy’s routes and configuration.';
 
