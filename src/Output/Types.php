@@ -28,7 +28,8 @@ class Types implements Stringable
         JAVASCRIPT;
     }
 
-    public function collectRoutes(): Collection {
+    public function collectRoutes(): Collection
+    {
         return collect($this->ziggy->toArray()['routes'])->map(function ($route) {
             return collect($route['parameters'] ?? [])->map(function ($param) use ($route) {
                 return Arr::has($route, "bindings.{$param}")
