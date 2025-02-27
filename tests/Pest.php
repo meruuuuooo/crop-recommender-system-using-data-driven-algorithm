@@ -43,7 +43,4 @@ expect()->extend('toEqualFile', function (string $expected, string $message = ''
 |
 */
 
-function something()
-{
-    // ..
-}
+//

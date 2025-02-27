@@ -19,4 +19,9 @@ abstract class TestCase extends OrchestraTestCase
     {
         return [ZiggyServiceProvider::class];
     }
+
+    protected function defineEnvironment($app)
+    {
+        $app->config->set('filesystems.disks.local.serve', false);
+    }
 }
