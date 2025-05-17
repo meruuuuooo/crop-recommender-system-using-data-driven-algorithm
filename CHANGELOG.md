@@ -8,6 +8,13 @@ Breaking changes are marked with ⚠️.
 
 ## [Unreleased]
 
+## [v2.5.3] - 2025-05-17
+
+**Fixed**
+
+* Fix type hinting for PHP 8.4 by @bodny in https://github.com/tighten/ziggy/pull/816
+* Fix checking current route in strict mode by @bakerkretzmar in https://github.com/tighten/ziggy/pull/840
+
 ## [v2.5.2] - 2025-02-27
 
 **Changed**
@@ -481,7 +488,8 @@ See [UPGRADING](UPGRADING.md#upgrading-from-1x-to-2x) for detailed upgrade instr
 
 For previous changes see the [Releases](https://github.com/tighten/ziggy/releases) page.
 
-[Unreleased]: https://github.com/tighten/ziggy/compare/v2.5.2...HEAD
+[Unreleased]: https://github.com/tighten/ziggy/compare/v2.5.3...HEAD
+[v2.5.3]: https://github.com/tighten/ziggy/compare/v2.5.2...v2.5.3
 [v2.5.2]: https://github.com/tighten/ziggy/compare/v2.5.1...v2.5.2
 [v2.5.1]: https://github.com/tighten/ziggy/compare/v2.5.0...v2.5.1
 [v2.5.0]: https://github.com/tighten/ziggy/compare/v2.4.2...v2.5.0
