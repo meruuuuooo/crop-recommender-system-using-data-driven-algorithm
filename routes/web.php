@@ -16,6 +16,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('management/farmer/index');
     })->name('management.farmer');
 
+    Route::get('management/farmer/create', function () {
+        return Inertia::render('management/farmer/create');
+    })->name('management.farmer.create');
+
+    Route::get('management/farmer/edit', function () {
+        return Inertia::render('management/farmer/edit');
+    })->name('management.farmer.edit');
+
+    Route::get('management/farmer/view', function () {
+        return Inertia::render('management/farmer/view');
+    })->name('management.farmer.view');
+
     Route::get('management/farm', function () {
         return Inertia::render('management/farm/index');
     })->name('management.farm');
