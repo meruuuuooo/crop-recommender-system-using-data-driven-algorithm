@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal, Plus } from 'lucide-react';
 
@@ -161,8 +161,12 @@ export const columns: ColumnDef<Farmer>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View farmer details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit farmer</DropdownMenuItem>
+                        <Link href={route('management.farmer.view')}>
+                            <DropdownMenuItem>View farmer details</DropdownMenuItem>
+                        </Link>
+                        <Link href={route('management.farmer.edit')}>
+                            <DropdownMenuItem>Edit farmer</DropdownMenuItem>
+                        </Link>
                         <DropdownMenuItem>View farm</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">Delete farmer</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -181,10 +185,12 @@ export default function Farmer() {
                     {/* Header Section */}
                     <div className="flex items-center justify-between">
                         <HeadingSmall title="Farmer Management" description="Manage farmer details and information." />
-                        <Button className="bg-[#619154] text-white hover:bg-[#4F7A43]">
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Farmer
-                        </Button>
+                        <Link href={route('management.farmer.create')}>
+                            <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Farmer
+                            </Button>
+                        </Link>
                     </div>
 
                     {/* Data Table */}
