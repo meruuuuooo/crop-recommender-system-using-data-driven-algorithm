@@ -12,6 +12,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
+    // Farmer
     Route::get('management/farmer', function () {
         return Inertia::render('management/farmer/index');
     })->name('management.farmer');
@@ -28,9 +29,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('management/farmer/view');
     })->name('management.farmer.view');
 
+    // Farm
     Route::get('management/farm', function () {
         return Inertia::render('management/farm/index');
     })->name('management.farm');
+
+    Route::get('management/farm/create', function () {
+        return Inertia::render('management/farm/create');
+    })->name('management.farm.create');
+
+    Route::get('management/farm/edit', function () {
+        return Inertia::render('management/farm/edit');
+    })->name('management.farm.edit');
+
+    Route::get('management/farm/view', function () {
+        return Inertia::render('management/farm/view');
+    })->name('management.farm.view');
 
     Route::get('recommendation', function () {
         return Inertia::render('recommendation/index');
