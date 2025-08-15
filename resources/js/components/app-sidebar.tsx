@@ -1,10 +1,10 @@
 import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
+import { NavMainCollapsible } from '@/components/nav-main-collapsible';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, ScrollText, Sparkles, Sprout, Tractor, User } from 'lucide-react';
+import { BookOpen, Folder, LayoutGrid, ScrollText, File, Sparkles, Sprout, Tractor, User } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -19,14 +19,22 @@ const mainNavItems: NavItem[] = [
         icon: Sparkles,
     },
     {
-        title: 'Farmer',
-        href: '/management/farmer',
-        icon: User,
-    },
-    {
-        title: 'Farm',
-        href: '/management/farm',
-        icon: Tractor,
+        title: 'Management',
+        href: '/management',
+        icon: File,
+
+        items: [
+            {
+                title: 'Farmer',
+                href: '/management/farmer',
+                icon: User,
+            },
+            {
+                title: 'Farm',
+                href: '/management/farm',
+                icon: Tractor,
+            },
+        ],
     },
     {
         title: 'Crop',
@@ -69,7 +77,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMainCollapsible items={mainNavItems} />
             </SidebarContent>
 
             <SidebarFooter>
