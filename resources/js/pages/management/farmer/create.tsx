@@ -2,7 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import CreateFormCard from './partials/createFormCard';
+import CreateFormCard from './partials/createFarmerForm';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {

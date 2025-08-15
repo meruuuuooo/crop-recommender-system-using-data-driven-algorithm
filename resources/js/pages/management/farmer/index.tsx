@@ -167,7 +167,7 @@ export const columns: ColumnDef<Farmer>[] = [
                         <Link href={route('management.farmer.edit')}>
                             <DropdownMenuItem>Edit farmer</DropdownMenuItem>
                         </Link>
-                        <DropdownMenuItem>View farm</DropdownMenuItem>
+                        <DropdownMenuItem>View farms</DropdownMenuItem>
                         <DropdownMenuItem className="text-destructive">Delete farmer</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
