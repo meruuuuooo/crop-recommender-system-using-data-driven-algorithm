@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
-            $table->string('contact_number')->unique();
+            $table->string('contact_number')->nullable();
             $table->string('farming_experience')->nullable();
-            $table->string('address')->nullable();
-            $table->softDeletes('deleted_at')->nullable();
-            $table->timestamp('registration_date')->useCurrent();
+            $table->date('registration_date');
+            $table->foreignId('location_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
         });
     }
 

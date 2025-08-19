@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('farms', function (Blueprint $table) {
+        Schema::create('crop_calendar', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('farmer_id')->constrained('farmers')->onDelete('cascade');
-            $table->foreignId('location_id')->constrained('locations')->onDelete('cascade');
-            $table->decimal('size', 8, 2)->nullable();
+            $table->foreignId('crop_id')->constrained()->cascadeOnDelete();
+            $table->string('activity');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('farms');
+        Schema::dropIfExists('crop_calendar');
     }
 };

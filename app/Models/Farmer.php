@@ -2,25 +2,41 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Farmer extends Model
+class farmer extends Model
 {
+
+    use HasFactory;
     protected $fillable = [
         'first_name',
         'middle_name',
         'last_name',
         'contact_number',
         'farming_experience',
-        'address',
+        'registration_date',
+        'location_id',
+        'user_id',
     ];
 
-    protected $casts = [
-        'registration_date' => 'datetime',
-    ];
-
-    public function getFullNameAttribute()
+    public function user()
     {
-        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        return $this->belongsTo(User::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function farms()
+    {
+        return $this->hasMany(Farm::class);
+    }
+
+    public function recommendations()
+    {
+        return $this->hasMany(Recommendation::class);
     }
 }

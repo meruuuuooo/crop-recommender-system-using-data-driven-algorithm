@@ -15,14 +15,21 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Create() {
+
+
+export default function Create({ provinces, municipalities, barangays }: {
+    provinces: { id: number | string; name: string }[];
+    municipalities: { id: number | string; name: string; province_id: number | string }[];
+    barangays: { id: number | string; name: string; municipality_id: number | string }[];
+}) {
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Farmer" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
                 <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
                     <HeadingSmall title="Create Farmer" description="Create a new farmer record." />
-                    <CreateFormCard />
+                    <CreateFormCard provinces={provinces} municipalities={municipalities} barangays={barangays} />
                 </div>
             </div>
         </AppLayout>

@@ -1,163 +1,65 @@
-import { DataTable } from '@/components/data-table';
-import { DataTableColumnHeader } from '@/components/data-table-column-header';
 import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/react';
-import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Plus } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
+
+import FarmTable from './partials/farmTable';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Farm',
+        title: 'Farm Management',
         href: 'management/farm',
     },
 ];
 
-// Define the farm data type
 type Farm = {
-    id: string;
-    owner: string; // farmer name
-    farmName: string;
-    province: string;
-    municipality: string;
-    barangay: string;
+    id: number | string;
+    name: string;
+    total_area: number;
+    prev_crops: string;
+    location: {
+        id: number;
+        street: string;
+        province: {
+            id: number | string;
+            name: string;
+            region_code: string;
+        },
+        municipality: {
+            id: number | string;
+            province_id: number | string;
+            name: string;
+        },
+        barangay: {
+            id: number | string;
+            municipality_id: number | string;
+            name: string;
+        }
+    }
+    farmer: {
+        id: number | string;
+        first_name: string;
+        last_name: string;
+        middle_name: string;
+        contact_number: string;
+    }
+    created_at: string;
+    updated_at: string;
 };
 
-// Sample data for demonstration
-const sampleFarms: Farm[] = [
-    {
-        id: '1',
-        owner: 'John Smith',
-        farmName: 'Green Valley Farm',
-        province: 'California',
-        municipality: 'Los Angeles',
-        barangay: 'Barangay 1',
-    },
-    {
-        id: '2',
-        owner: 'Maria Garcia',
-        farmName: 'Sunrise Acres',
-        province: 'Texas',
-        municipality: 'Houston',
-        barangay: 'Barangay 2',
-    },
-    {
-        id: '3',
-        owner: 'David Johnson',
-        farmName: 'Johnson Fields',
-        province: 'Iowa',
-        municipality: 'Des Moines',
-        barangay: 'Barangay 3',
-    },
-    {
-        id: '4',
-        owner: 'Sarah Wilson',
-        farmName: 'Wilson Ranch',
-        province: 'Nebraska',
-        municipality: 'Omaha',
-        barangay: 'Barangay 4',
-    },
-    {
-        id: '5',
-        owner: 'Michael Brown',
-        farmName: 'Brown Family Farm',
-        province: 'Kansas',
-        municipality: 'Wichita',
-        barangay: 'Barangay 5',
-    },
-    {
-        id: '6',
-        owner: 'Emily Davis',
-        farmName: 'Davis Orchard',
-        province: 'North Dakota',
-        municipality: 'Fargo',
-        barangay: 'Barangay 6',
-    },
-    {
-        id: '7',
-        owner: 'Robert Miller',
-        farmName: 'Miller Pastures',
-        province: 'Minnesota',
-        municipality: 'Minneapolis',
-        barangay: 'Barangay 7',
-    },
-    {
-        id: '8',
-        owner: 'Jennifer Taylor',
-        farmName: 'Taylor Gardens',
-        province: 'Wisconsin',
-        municipality: 'Madison',
-        barangay: 'Barangay 8',
-    },
-];
 
-export const columns: ColumnDef<Farm>[] = [
-    {
-        accessorKey: 'farmName',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Farm Name" />,
-        cell: ({ row }) => (
-            <span className="font-medium">{row.getValue('farmName')}</span>
-        ),
-    },
-    {
-        accessorKey: 'owner',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Owner" />,
-        cell: ({ row }) => (
-            <span>{row.getValue('owner')}</span>
-        ),
-    },
-    {
-        accessorKey: 'province',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Province" />,
-    },
-    {
-        accessorKey: 'municipality',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Municipality" />,
-    },
-    {
-        accessorKey: 'barangay',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Barangay" />,
-    },
-    {
-        id: 'actions',
-        enableHiding: false,
-        cell: () => {
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <Link href={route('management.farm.view')}>
-                            <DropdownMenuItem>View farm details</DropdownMenuItem>
-                        </Link>
-                        <Link href={route('management.farm.edit')}>
-                            <DropdownMenuItem>Edit farm</DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuItem className="text-destructive">Delete farm</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    },
-];
+export default function Farm({ farms }: { farms: { data: Farm[] } }) {
 
-export default function Farm() {
+    const handleView = (farm: Farm) => {
+        router.get(route('management.farm.show', farm.id))
+    };
+
+    const handleEdit = (farm: Farm) => {
+        router.get(route('management.farm.edit', farm.id))
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Farm" />
@@ -174,15 +76,8 @@ export default function Farm() {
                         </Link>
                     </div>
 
-                    {/* Data Table */}
-                    <DataTable
-                        columns={columns}
-                        data={sampleFarms}
-                        searchKey="farmName"
-                        searchPlaceholder="Search farms..."
-                        initialPageSize={5}
-                        pageSizeOptions={[5, 10, 20, 50]}
-                        enablePagination={true}
+                    <FarmTable
+                        farms={farms.data} onView={handleView} onEdit={handleEdit}
                     />
                 </div>
             </div>

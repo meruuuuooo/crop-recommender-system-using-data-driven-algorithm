@@ -2,18 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Farmer;
+use App\Models\farmer;
 use App\Http\Controllers\Controller;
+use App\Models\Province;
+use App\Models\Municipality;
+use App\Models\Barangay;
+use App\Models\Location;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class FarmerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $farmers = farmer::with([
+            'location.province',
+            'location.municipality',
+            'location.barangay',
+            'user:id,last_name,email'
+        ])
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+
+        return Inertia::render('management/farmer/index', [
+            'farmers' => $farmers
+        ]);
     }
 
     /**
@@ -21,7 +39,16 @@ class FarmerController extends Controller
      */
     public function create()
     {
-        //
+
+       $province = Province::all();
+        $municipality = Municipality::all();
+        $barangay = Barangay::all();
+
+        return Inertia::render('management/farmer/create', [
+            'provinces' => $province,
+            'municipalities' => $municipality,
+            'barangays' => $barangay
+        ]);
     }
 
     /**
@@ -29,38 +56,142 @@ class FarmerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // To view all request data
+        // dd($request->all());
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:15',
+            'farming_experience' => 'nullable|string|max:255',
+            'street' => 'required|string|max:255',
+            'registration_date' => 'required|date',
+            'province_id' => 'required|exists:provinces,id',
+            'municipality_id' => 'required|exists:municipalities,id',
+            'barangay_id' => 'required|exists:barangays,id'
+        ]);
+
+        $location = Location::create([
+            'province_id' => $request->province_id,
+            'municipality_id' => $request->municipality_id,
+            'barangay_id' => $request->barangay_id,
+            'street' => $request->street,
+        ]);
+
+        $user_id = Auth::user()->id;
+
+        $farmer = farmer::create([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'contact_number' => $request->contact_number,
+            'farming_experience' => $request->farming_experience,
+            'registration_date' => $request->registration_date,
+            'location_id' => $location->id,
+            'user_id' => $user_id,
+        ]);
+
+        $farmer->save();
+
+        return redirect()->route('management.farmer.create')->with('success', 'Farmer created successfully.');
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Farmer $farmer)
+    public function show(farmer $farmer)
     {
-        //
+        $farmer->load([
+            'location.province',
+            'location.municipality',
+            'location.barangay',
+            'user:id,last_name,email'
+        ]);
+
+        return Inertia::render('management/farmer/view', [
+            'farmer' => $farmer
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Farmer $farmer)
+    public function edit(farmer $farmer)
     {
-        //
+        $provinces = Province::all();
+        $municipalities = Municipality::all();
+        $barangays = Barangay::all();
+
+        $farmer->load([
+            'location.province',
+            'location.municipality',
+            'location.barangay',
+            'user:id,last_name,email'
+        ]);
+
+        return Inertia::render('management/farmer/edit', [
+            'farmer' => $farmer,
+            'provinces' => $provinces,
+            'municipalities' => $municipalities,
+            'barangays' => $barangays
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Farmer $farmer)
+    public function update(Request $request, farmer $farmer)
     {
-        //
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:255',
+            'farming_experience' => 'nullable|string|max:255',
+            'registration_date' => 'required|date',
+            'province_id' => 'required|exists:provinces,id',
+            'municipality_id' => 'required|exists:municipalities,id',
+            'barangay_id' => 'required|exists:barangays,id',
+            'street' => 'required|string|max:255',
+        ]);
+
+        // Update or create location
+        $location = Location::updateOrCreate(
+            ['id' => $farmer->location_id],
+            [
+                'province_id' => $request->province_id,
+                'municipality_id' => $request->municipality_id,
+                'barangay_id' => $request->barangay_id,
+                'street' => $request->street,
+            ]
+        );
+
+        // Update farmer
+        $farmer->update([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'contact_number' => $request->contact_number,
+            'farming_experience' => $request->farming_experience,
+            'registration_date' => $request->registration_date,
+            'location_id' => $location->id,
+        ]);
+
+        return redirect()->route('management.farmer.index')->with('success', 'Farmer updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Farmer $farmer)
-    {
-        //
-    }
+    // public function destroy(farmer $farmer)
+    // {
+    //     try {
+    //         $farmer->delete();
+    //         return redirect()->route('management.farmer.index')->with('success', 'Farmer deleted successfully.');
+    //     } catch (\Exception $e) {
+    //         return redirect()->route('management.farmer.index')->with('error', 'Failed to delete farmer.');
+    //     }
+    // }
 }
