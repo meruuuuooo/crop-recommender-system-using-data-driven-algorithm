@@ -1,48 +1,20 @@
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-
-type viewFarmProps = {
-    farm: {
-        id: number | string;
-        name: string;
-        total_area: number;
-        prev_crops: string;
-        location?: {
-            id: number;
-            street?: string;
-            province?: {
-                id: number | string;
-                name: string;
-                region_code: string;
-            },
-            municipality?: {
-                id: number | string;
-                province_id: number | string;
-                name: string;
-            },
-            barangay?: {
-                id: number | string;
-                municipality_id: number | string;
-                name: string;
-            }
-        }
-        farmer?: {
-            id: number | string;
-            first_name: string;
-            last_name: string;
-            middle_name?: string;
-            contact_number: string;
-        }
-        created_at: string;
-        updated_at: string;
-    }
-}
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { type viewFarmProps } from '@/types/farm';
 
 export default function ViewFarmCard({ farm }: viewFarmProps) {
     if (!farm) {
         return (
-            <div className="grid grid-cols-2 gap-6 px-5">
-                <Label className="col-span-2 text-center text-gray-500">No farm data available</Label>
+            <div className="w-full p-4 sm:p-6 lg:p-8">
+                <Card className="border-[#D6E3D4]">
+                    <CardContent className="p-6">
+                        <div className="text-center text-gray-500">
+                            <p className="text-lg">No farm data available</p>
+                            <p className="text-sm mt-2">Farm information could not be loaded.</p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         );
     }
@@ -51,36 +23,126 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
         ? `${farm.farmer.first_name || ''} ${farm.farmer.middle_name ? farm.farmer.middle_name + ' ' : ''}${farm.farmer.last_name || ''}`.trim()
         : 'N/A';
 
-    const address = farm.location
-        ? [
-            farm.location.province?.name,
-            farm.location.municipality?.name,
-            farm.location.barangay?.name,
-            farm.location.street
-          ].filter(Boolean).join(', ') || 'N/A'
-        : 'N/A';
+    const addressParts = [];
+    if (farm.location?.street) addressParts.push(farm.location.street);
+    if (farm.location?.barangay?.name) addressParts.push(farm.location.barangay.name);
+    if (farm.location?.municipality?.name) addressParts.push(farm.location.municipality.name);
+    if (farm.location?.province?.name) addressParts.push(farm.location.province.name);
+
+    const address = addressParts.length > 0 ? addressParts.join(', ') : 'N/A';
 
     const farmSize = farm.total_area ? `${farm.total_area} hectares` : 'N/A';
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
+    const InfoField = ({ label, value, fullWidth = false }: { label: string; value: string | number | null | undefined; fullWidth?: boolean }) => (
+        <div className={`space-y-2 ${fullWidth ? 'col-span-full' : ''}`}>
+            <Label className="text-sm font-medium text-[#619154]">{label}</Label>
+            <div className="text-gray-900 bg-gray-50 border border-gray-200 rounded-md px-3 py-2 min-h-[38px] flex items-center">
+                {value || 'N/A'}
+            </div>
+        </div>
+    );
 
     return (
-        <div className="grid grid-cols-2 gap-6 px-5">
-            <Separator orientation="horizontal" className="col-span-2 mr-2 data-[orientation=vertical]:h-4" />
-            <Label className="!text-[#619154]">Farm Name</Label>
-            <Label>{farm.name || 'N/A'}</Label>
-            <Separator orientation="horizontal" className="col-span-2 mr-2 data-[orientation=vertical]:h-4" />
-            <Label className="!text-[#619154]">Owner</Label>
-            <Label>{ownerName}</Label>
-            <Separator orientation="horizontal" className="col-span-2 mr-2 data-[orientation=vertical]:h-4" />
-            <Label className="!text-[#619154]">Farm Address</Label>
-            <Label>{address}</Label>
-            <Separator orientation="horizontal" className="col-span-2 mr-2 data-[orientation=vertical]:h-4" />
-            <Label className="!text-[#619154]">Farm Size</Label>
-            <Label>{farmSize}</Label>
-            <Separator orientation="horizontal" className="col-span-2 mr-2 data-[orientation=vertical]:h-4" />
-            <Label className="!text-[#619154]">Previous Crops</Label>
-            <Label>{farm.prev_crops || 'N/A'}</Label>
-            <Separator orientation="horizontal" className="col-span-2 mr-2 data-[orientation=vertical]:h-4" />
+        <div className="w-full sm:p-4 lg:p-6 space-y-4">
+            {/* Header Section */}
+            <Card className="border-[#D6E3D4]">
+                <CardHeader className="pb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <CardTitle className="text-2xl font-bold text-gray-900">
+                                {farm.name}
+                            </CardTitle>
+                            <p className="text-gray-600 mt-1">Farm Details</p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <Badge variant="secondary" className="bg-[#619154]/10 text-[#619154] border-[#619154]/20">
+                                ID: {farm.id}
+                            </Badge>
+                            <Badge variant="outline" className="border-gray-300">
+                                {farmSize}
+                            </Badge>
+                        </div>
+                    </div>
+                </CardHeader>
+            </Card>
+
+            {/* Farm Information Section */}
+            <Card className="border-[#D6E3D4]">
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                        Farm Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <InfoField label="Farm Name" value={farm.name} />
+                        <InfoField label="Total Area" value={farmSize} />
+                        <InfoField label="Previous Crops" value={farm.prev_crops} fullWidth />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Owner Information Section */}
+            <Card className="border-[#D6E3D4]">
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                        Owner Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <InfoField label="Farm Owner" value={ownerName} />
+                        {farm.farmer?.contact_number && (
+                            <InfoField label="Contact Number" value={farm.farmer.contact_number} />
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Location Information Section */}
+            <Card className="border-[#D6E3D4]">
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                        Location Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <InfoField label="Province" value={farm.location?.province?.name} />
+                            <InfoField label="Municipality" value={farm.location?.municipality?.name} />
+                            <InfoField label="Barangay" value={farm.location?.barangay?.name} />
+                        </div>
+                        {farm.location?.street && (
+                            <InfoField label="Street Address" value={farm.location.street} fullWidth />
+                        )}
+                        <InfoField label="Complete Address" value={address} fullWidth />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* System Information Section */}
+            <Card className="border-[#D6E3D4]">
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                        System Information
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <InfoField label="Date Created" value={formatDate(farm.created_at)} />
+                        <InfoField label="Last Updated" value={formatDate(farm.updated_at)} />
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }

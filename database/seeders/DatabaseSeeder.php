@@ -6,6 +6,9 @@ use App\Models\User;
 use App\Models\Farmer;
 use App\Models\Farm;
 use App\Models\Location;
+use App\Models\Category;
+use App\Models\Crop;
+use App\Models\Variety;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -197,5 +200,11 @@ class DatabaseSeeder extends Seeder
             'location_id' => rand(1, 5), // Assign a random location to the farm
         ]);
 
+        // Seed Categories
+        Category::factory(5)->create();
+
+        Crop::factory(5)->create([
+            'category_id' => rand(1, 5), // Assign a random category to the crop
+        ]);
     }
 }

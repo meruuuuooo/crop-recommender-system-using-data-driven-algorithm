@@ -3,6 +3,7 @@ import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import ViewFarmCard from './partials/viewFarmCard';
+import type { viewFarmProps } from '@/types/farm';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,44 +16,10 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-type viewFarmProps = {
-    farm: {
-        id: number | string;
-        name: string;
-        total_area: number;
-        prev_crops: string;
-        location: {
-            id: number;
-            street: string;
-            province: {
-                id: number | string;
-                name: string;
-                region_code: string;
-            },
-            municipality: {
-                id: number | string;
-                province_id: number | string;
-                name: string;
-            },
-            barangay: {
-                id: number | string;
-                municipality_id: number | string;
-                name: string;
-            }
-        }
-        farmer: {
-            id: number | string;
-            first_name: string;
-            last_name: string;
-            middle_name: string;
-            contact_number: string;
-        }
-        created_at: string;
-        updated_at: string;
-    }
-}
-
 export default function View({ farm }: viewFarmProps) {
+
+    console.log('Farm Data:', farm);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Show Farm" />

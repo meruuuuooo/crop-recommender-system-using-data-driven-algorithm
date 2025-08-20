@@ -3,6 +3,7 @@ import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import CreateFarmForm from './partials/createFarmForm';
+import type { CreateFarmProps } from '@/types/farm';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,31 +15,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/management/farm/create',
     },
 ];
-
-type CreateFarmProps = {
-    farmers: {
-        id: number | string;
-        first_name: string;
-        middle_name: string;
-        last_name: string;
-    }[];
-    provinces: {
-        id: number | string;
-        name: string;
-        region_code: number | string;
-    }[];
-    municipalities: {
-        id: number | string;
-        name: string;
-        province_id: number | string;
-    }[];
-    barangays: {
-        id: number | string;
-        name: string;
-        municipality_id: number | string;
-    }[];
-};
-
 
 export default function Create({ farmers, provinces, municipalities, barangays }: CreateFarmProps) {
     return (

@@ -1,48 +1,45 @@
 import HeadingSmall from '@/components/heading-small';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
+import CropTable from './partials/cropTable';
+import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import FarmTable from './partials/farmTable';
-import type { Farm } from '@/types/farm';
+import { Link } from '@inertiajs/react';
+import type { Crop } from '@/types/crop';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Farm Management',
-        href: 'management/farm',
+        title: 'Crop Management',
+        href: '/management/crop',
     },
 ];
 
-export default function Farm({ farms }: { farms: { data: Farm[] } }) {
+export default function Crop({ crops }: { crops: Crop[] }) {
 
-    const handleView = (farm: Farm) => {
-        router.get(route('management.farm.show', farm.id))
-    };
+    const handleView = (crop: Crop) => {
+        router.get(route('management.crop.show', crop.id));
+    }
 
-    const handleEdit = (farm: Farm) => {
-        router.get(route('management.farm.edit', farm.id))
+    const handleEdit = (crop: Crop) => {
+        router.get(route('management.crop.edit', crop.id));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Farm" />
+            <Head title="Crop" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
                 <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
-                    {/* Header Section */}
                     <div className="flex items-center justify-between">
-                        <HeadingSmall title="Farm Management" description="Manage farm details and information." />
-                        <Link href={route('management.farm.create')}>
+                        <HeadingSmall title="Crop Management" description="Manage crop information." />
+                        <Link href={route('management.crop.create')}>
                             <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
                                 <Plus className="mr-2 h-4 w-4" />
-                                Add Farm
+                                Add Crop
                             </Button>
                         </Link>
                     </div>
-
-                    <FarmTable
-                        farms={farms.data} onView={handleView} onEdit={handleEdit}
-                    />
+                    <CropTable crops={crops} onView={handleView} onEdit={handleEdit} />
                 </div>
             </div>
         </AppLayout>

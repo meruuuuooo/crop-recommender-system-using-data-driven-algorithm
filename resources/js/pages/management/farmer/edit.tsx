@@ -1,6 +1,7 @@
-import AppLayout from '@/layouts/app-layout';
 import HeadingSmall from '@/components/heading-small';
+import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
+import type { Props } from '@/types/farmer';
 import { Head } from '@inertiajs/react';
 import EditFormCard from './partials/editFarmerForm';
 
@@ -15,35 +16,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-type Props = {
-    farmer: {
-        id: number;
-        first_name: string;
-        middle_name: string;
-        last_name: string;
-        contact_number: string;
-        farming_experience: string | null;
-        registration_date: string;
-        location: {
-            street: string;
-            province_id: number | string;
-            municipality_id: number | string;
-            barangay_id: number | string;
-        };
-        user: {
-            last_name: string;
-            email: string;
-        };
-        created_at: string;
-        updated_at: string;
-    };
-    provinces: { id: number | string; name: string }[];
-    municipalities: { id: number | string; name: string; province_id: number | string }[];
-    barangays: { id: number | string; name: string; municipality_id: number | string }[];
-};
-
-export default function Edit( { farmer, provinces, municipalities, barangays }: Props) {
-
+export default function Edit({ farmer, provinces, municipalities, barangays }: Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Farmer" />

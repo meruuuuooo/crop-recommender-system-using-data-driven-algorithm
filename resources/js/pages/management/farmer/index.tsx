@@ -5,6 +5,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import FarmerTable from './partials/farmerTable';
+import { type Farmer } from '@/types/farmer';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -12,40 +13,6 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: 'management/farmer',
     },
 ];
-
-type Farmer = {
-    id: number;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    contact_number: string;
-    farming_experience: string | null;
-    registration_date: string;
-    location: {
-        street: string;
-        province: {
-            id: number | string;
-            name: string;
-            region_code: string;
-        };
-        municipality: {
-            id: number | string;
-            name: string;
-            province_id: number | string;
-        };
-        barangay: {
-            id: number | string;
-            name: string;
-            municipality_id: number | string;
-        };
-    };
-    user: {
-        last_name: string;
-        email: string;
-    };
-    created_at: string;
-    updated_at: string;
-};
 
 export default function Farmer({ farmers }: { farmers: { data: Farmer[] } }) {
     const handleView = (farmer: Farmer) => {
@@ -55,40 +22,6 @@ export default function Farmer({ farmers }: { farmers: { data: Farmer[] } }) {
     const handleEdit = (farmer: Farmer) => {
         router.get(route('management.farmer.edit', farmer.id));
     };
-
-    // const handleDelete = (farmer: Farmer) => {
-    //     Swal.fire({
-    //         title: 'Are you sure?',
-    //         text: `Do you want to delete ${farmer.first_name} ${farmer.last_name}? This action cannot be undone!`,
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#dc2626',
-    //         cancelButtonColor: '#619154',
-    //         confirmButtonText: 'Yes, delete!',
-    //         cancelButtonText: 'Cancel',
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             router.delete(route('management.farmer.destroy', farmer.id), {
-    //                 onSuccess: () => {
-    //                     Swal.fire({
-    //                         title: 'Deleted!',
-    //                         text: 'Farmer has been deleted successfully.',
-    //                         icon: 'success',
-    //                         confirmButtonColor: '#619154',
-    //                     });
-    //                 },
-    //                 onError: () => {
-    //                     Swal.fire({
-    //                         title: 'Error!',
-    //                         text: 'Failed to delete farmer.',
-    //                         icon: 'error',
-    //                         confirmButtonColor: '#dc2626',
-    //                     });
-    //                 },
-    //             });
-    //         }
-    //     });
-    // };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

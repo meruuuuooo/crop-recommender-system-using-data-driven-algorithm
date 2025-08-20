@@ -3,6 +3,7 @@ import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import CreateFormCard from './partials/createFarmerForm';
+import { type CreateFarmerProps } from '@/types/farmer';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,13 +16,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-
-
-export default function Create({ provinces, municipalities, barangays }: {
-    provinces: { id: number | string; name: string }[];
-    municipalities: { id: number | string; name: string; province_id: number | string }[];
-    barangays: { id: number | string; name: string; municipality_id: number | string }[];
-}) {
+export default function Create({ provinces, municipalities, barangays }: CreateFarmerProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

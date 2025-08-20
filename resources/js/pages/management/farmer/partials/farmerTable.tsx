@@ -1,43 +1,12 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronLeft, ChevronRight, Edit, Eye, Search } from 'lucide-react';
-import { useState, useMemo } from 'react';
-
-type Farmer = {
-    id: number;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    contact_number: string;
-    farming_experience: string | null;
-    registration_date: string;
-    location: {
-        street: string;
-        province: {
-            id: number | string;
-            name: string;
-            region_code: string;
-        },
-        municipality: {
-            id: number | string;
-            name: string;
-            province_id: number | string;
-        };
-        barangay: {
-            id: number | string;
-            name: string;
-            municipality_id: number | string;
-        }
-    };
-    user: {
-        last_name: string;
-        email: string;
-    };
-    created_at: string;
-    updated_at: string;
-};
-
+import { Calendar, ChevronLeft, ChevronRight, Edit, Eye, MapPin, Phone, Search, User, Users } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { type Farmer } from '@/types/farmer';
 interface FarmerTableProps {
     farmers: Farmer[];
     onEdit?: (farmer: Farmer) => void;
@@ -55,14 +24,15 @@ export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProp
 
         if (!search) return safeFarmers;
 
-        return safeFarmers.filter((farmer) =>
-            farmer.first_name?.toLowerCase().includes(search.toLowerCase()) ||
-            farmer.last_name?.toLowerCase().includes(search.toLowerCase()) ||
-            farmer.middle_name?.toLowerCase().includes(search.toLowerCase()) ||
-            farmer.contact_number?.includes(search) ||
-            farmer.location?.province.name?.toString().includes(search) ||
-            farmer.location?.municipality.name?.toString().includes(search) ||
-            farmer.location?.barangay.name?.toString().includes(search)
+        return safeFarmers.filter(
+            (farmer) =>
+                farmer.first_name?.toLowerCase().includes(search.toLowerCase()) ||
+                farmer.last_name?.toLowerCase().includes(search.toLowerCase()) ||
+                farmer.middle_name?.toLowerCase().includes(search.toLowerCase()) ||
+                farmer.contact_number?.includes(search) ||
+                farmer.location?.province.name?.toString().includes(search) ||
+                farmer.location?.municipality.name?.toString().includes(search) ||
+                farmer.location?.barangay.name?.toString().includes(search),
         );
     }, [farmers, search]);
 
@@ -95,172 +65,266 @@ export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProp
     };
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-                <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-[#619154]" />
-                    <Input
-                        placeholder="Search farmers..."
-                        value={search}
-                        onChange={(e) => handleSearchChange(e.target.value)}
-                        className="pl-10 border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-[#619154] focus:ring-[#619154]"
-                    />
-                </div>
-            </div>
-
-            <div className="text-sm text-[#619154]">
-                Showing {currentFarmers.length} of {filteredFarmers.length} farmers
-                {search && ` (filtered from ${Array.isArray(farmers) ? farmers.length : 0} total)`}
-            </div>
-
-            <div className="rounded-md border border-[#D6E3D4] overflow-hidden">
-                <Table>
-                    <TableHeader className="bg-[#619154]">
-                        <TableRow>
-                            <TableHead className="text-white font-semibold">Name</TableHead>
-                            <TableHead className="text-white font-semibold">Contact</TableHead>
-                            <TableHead className="text-white font-semibold">Experience</TableHead>
-                            <TableHead className="text-white font-semibold">Address</TableHead>
-                            <TableHead className="text-white font-semibold">Registration Date</TableHead>
-                            <TableHead className="text-white font-semibold text-center">Actions</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {currentFarmers.length > 0 ? (
-                            currentFarmers.map((farmer) => (
-                                <TableRow
-                                    key={farmer.id}
-                                    className="hover:bg-[#F0F7ED] border-b border-[#D6E3D4]"
-                                >
-                                    <TableCell className="font-medium text-[#619154]">
-                                        {getFullName(farmer)}
-                                    </TableCell>
-                                    <TableCell className="text-[#619154]">
-                                        {farmer.contact_number}
-                                    </TableCell>
-                                    <TableCell className="text-[#619154]">
-                                        {farmer.farming_experience ? `${farmer.farming_experience} years` : 'N/A'}
-                                    </TableCell>
-                                    <TableCell className="text-[#619154] max-w-xs truncate">
-                                        <span title={getFullAddress(farmer)}>
-                                            {getFullAddress(farmer)}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="text-[#619154]">
-                                        {formatDate(farmer.registration_date)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center justify-center space-x-2">
-                                            {onView && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => onView(farmer)}
-                                                    className="cursor-pointer h-8 w-8 p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43]"
-                                                >
-                                                    <Eye className="h-4 w-4" />
-                                                </Button>
-                                            )}
-                                            {onEdit && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => onEdit(farmer)}
-                                                    className="cursor-pointer h-8 w-8 p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43]"
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                            )}
-                                            {/* {onDelete && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => onDelete(farmer)}
-                                                    className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            )} */}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={6}
-                                    className="text-center py-8 text-[#619154]"
-                                >
-                                    {search ? 'No farmers found matching your search.' : 'No farmers found.'}
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
-
-            {totalPages > 1 && (
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-[#619154]">
-                        Page {currentPage} of {totalPages}
+        <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farmers-table-heading">
+            <CardHeader className="pb-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <CardTitle id="farmers-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                            <Users className="h-5 w-5 text-[#619154]" aria-hidden="true" />
+                            Farmers Directory
+                        </CardTitle>
+                        <p className="mt-1 text-sm text-gray-600">Manage and view all registered farmers in the system</p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] disabled:opacity-50"
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                            Previous
-                        </Button>
-
-                        {/* Page Numbers */}
-                        <div className="flex items-center space-x-1">
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNumber;
-                                if (totalPages <= 5) {
-                                    pageNumber = i + 1;
-                                } else if (currentPage <= 3) {
-                                    pageNumber = i + 1;
-                                } else if (currentPage >= totalPages - 2) {
-                                    pageNumber = totalPages - 4 + i;
-                                } else {
-                                    pageNumber = currentPage - 2 + i;
-                                }
-
-                                return (
-                                    <Button
-                                        key={pageNumber}
-                                        variant={currentPage === pageNumber ? "default" : "outline"}
-                                        size="sm"
-                                        onClick={() => setCurrentPage(pageNumber)}
-                                        className={
-                                            currentPage === pageNumber
-                                                ? "bg-[#619154] text-white hover:bg-[#4F7A43]"
-                                                : "border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43]"
-                                        }
-                                    >
-                                        {pageNumber}
-                                    </Button>
-                                );
-                            })}
+                    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                        <div className="relative w-full sm:w-80">
+                            <Label htmlFor="farmer-search" className="sr-only">
+                                Search farmers
+                            </Label>
+                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-[#619154]" aria-hidden="true" />
+                            <Input
+                                id="farmer-search"
+                                placeholder="Search farmers..."
+                                value={search}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                className="border-[#D6E3D4] pl-10 text-[#619154] placeholder:text-[#619154] focus:border-[#619154] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
+                                aria-describedby="search-help"
+                            />
+                            <div id="search-help" className="sr-only">
+                                Search by name, contact, or address
+                            </div>
                         </div>
-
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] disabled:opacity-50"
-                        >
-                            Next
-                            <ChevronRight className="h-4 w-4" />
-                        </Button>
+                        <div className="text-sm whitespace-nowrap text-[#619154]">
+                            <span className="font-medium">{currentFarmers.length}</span> of{' '}
+                            <span className="font-medium">{filteredFarmers.length}</span> farmers
+                            {search && <span className="text-gray-500"> (filtered from {Array.isArray(farmers) ? farmers.length : 0} total)</span>}
+                        </div>
                     </div>
                 </div>
-            )}
-        </div>
+            </CardHeader>
+            <CardContent className="p-0">
+                {/* Mobile Cards View for smaller screens */}
+                <div className="block space-y-4 p-4 lg:hidden">
+                    {currentFarmers.length > 0 ? (
+                        currentFarmers.map((farmer) => (
+                            <Card key={farmer.id} className="border-[#D6E3D4] transition-shadow hover:shadow-md">
+                                <CardContent className="p-4">
+                                    <div className="space-y-3">
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <h3 className="text-lg font-semibold text-[#619154]">{getFullName(farmer)}</h3>
+                                                <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+                                                    <Phone className="h-4 w-4" aria-hidden="true" />
+                                                    <span>{farmer.contact_number}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {onView && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => onView(farmer)}
+                                                        className="h-8 w-8 cursor-pointer p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
+                                                        aria-label={`View details for ${getFullName(farmer)}`}
+                                                    >
+                                                        <Eye className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                {onEdit && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => onEdit(farmer)}
+                                                        className="h-8 w-8 cursor-pointer p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
+                                                        aria-label={`Edit ${getFullName(farmer)}`}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Badge variant="secondary" className="border-[#D6E3D4] bg-[#F0F7ED] text-[#619154]">
+                                                    {farmer.farming_experience ? `${farmer.farming_experience} years` : 'Experience: N/A'}
+                                                </Badge>
+                                            </div>
+
+                                            <div className="flex items-start gap-2 text-sm text-gray-600">
+                                                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
+                                                <span className="line-clamp-2">{getFullAddress(farmer)}</span>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Calendar className="h-4 w-4" aria-hidden="true" />
+                                                <span>Registered: {formatDate(farmer.registration_date)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))
+                    ) : (
+                        <div className="py-12 text-center text-gray-500">
+                            <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" aria-hidden="true" />
+                            <p className="text-lg font-medium">{search ? 'No farmers found matching your search.' : 'No farmers found.'}</p>
+                            {search && <p className="mt-1 text-sm">Try adjusting your search terms</p>}
+                        </div>
+                    )}
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden lg:block">
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader className="bg-[#619154]">
+                                <TableRow>
+                                    <TableHead className="font-semibold text-white">Name</TableHead>
+                                    <TableHead className="font-semibold text-white">Contact</TableHead>
+                                    <TableHead className="font-semibold text-white">Experience</TableHead>
+                                    <TableHead className="font-semibold text-white">Address</TableHead>
+                                    <TableHead className="font-semibold text-white">Registration Date</TableHead>
+                                    <TableHead className="text-center font-semibold text-white">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {currentFarmers.length > 0 ? (
+                                    currentFarmers.map((farmer) => (
+                                        <TableRow key={farmer.id} className="border-b border-[#D6E3D4] transition-colors hover:bg-[#F0F7ED]">
+                                            <TableCell className="font-medium text-[#619154]">
+                                                <div className="flex items-center gap-2">
+                                                    <User className="h-4 w-4" aria-hidden="true" />
+                                                    {getFullName(farmer)}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-[#619154]">{farmer.contact_number}</TableCell>
+                                            <TableCell className="text-[#619154]">
+                                                <Badge variant="secondary" className="border-[#D6E3D4] bg-[#F0F7ED] text-[#619154]">
+                                                    {farmer.farming_experience ? `${farmer.farming_experience} years` : 'N/A'}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="max-w-xs text-[#619154]">
+                                                <span title={getFullAddress(farmer)} className="block truncate">
+                                                    {getFullAddress(farmer)}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-[#619154]">{formatDate(farmer.registration_date)}</TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center justify-center space-x-2">
+                                                    {onView && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => onView(farmer)}
+                                                            className="h-8 w-8 p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
+                                                            aria-label={`View details for ${getFullName(farmer)}`}
+                                                        >
+                                                            <Eye className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                    {onEdit && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => onEdit(farmer)}
+                                                            className="h-8 w-8 p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
+                                                            aria-label={`Edit ${getFullName(farmer)}`}
+                                                        >
+                                                            <Edit className="h-4 w-4" />
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="py-12 text-center text-gray-500">
+                                            <div className="flex flex-col items-center">
+                                                <Users className="mb-4 h-12 w-12 text-gray-300" aria-hidden="true" />
+                                                <p className="text-lg font-medium">
+                                                    {search ? 'No farmers found matching your search.' : 'No farmers found.'}
+                                                </p>
+                                                {search && <p className="mt-1 text-sm">Try adjusting your search terms</p>}
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="border-t border-[#D6E3D4] p-4">
+                        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                            <div className="order-2 text-sm text-[#619154] sm:order-1">
+                                Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+                            </div>
+                            <nav className="order-1 flex items-center space-x-2 sm:order-2" aria-label="Pagination">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 disabled:opacity-50"
+                                    aria-label="Go to previous page"
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                    <span className="hidden sm:inline">Previous</span>
+                                </Button>
+
+                                {/* Page Numbers */}
+                                <div className="flex items-center space-x-1">
+                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                        let pageNumber;
+                                        if (totalPages <= 5) {
+                                            pageNumber = i + 1;
+                                        } else if (currentPage <= 3) {
+                                            pageNumber = i + 1;
+                                        } else if (currentPage >= totalPages - 2) {
+                                            pageNumber = totalPages - 4 + i;
+                                        } else {
+                                            pageNumber = currentPage - 2 + i;
+                                        }
+
+                                        return (
+                                            <Button
+                                                key={pageNumber}
+                                                variant={currentPage === pageNumber ? 'default' : 'outline'}
+                                                size="sm"
+                                                onClick={() => setCurrentPage(pageNumber)}
+                                                className={
+                                                    currentPage === pageNumber
+                                                        ? 'bg-[#619154] text-white hover:bg-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2'
+                                                        : 'border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2'
+                                                }
+                                                aria-label={`Go to page ${pageNumber}`}
+                                                aria-current={currentPage === pageNumber ? 'page' : undefined}
+                                            >
+                                                {pageNumber}
+                                            </Button>
+                                        );
+                                    })}
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage(currentPage + 1)}
+                                    disabled={currentPage === totalPages}
+                                    className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 disabled:opacity-50"
+                                    aria-label="Go to next page"
+                                >
+                                    <span className="hidden sm:inline">Next</span>
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </nav>
+                        </div>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
     );
 }

@@ -66,7 +66,6 @@ class FarmerController extends Controller
             'contact_number' => 'required|string|max:15',
             'farming_experience' => 'nullable|string|max:255',
             'street' => 'required|string|max:255',
-            'registration_date' => 'required|date',
             'province_id' => 'required|exists:provinces,id',
             'municipality_id' => 'required|exists:municipalities,id',
             'barangay_id' => 'required|exists:barangays,id'
@@ -87,14 +86,14 @@ class FarmerController extends Controller
             'last_name' => $request->last_name,
             'contact_number' => $request->contact_number,
             'farming_experience' => $request->farming_experience,
-            'registration_date' => $request->registration_date,
+            'registration_date' => now(),
             'location_id' => $location->id,
             'user_id' => $user_id,
         ]);
 
         $farmer->save();
 
-        return redirect()->route('management.farmer.create')->with('success', 'Farmer created successfully.');
+        return redirect()->route('management.farmer.index')->with('success', 'Farmer created successfully.');
 
     }
 
@@ -146,27 +145,26 @@ class FarmerController extends Controller
     {
         $request->validate([
             'first_name' => 'required|string|max:255',
-            'middle_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
             'farming_experience' => 'nullable|string|max:255',
-            'registration_date' => 'required|date',
             'province_id' => 'required|exists:provinces,id',
             'municipality_id' => 'required|exists:municipalities,id',
             'barangay_id' => 'required|exists:barangays,id',
             'street' => 'required|string|max:255',
         ]);
 
-        // Update or create location
-        $location = Location::updateOrCreate(
-            ['id' => $farmer->location_id],
-            [
-                'province_id' => $request->province_id,
-                'municipality_id' => $request->municipality_id,
-                'barangay_id' => $request->barangay_id,
-                'street' => $request->street,
-            ]
-        );
+        // Store the old location ID for potential cleanup
+        $oldLocationId = $farmer->location_id;
+
+        // Create a new location for this farmer
+        $location = Location::create([
+            'province_id' => $request->province_id,
+            'municipality_id' => $request->municipality_id,
+            'barangay_id' => $request->barangay_id,
+            'street' => $request->street,
+        ]);
 
         // Update farmer
         $farmer->update([
@@ -175,9 +173,20 @@ class FarmerController extends Controller
             'last_name' => $request->last_name,
             'contact_number' => $request->contact_number,
             'farming_experience' => $request->farming_experience,
-            'registration_date' => $request->registration_date,
             'location_id' => $location->id,
         ]);
+
+        // Check if the old location is still being used by other farmers
+        // If not, delete it to prevent orphaned records
+        if ($oldLocationId) {
+            $otherFarmersWithSameLocation = farmer::where('location_id', $oldLocationId)
+                ->where('id', '!=', $farmer->id)
+                ->count();
+            
+            if ($otherFarmersWithSameLocation === 0) {
+                Location::find($oldLocationId)?->delete();
+            }
+        }
 
         return redirect()->route('management.farmer.index')->with('success', 'Farmer updated successfully.');
     }

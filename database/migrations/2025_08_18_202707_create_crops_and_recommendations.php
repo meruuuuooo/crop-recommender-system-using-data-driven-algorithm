@@ -11,13 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+
         Schema::create('crops', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('crop_season')->nullable();
+            $table->string('season');
             $table->text('description')->nullable();
-            $table->string('variety')->nullable();
-            $table->string('category')->nullable();
+            $table->foreignId('category_id')->constrained('categories')->nullable();
             $table->timestamps();
         });
 
@@ -49,5 +55,7 @@ return new class extends Migration
         Schema::dropIfExists('recommendations');
         Schema::dropIfExists('crop_nutrients');
         Schema::dropIfExists('crops');
+        Schema::dropIfExists('varieties');
+        Schema::dropIfExists('categories');
     }
 };

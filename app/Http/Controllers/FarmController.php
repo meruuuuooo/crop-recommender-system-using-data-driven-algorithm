@@ -19,6 +19,7 @@ class FarmController extends Controller
      */
     public function index()
     {
+
         $farms = Farm::with([
             'location.province',
             'location.municipality',
@@ -94,7 +95,14 @@ class FarmController extends Controller
      */
     public function show(Farm $farm)
     {
-        $farm = Farm::with(['location', 'farmer'])->findOrFail($farm->id);
+        $farm = Farm::with([
+            'location.province',
+            'location.municipality',
+            'location.barangay',
+            'farmer' => function ($query) {
+                $query->select('id', 'last_name', 'first_name', 'middle_name', 'contact_number');
+            }
+        ])->findOrFail($farm->id);
 
         return Inertia::render('management/farm/view', [
             'farm' => $farm,
@@ -132,41 +140,31 @@ class FarmController extends Controller
      */
     public function update(Request $request, Farm $farm)
     {
-        // $request->validate([
-        //     'name' => 'required|string|max:255',
-        //     'total_area' => 'required|numeric|min:0',
-        //     'prev_crops' => 'nullable|string|max:255',
-        //     'farmer_id' => 'required|exists:farmers,id',
-        //     'province_id' => 'required|exists:provinces,id',
-        //     'municipality_id' => 'required|exists:municipalities,id',
-        //     'barangay_id' => 'required|exists:barangays,id',
-        // ]);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'total_area' => 'required|numeric|min:0',
+            'prev_crops' => 'nullable|string|max:255',
+            'farmer_id' => 'required|exists:farmers,id',
+            'province_id' => 'required|exists:provinces,id',
+            'municipality_id' => 'required|exists:municipalities,id',
+            'barangay_id' => 'required|exists:barangays,id',
+        ]);
 
-        // // Update or create location
-        // if ($farm->location) {
-        //     $farm->location->update([
-        //         'province_id' => $request->province_id,
-        //         'municipality_id' => $request->municipality_id,
-        //         'barangay_id' => $request->barangay_id,
-        //     ]);
-        // } else {
-        //     $location = Location::create([
-        //         'province_id' => $request->province_id,
-        //         'municipality_id' => $request->municipality_id,
-        //         'barangay_id' => $request->barangay_id,
-        //     ]);
-        //     $farm->location_id = $location->id;
-        // }
+        $location = Location::create([
+            'province_id' => $request->province_id,
+            'municipality_id' => $request->municipality_id,
+            'barangay_id' => $request->barangay_id,
+        ]);
+        $farm->update([
+            'name' => $request->name,
+            'total_area' => $request->total_area,
+            'prev_crops' => $request->prev_crops,
+            'farmer_id' => $request->farmer_id,
+            'location_id' => $location->id,
+        ]);
+        $farm->save();
 
-        // // Update farm
-        // $farm->update([
-        //     'name' => $request->name,
-        //     'total_area' => $request->total_area,
-        //     'prev_crops' => $request->prev_crops,
-        //     'farmer_id' => $request->farmer_id,
-        // ]);
-
-        // return redirect()->route('management.farm.index')->with('success', 'Farm updated successfully.');
+        return redirect()->route('management.farm.index')->with('success', 'Farm updated successfully.');
     }
 
     /**

@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Crop extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'name',
-        'crop_season',
+        'season',
         'description',
-        'variety',
-        'category'
+        'category_id',
     ];
 
     public function nutrients()
@@ -37,5 +38,10 @@ class Crop extends Model
     public function cropCalendar()
     {
         return $this->hasMany(CropCalendar::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

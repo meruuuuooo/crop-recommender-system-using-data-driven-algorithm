@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, ScrollText, File, Sparkles, Sprout, Tractor, User, ShowerHead, Snail, Calendar } from 'lucide-react';
+import { BookOpen, Calendar, File, Folder, LayoutGrid, ScrollText, ShowerHead, Snail, Sparkles, Sprout, Tractor, User } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -21,7 +21,7 @@ const mainNavItems: NavItem[] = [
         items: [
             {
                 title: 'Crop',
-                href: '/recommendation',
+                href: '/recommendation/crop',
                 icon: Sprout,
             },
             {
@@ -52,17 +52,17 @@ const mainNavItems: NavItem[] = [
                 href: '/management/farm',
                 icon: Tractor,
             },
+            {
+                title: 'Crop',
+                href: '/management/crop',
+                icon: Sprout,
+            },
         ],
     },
     {
         title: 'Calendar',
         href: '/calendar',
         icon: Calendar,
-    },
-    {
-        title: 'Crop',
-        href: '/crop',
-        icon: Sprout,
     },
     {
         title: 'Reports',
