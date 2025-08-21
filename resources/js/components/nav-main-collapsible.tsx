@@ -16,12 +16,17 @@ import { ChevronRight } from 'lucide-react';
 export function NavMainCollapsible({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
 
+    const getPathname = (url: string) => {
+        return url.split('?')[0];
+    };
+
     return (
         <SidebarGroup className="px-2 py-0">
             <SidebarGroupLabel>Platform</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) => {
-                    const isActive = page.url === item.href || page.url.startsWith(item.href + '/');
+                    const currentPathname = getPathname(page.url);
+                    const isActive = currentPathname === item.href || currentPathname.startsWith(item.href + '/');
                     const hasSubItems = item.items && item.items.length > 0;
 
                     if (hasSubItems) {
@@ -44,7 +49,7 @@ export function NavMainCollapsible({ items = [] }: { items: NavItem[] }) {
                                     <CollapsibleContent>
                                         <SidebarMenuSub>
                                             {item.items?.map((subItem) => {
-                                                const subIsActive = page.url === subItem.href || page.url.startsWith(subItem.href + '/');
+                                                const subIsActive = currentPathname === subItem.href || currentPathname.startsWith(subItem.href + '/');
                                                 return (
                                                     <SidebarMenuSubItem key={subItem.title}>
                                                         <SidebarMenuSubButton asChild isActive={subIsActive}>

@@ -3,50 +3,81 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, ChevronLeft, ChevronRight, Edit, Eye, MapPin, Search, Sprout, Tractor, User } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import type {Farm} from '@/types/farm';
+import { Calendar, Edit, Eye, MapPin, Search, Tractor, User } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
+import type { Farm, PaginatedFarms } from '@/types/farm';
+import { PaginationData } from '@/components/paginationData';
 
 interface FarmTableProps {
-    farms: Farm[];
+    farms: PaginatedFarms;
+    filters: {
+        search?: string;
+        per_page?: number;
+    };
     onEdit?: (farm: Farm) => void;
     onView?: (farm: Farm) => void;
     onDelete?: (farm: Farm) => void;
 }
 
-export default function FarmTable({ farms, onEdit, onView }: FarmTableProps) {
-    const [search, setSearch] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableProps) {
+    const [search, setSearch] = useState(filters.search || '');
+    const [perPage, setPerPage] = useState(filters.per_page || 10);
 
-    const filteredFarms = useMemo(() => {
-        const safeFarms = Array.isArray(farms) ? farms : [];
-
-        if (!search) return safeFarms;
-
-        return safeFarms.filter(
-            (farm) =>
-                farm.name?.toLowerCase().includes(search.toLowerCase()) ||
-                farm.farmer?.last_name?.toLowerCase().includes(search.toLowerCase()) ||
-                farm.prev_crops?.toLowerCase().includes(search.toLowerCase()) ||
-                farm.location?.province?.name?.toLowerCase().includes(search.toLowerCase()) ||
-                farm.location?.municipality?.name?.toLowerCase().includes(search.toLowerCase()) ||
-                farm.location?.barangay?.name?.toLowerCase().includes(search.toLowerCase()),
-        );
-    }, [farms, search]);
-
-    // Calculate pagination
-    const totalPages = Math.ceil(filteredFarms.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentFarms = filteredFarms.slice(startIndex, endIndex);
-
-    // Reset to first page when search changes
+    // Update search and navigate to new URL
     const handleSearchChange = (value: string) => {
         setSearch(value);
-        setCurrentPage(1);
     };
+
+    // Debounced search effect
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            router.get(route('management.farm.index'), {
+                search: search,
+                per_page: perPage,
+                page: 1 // Reset to first page when searching
+            }, {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);    // Handle per page change
+    const handlePerPageChange = (value: string) => {
+        const newPerPage = parseInt(value);
+        setPerPage(newPerPage);
+
+        router.get(route('management.farm.index'), {
+            search,
+            per_page: newPerPage,
+            page: 1 // Reset to first page when changing per page
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Handle pagination
+    const handlePageChange = (page: number) => {
+        router.get(route('management.farm.index'), {
+            search,
+            per_page: perPage,
+            page
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Sync local state with props when they change
+    useEffect(() => {
+        setSearch(filters.search || '');
+        setPerPage(filters.per_page || 10);
+    }, [filters.search, filters.per_page]);
 
     const timeStampToDate = (timestamp: string) => {
         const date = new Date(timestamp);
@@ -98,10 +129,25 @@ export default function FarmTable({ farms, onEdit, onView }: FarmTableProps) {
                                 Search by farm name, owner, crops, or location
                             </div>
                         </div>
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="per-page" className="text-sm text-[#619154]">
+                                Show:
+                            </Label>
+                            <Select value={perPage.toString()} onValueChange={handlePerPageChange}>
+                                <SelectTrigger className="w-20 border-[#D6E3D4] text-[#619154] focus:border-[#619154] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="25">25</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="text-sm whitespace-nowrap text-[#619154]">
-                            <span className="font-medium">{currentFarms.length}</span> of <span className="font-medium">{filteredFarms.length}</span>{' '}
-                            farms
-                            {search && <span className="text-gray-500"> (filtered from {Array.isArray(farms) ? farms.length : 0} total)</span>}
+                            <span className="font-medium">{farms.from || 0}</span>-<span className="font-medium">{farms.to || 0}</span> of{' '}
+                            <span className="font-medium">{farms.total}</span> farms
                         </div>
                     </div>
                 </div>
@@ -109,8 +155,8 @@ export default function FarmTable({ farms, onEdit, onView }: FarmTableProps) {
             <CardContent className="p-0">
                 {/* Mobile Cards View for smaller screens */}
                 <div className="block space-y-4 p-4 lg:hidden">
-                    {currentFarms.length > 0 ? (
-                        currentFarms.map((farm) => (
+                    {farms.data.length > 0 ? (
+                        farms.data.map((farm: Farm) => (
                             <Card key={farm.id} className="border-[#D6E3D4] transition-shadow hover:shadow-md">
                                 <CardContent className="p-4">
                                     <div className="space-y-3">
@@ -153,12 +199,7 @@ export default function FarmTable({ farms, onEdit, onView }: FarmTableProps) {
                                                 <Badge variant="secondary" className="border-blue-200 bg-blue-50 text-blue-700">
                                                     {farm.total_area || 'N/A'} area
                                                 </Badge>
-                                                {farm.prev_crops && (
-                                                    <Badge variant="secondary" className="border-green-200 bg-green-50 text-green-700">
-                                                        <Sprout className="mr-1 h-3 w-3" aria-hidden="true" />
-                                                        {farm.prev_crops}
-                                                    </Badge>
-                                                )}
+
                                             </div>
 
                                             <div className="flex items-start gap-2 text-sm text-gray-600">
@@ -200,8 +241,8 @@ export default function FarmTable({ farms, onEdit, onView }: FarmTableProps) {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {currentFarms.length > 0 ? (
-                                    currentFarms.map((farm) => (
+                                {farms.data.length > 0 ? (
+                                    farms.data.map((farm: Farm) => (
                                         <TableRow key={farm.id} className="border-b border-[#D6E3D4] transition-colors hover:bg-[#F0F7ED]">
                                             <TableCell className="font-medium text-[#619154]">
                                                 <div className="flex items-center gap-2">
@@ -278,72 +319,13 @@ export default function FarmTable({ farms, onEdit, onView }: FarmTableProps) {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {farms.last_page > 1 && (
                     <div className="border-t border-[#D6E3D4] p-4">
-                        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                            <div className="order-2 text-sm text-[#619154] sm:order-1">
-                                Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
-                            </div>
-                            <nav className="order-1 flex items-center space-x-2 sm:order-2" aria-label="Pagination">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 disabled:opacity-50"
-                                    aria-label="Go to previous page"
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                                    <span className="hidden sm:inline">Previous</span>
-                                </Button>
-
-                                {/* Page Numbers */}
-                                <div className="flex items-center space-x-1">
-                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                        let pageNumber;
-                                        if (totalPages <= 5) {
-                                            pageNumber = i + 1;
-                                        } else if (currentPage <= 3) {
-                                            pageNumber = i + 1;
-                                        } else if (currentPage >= totalPages - 2) {
-                                            pageNumber = totalPages - 4 + i;
-                                        } else {
-                                            pageNumber = currentPage - 2 + i;
-                                        }
-
-                                        return (
-                                            <Button
-                                                key={pageNumber}
-                                                variant={currentPage === pageNumber ? 'default' : 'outline'}
-                                                size="sm"
-                                                onClick={() => setCurrentPage(pageNumber)}
-                                                className={
-                                                    currentPage === pageNumber
-                                                        ? 'bg-[#619154] text-white hover:bg-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2'
-                                                        : 'border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2'
-                                                }
-                                                aria-label={`Go to page ${pageNumber}`}
-                                                aria-current={currentPage === pageNumber ? 'page' : undefined}
-                                            >
-                                                {pageNumber}
-                                            </Button>
-                                        );
-                                    })}
-                                </div>
-
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 disabled:opacity-50"
-                                    aria-label="Go to next page"
-                                >
-                                    <span className="hidden sm:inline">Next</span>
-                                    <ChevronRight className="h-4 w-4" />
-                                </Button>
-                            </nav>
-                        </div>
+                        <PaginationData
+                            currentPage={farms.current_page}
+                            totalPages={farms.last_page}
+                            onPageChange={handlePageChange}
+                        />
                     </div>
                 )}
             </CardContent>

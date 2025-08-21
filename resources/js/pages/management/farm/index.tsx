@@ -5,7 +5,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import FarmTable from './partials/farmTable';
-import type { Farm } from '@/types/farm';
+import type { Farm, FarmIndexProps } from '@/types/farm';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,7 +14,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Farm({ farms }: { farms: { data: Farm[] } }) {
+export default function Farm({ farms, filters }: FarmIndexProps) {
 
     const handleView = (farm: Farm) => {
         router.get(route('management.farm.show', farm.id))
@@ -41,7 +41,10 @@ export default function Farm({ farms }: { farms: { data: Farm[] } }) {
                     </div>
 
                     <FarmTable
-                        farms={farms.data} onView={handleView} onEdit={handleEdit}
+                        farms={farms}
+                        filters={filters}
+                        onView={handleView} 
+                        onEdit={handleEdit}
                     />
                 </div>
             </div>

@@ -40,17 +40,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Crop Management
 
     Route::prefix('management/crop')->name('management.crop.')->group(function () {
-       Route::get('/', [CropController::class, 'index'])->name('index');
-       Route::get('/create', [CropController::class, 'create'])->name('create');
-       Route::post('/', [CropController::class, 'store'])->name('store');
-       Route::get('/show/{crop}', [CropController::class, 'show'])->name('show');
-       Route::get('/edit/{crop}', [CropController::class, 'edit'])->name('edit');
-       Route::put('/{crop}', [CropController::class, 'update'])->name('update');
+        Route::get('/', [CropController::class, 'index'])->name('index');
+        Route::get('/create', [CropController::class, 'create'])->name('create');
+        Route::post('/', [CropController::class, 'store'])->name('store');
+        Route::get('/show/{crop}', [CropController::class, 'show'])->name('show');
+        Route::get('/edit/{crop}', [CropController::class, 'edit'])->name('edit');
+        Route::put('/{crop}', [CropController::class, 'update'])->name('update');
     });
 
     Route::prefix('recommendation')->name('recommendation.')->group(function () {
         Route::get('/crop', [RecommendationController::class, 'crop'])->name('crop');
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
+        Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');
     });
 
@@ -59,9 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('reports', function () {
         return Inertia::render('reports/index');
     })->name('reports');
-
-
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

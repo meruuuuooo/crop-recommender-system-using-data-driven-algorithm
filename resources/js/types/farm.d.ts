@@ -1,4 +1,3 @@
-
 export type Farm = {
     id: number | string;
     name: string;
@@ -107,3 +106,31 @@ export type EditFarmProps = {
     municipalities?: { id: number | string; name: string; province_id: number | string }[];
     barangays?: { id: number | string; name: string; municipality_id: number | string }[];
 }
+
+export type PaginatedFarms = {
+    data: Farm[];
+    current_page: number;
+    first_page_url: string;
+    from: number;
+    last_page: number;
+    last_page_url: string;
+    links: Array<{
+        url: string | null;
+        label: string;
+        active: boolean;
+    }>;
+    next_page_url: string | null;
+    path: string;
+    per_page: number;
+    prev_page_url: string | null;
+    to: number;
+    total: number;
+};
+
+export type FarmIndexProps = {
+    farms: PaginatedFarms;
+    filters: {
+        search?: string;
+        per_page?: number;
+    };
+};

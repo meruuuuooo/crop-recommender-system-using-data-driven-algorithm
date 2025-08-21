@@ -13,11 +13,30 @@ class CropController extends Controller
 {
     public function index(Request $request)
     {
+        $search = $request->get('search');
+        $perPage = $request->get('per_page', 10);
 
-        $crops = Crop::with('category')->get();
+        $crops = Crop::with('category')
+        ->when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('season', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage)
+        ->withQueryString();
 
         return Inertia::render('management/crop/index', [
             'crops' => $crops,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage
+            ]
         ]);
     }
 

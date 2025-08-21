@@ -17,8 +17,10 @@ class FarmController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+        $perPage = $request->get('per_page', 10);
 
         $farms = Farm::with([
             'location.province',
@@ -28,12 +30,36 @@ class FarmController extends Controller
                 $query->select('id', 'last_name', 'first_name', 'middle_name', 'contact_number');
             }
         ])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
+        ->when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('prev_crops', 'like', "%{$search}%")
+                  ->orWhereHas('farmer', function ($q) use ($search) {
+                      $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('middle_name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('location.province', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('location.municipality', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('location.barangay', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        })
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage)
+        ->withQueryString();
 
         return Inertia::render('management/farm/index', [
             'farms' => $farms,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage
+            ]
         ]);
     }
 

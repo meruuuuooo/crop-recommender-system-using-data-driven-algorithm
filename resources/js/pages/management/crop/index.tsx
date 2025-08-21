@@ -6,7 +6,7 @@ import CropTable from './partials/cropTable';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { Link } from '@inertiajs/react';
-import type { Crop } from '@/types/crop';
+import type { Crop, CropIndexProps } from '@/types/crop';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Crop({ crops }: { crops: Crop[] }) {
+export default function Crop({ crops, filters }: CropIndexProps) {
 
     const handleView = (crop: Crop) => {
         router.get(route('management.crop.show', crop.id));
@@ -39,7 +39,7 @@ export default function Crop({ crops }: { crops: Crop[] }) {
                             </Button>
                         </Link>
                     </div>
-                    <CropTable crops={crops} onView={handleView} onEdit={handleEdit} />
+                    <CropTable crops={crops} filters={filters} onView={handleView} onEdit={handleEdit} />
                 </div>
             </div>
         </AppLayout>

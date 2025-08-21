@@ -3,50 +3,81 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, ChevronLeft, ChevronRight, Edit, Eye, MapPin, Phone, Search, User, Users } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { type Farmer } from '@/types/farmer';
+import { Calendar, Edit, Eye, MapPin, Phone, Search, User, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
+import { type Farmer, type PaginatedFarmers } from '@/types/farmer';
+import { PaginationData } from '@/components/paginationData';
+
 interface FarmerTableProps {
-    farmers: Farmer[];
+    farmers: PaginatedFarmers;
+    filters: {
+        search?: string;
+        per_page?: number;
+    };
     onEdit?: (farmer: Farmer) => void;
     onView?: (farmer: Farmer) => void;
     onDelete?: (farmer: Farmer) => void;
 }
 
-export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProps) {
-    const [search, setSearch] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5;
+export default function FarmerTable({ farmers, filters, onEdit, onView }: FarmerTableProps) {
+    const [search, setSearch] = useState(filters.search || '');
+    const [perPage, setPerPage] = useState(filters.per_page || 10);
 
-    const filteredFarmers = useMemo(() => {
-        const safeFarmers = Array.isArray(farmers) ? farmers : [];
-
-        if (!search) return safeFarmers;
-
-        return safeFarmers.filter(
-            (farmer) =>
-                farmer.first_name?.toLowerCase().includes(search.toLowerCase()) ||
-                farmer.last_name?.toLowerCase().includes(search.toLowerCase()) ||
-                farmer.middle_name?.toLowerCase().includes(search.toLowerCase()) ||
-                farmer.contact_number?.includes(search) ||
-                farmer.location?.province.name?.toString().includes(search) ||
-                farmer.location?.municipality.name?.toString().includes(search) ||
-                farmer.location?.barangay.name?.toString().includes(search),
-        );
-    }, [farmers, search]);
-
-    // Calculate pagination
-    const totalPages = Math.ceil(filteredFarmers.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentFarmers = filteredFarmers.slice(startIndex, endIndex);
-
-    // Reset to first page when search changes
+    // Update search and navigate to new URL
     const handleSearchChange = (value: string) => {
         setSearch(value);
-        setCurrentPage(1);
     };
+
+    // Debounced search effect
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            router.get(route('management.farmer.index'), {
+                search: search,
+                per_page: perPage,
+                page: 1 // Reset to first page when searching
+            }, {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }, 300);
+
+        return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);    // Handle per page change
+    const handlePerPageChange = (value: string) => {
+        const newPerPage = parseInt(value);
+        setPerPage(newPerPage);
+
+        router.get(route('management.farmer.index'), {
+            search,
+            per_page: newPerPage,
+            page: 1 // Reset to first page when changing per page
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Handle pagination
+    const handlePageChange = (page: number) => {
+        router.get(route('management.farmer.index'), {
+            search,
+            per_page: perPage,
+            page
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    // Sync local state with props when they change
+    useEffect(() => {
+        setSearch(filters.search || '');
+        setPerPage(filters.per_page || 10);
+    }, [filters.search, filters.per_page]);
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -93,10 +124,25 @@ export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProp
                                 Search by name, contact, or address
                             </div>
                         </div>
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="per-page" className="text-sm text-[#619154]">
+                                Show:
+                            </Label>
+                            <Select value={perPage.toString()} onValueChange={handlePerPageChange}>
+                                <SelectTrigger className="w-20 border-[#D6E3D4] text-[#619154] focus:border-[#619154] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="25">25</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <div className="text-sm whitespace-nowrap text-[#619154]">
-                            <span className="font-medium">{currentFarmers.length}</span> of{' '}
-                            <span className="font-medium">{filteredFarmers.length}</span> farmers
-                            {search && <span className="text-gray-500"> (filtered from {Array.isArray(farmers) ? farmers.length : 0} total)</span>}
+                            <span className="font-medium">{farmers.from || 0}</span>-<span className="font-medium">{farmers.to || 0}</span> of{' '}
+                            <span className="font-medium">{farmers.total}</span> farmers
                         </div>
                     </div>
                 </div>
@@ -104,8 +150,8 @@ export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProp
             <CardContent className="p-0">
                 {/* Mobile Cards View for smaller screens */}
                 <div className="block space-y-4 p-4 lg:hidden">
-                    {currentFarmers.length > 0 ? (
-                        currentFarmers.map((farmer) => (
+                    {farmers.data.length > 0 ? (
+                        farmers.data.map((farmer: Farmer) => (
                             <Card key={farmer.id} className="border-[#D6E3D4] transition-shadow hover:shadow-md">
                                 <CardContent className="p-4">
                                     <div className="space-y-3">
@@ -188,8 +234,8 @@ export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProp
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {currentFarmers.length > 0 ? (
-                                    currentFarmers.map((farmer) => (
+                                {farmers.data.length > 0 ? (
+                                    farmers.data.map((farmer: Farmer) => (
                                         <TableRow key={farmer.id} className="border-b border-[#D6E3D4] transition-colors hover:bg-[#F0F7ED]">
                                             <TableCell className="font-medium text-[#619154]">
                                                 <div className="flex items-center gap-2">
@@ -256,72 +302,13 @@ export default function FarmerTable({ farmers, onEdit, onView }: FarmerTableProp
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {farmers.last_page > 1 && (
                     <div className="border-t border-[#D6E3D4] p-4">
-                        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-                            <div className="order-2 text-sm text-[#619154] sm:order-1">
-                                Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
-                            </div>
-                            <nav className="order-1 flex items-center space-x-2 sm:order-2" aria-label="Pagination">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 disabled:opacity-50"
-                                    aria-label="Go to previous page"
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                                    <span className="hidden sm:inline">Previous</span>
-                                </Button>
-
-                                {/* Page Numbers */}
-                                <div className="flex items-center space-x-1">
-                                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                        let pageNumber;
-                                        if (totalPages <= 5) {
-                                            pageNumber = i + 1;
-                                        } else if (currentPage <= 3) {
-                                            pageNumber = i + 1;
-                                        } else if (currentPage >= totalPages - 2) {
-                                            pageNumber = totalPages - 4 + i;
-                                        } else {
-                                            pageNumber = currentPage - 2 + i;
-                                        }
-
-                                        return (
-                                            <Button
-                                                key={pageNumber}
-                                                variant={currentPage === pageNumber ? 'default' : 'outline'}
-                                                size="sm"
-                                                onClick={() => setCurrentPage(pageNumber)}
-                                                className={
-                                                    currentPage === pageNumber
-                                                        ? 'bg-[#619154] text-white hover:bg-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2'
-                                                        : 'border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2'
-                                                }
-                                                aria-label={`Go to page ${pageNumber}`}
-                                                aria-current={currentPage === pageNumber ? 'page' : undefined}
-                                            >
-                                                {pageNumber}
-                                            </Button>
-                                        );
-                                    })}
-                                </div>
-
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setCurrentPage(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className="border-[#D6E3D4] text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 disabled:opacity-50"
-                                    aria-label="Go to next page"
-                                >
-                                    <span className="hidden sm:inline">Next</span>
-                                    <ChevronRight className="h-4 w-4" />
-                                </Button>
-                            </nav>
-                        </div>
+                        <PaginationData
+                            currentPage={farmers.current_page}
+                            totalPages={farmers.last_page}
+                            onPageChange={handlePageChange}
+                        />
                     </div>
                 )}
             </CardContent>

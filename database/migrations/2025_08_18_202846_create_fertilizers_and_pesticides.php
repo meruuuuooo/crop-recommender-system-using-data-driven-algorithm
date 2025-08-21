@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('guaranteed_analysis')->nullable();
             $table->text('target_crops')->nullable();
             $table->string('registration_number')->nullable();
-            $table->date('expiry_date')->nullable();
+            $table->string('expiry_date')->nullable();
             $table->timestamps();
         });
 

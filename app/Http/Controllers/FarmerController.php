@@ -19,18 +19,42 @@ class FarmerController extends Controller
      */
     public function index(Request $request)
     {
+        $search = $request->get('search');
+        $perPage = $request->get('per_page', 10);
+
         $farmers = farmer::with([
             'location.province',
             'location.municipality',
             'location.barangay',
             'user:id,last_name,email'
         ])
+        ->when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                  ->orWhere('last_name', 'like', "%{$search}%")
+                  ->orWhere('middle_name', 'like', "%{$search}%")
+                  ->orWhere('contact_number', 'like', "%{$search}%")
+                  ->orWhereHas('location.province', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('location.municipality', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('location.barangay', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        })
         ->orderBy('created_at', 'desc')
-        ->paginate(10);
-
+        ->paginate($perPage)
+        ->withQueryString();
 
         return Inertia::render('management/farmer/index', [
-            'farmers' => $farmers
+            'farmers' => $farmers,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage
+            ]
         ]);
     }
 
