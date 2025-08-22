@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('season');
             $table->text('description')->nullable();
+            $table->string('varieties')->nullable();
             $table->foreignId('category_id')->constrained('categories')->nullable();
             $table->timestamps();
         });

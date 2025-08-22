@@ -20,6 +20,7 @@ class CropFactory extends Factory
             'name' => $this->faker->word,
             'description' => $this->faker->sentence,
             'season' => $this->faker->randomElement(['wet', 'dry']),
+            'varieties' => $this->faker->sentence,
             'category_id' => rand(1, 5),
             'created_at' => now(),
             'updated_at' => now(),

@@ -12,6 +12,7 @@ class Crop extends Model
         'name',
         'season',
         'description',
+        'varieties',
         'category_id',
     ];
 

@@ -55,13 +55,16 @@ class CropController extends Controller
             'name' => 'required|string|max:255',
             'season' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'varieties' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
         ]);
+
 
         $crop = Crop::create([
             'name' => $validated['name'],
             'season' => $validated['season'],
             'description' => $validated['description'],
+            'varieties' => $validated['varieties'] ?? null,
             'category_id' => $validated['category_id'],
         ]);
 
@@ -94,6 +97,7 @@ class CropController extends Controller
             'name' => 'required|string|max:255',
             'season' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'varieties' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
         ]);
 
@@ -101,6 +105,7 @@ class CropController extends Controller
             'name' => $validated['name'],
             'season' => $validated['season'],
             'description' => $validated['description'],
+            'varieties' => $validated['varieties'] ?? null,
             'category_id' => $validated['category_id'],
         ]);
 

@@ -3,6 +3,7 @@ export interface Crop {
     name: string;
     season: string;
     description?: string;
+    varieties?: string;
     category_id?: number | string;
     category?: {
         id: number | string;
@@ -34,6 +35,7 @@ export type EditCropProps = {
         season: string;
         description?: string;
         category_id?: number | string;
+        varieties?: string;
         category?: {
             id: number | string;
             name: string;

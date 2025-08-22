@@ -23,6 +23,7 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
         name: '',
         season: '',
         description: '',
+        varieties: '',
         category_id: '',
     });
 
@@ -117,6 +118,27 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                                 Choose when this crop is typically grown
                             </div>
                             <InputError message={errors.season} id="season-error" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cropvariety" className="text-sm font-medium text-gray-700">
+                                Crop Variety <span className="text-red-500" aria-label="required">*</span>
+                            </Label>
+                            <Input
+                                id="cropvariety"
+                                name="variety"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.varieties}
+                                onChange={(e) => setData('varieties', e.target.value)}
+                                required
+                                autoComplete="off"
+                                placeholder="Enter crop variety (e.g., Basmati, Sweet Corn, Cherry Tomato)"
+                                aria-describedby={errors.varieties ? "crop-varieties-error" : "crop-varieties-help"}
+                                aria-invalid={errors.varieties ? "true" : "false"}
+                            />
+                            <div id="crop-varieties-help" className="text-xs text-gray-500">
+                                Enter the specific variety of the crop
+                            </div>
+                            <InputError message={errors.varieties} id="crop-varieties-error" />
                         </div>
                     </div>
                 </div>

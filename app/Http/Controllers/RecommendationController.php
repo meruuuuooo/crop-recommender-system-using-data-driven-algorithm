@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Fertilizer;
+use App\Models\Crop;
+use App\Models\Category;
 
 class RecommendationController extends Controller
 {
@@ -33,12 +35,17 @@ class RecommendationController extends Controller
 
         $fertilizers = $query->paginate($perPage)->withQueryString();
 
+        // $crops = Crop::with('category')->get();
+
+        $categories = Category::with('crops')->get();
+
         return Inertia::render('recommendation/fertilizer', [
             'fertilizers' => $fertilizers,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
             ],
+            'categories' => $categories,
         ]);
     }
 
