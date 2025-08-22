@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Calendar, Edit, Eye, MapPin, Search, Tractor, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
@@ -83,9 +84,14 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
         const date = new Date(timestamp);
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
-            month: 'long',
+            month: 'short',
             day: 'numeric',
         });
+    };
+
+    const truncateText = (text: string, maxLength: number = 50) => {
+        if (!text) return 'N/A';
+        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
     };
 
     const getFarmAddress = (farm: Farm) => {
@@ -100,235 +106,201 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
         return addressParts.length > 0 ? addressParts.join(', ') : 'Address not available';
     };
 
+    const getFarmerName = (farm: Farm) => {
+        if (!farm.farmer) return 'Unknown Farmer';
+        return `${farm.farmer.first_name} ${farm.farmer.middle_name ? farm.farmer.middle_name + ' ' : ''}${farm.farmer.last_name}`;
+    };
+
     return (
-        <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farms-table-heading">
-            <CardHeader className="pb-4">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <CardTitle id="farms-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                            <Tractor className="h-5 w-5 text-[#619154]" aria-hidden="true" />
-                            Farms Directory
-                        </CardTitle>
-                        <p className="mt-1 text-sm text-gray-600">Manage and view all registered farms in the system</p>
-                    </div>
-                    <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                        <div className="relative w-full sm:w-80">
-                            <Label htmlFor="farm-search" className="sr-only">
-                                Search farms
-                            </Label>
-                            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-[#619154]" aria-hidden="true" />
-                            <Input
-                                id="farm-search"
-                                placeholder="Search farms..."
-                                value={search}
-                                onChange={(e) => handleSearchChange(e.target.value)}
-                                className="border-[#D6E3D4] pl-10 text-[#619154] placeholder:text-[#619154] focus:border-[#619154] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
-                                aria-describedby="search-help"
-                            />
-                            <div id="search-help" className="sr-only">
-                                Search by farm name, owner, crops, or location
+        <TooltipProvider>
+            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farms-table-heading">
+                <CardHeader className="pb-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <CardTitle id="farms-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                                <Tractor className="h-5 w-5 text-[#619154]" aria-hidden="true" />
+                                Farms Directory
+                            </CardTitle>
+                            <p className="mt-1 text-sm text-gray-600">Manage and view all registered farms in the system</p>
+                        </div>
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                            <div className="relative w-full sm:w-80">
+                                <Label htmlFor="farm-search" className="sr-only">
+                                    Search farms
+                                </Label>
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+                                <Input
+                                    id="farm-search"
+                                    placeholder="Search by farm name, owner, crops, or location..."
+                                    value={search}
+                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    className="border-[#D6E3D4] pl-10 focus:border-[#619154] focus:ring-[#619154]"
+                                    aria-describedby="search-hint"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Label htmlFor="per-page" className="text-sm text-gray-500">
+                                    Show:
+                                </Label>
+                                <Select value={perPage.toString()} onValueChange={handlePerPageChange}>
+                                    <SelectTrigger className="w-20 border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="10">10</SelectItem>
+                                        <SelectItem value="25">25</SelectItem>
+                                        <SelectItem value="50">50</SelectItem>
+                                        <SelectItem value="100">100</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="text-sm whitespace-nowrap text-gray-500">
+                                Showing <span className="font-medium">{farms.from || 0}</span>-<span className="font-medium">{farms.to || 0}</span> of{' '}
+                                <span className="font-medium">{farms.total}</span> farms
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Label htmlFor="per-page" className="text-sm text-[#619154]">
-                                Show:
-                            </Label>
-                            <Select value={perPage.toString()} onValueChange={handlePerPageChange}>
-                                <SelectTrigger className="w-20 border-[#D6E3D4] text-[#619154] focus:border-[#619154] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="10">10</SelectItem>
-                                    <SelectItem value="25">25</SelectItem>
-                                    <SelectItem value="50">50</SelectItem>
-                                    <SelectItem value="100">100</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="text-sm whitespace-nowrap text-[#619154]">
-                            <span className="font-medium">{farms.from || 0}</span>-<span className="font-medium">{farms.to || 0}</span> of{' '}
-                            <span className="font-medium">{farms.total}</span> farms
-                        </div>
                     </div>
-                </div>
-            </CardHeader>
-            <CardContent className="p-0">
-                {/* Mobile Cards View for smaller screens */}
-                <div className="block space-y-4 p-4 lg:hidden">
-                    {farms.data.length > 0 ? (
-                        farms.data.map((farm: Farm) => (
-                            <Card key={farm.id} className="border-[#D6E3D4] transition-shadow hover:shadow-md">
-                                <CardContent className="p-4">
-                                    <div className="space-y-3">
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <h3 className="text-lg font-semibold text-[#619154]">{farm.name || 'N/A'}</h3>
-                                                <div className="mt-1 flex items-center gap-2 text-sm text-gray-600">
-                                                    <User className="h-4 w-4" aria-hidden="true" />
-                                                    <span>Owner: {farm.farmer?.last_name || 'N/A'}</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                {onView && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => onView(farm)}
-                                                        className="h-8 w-8 p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
-                                                        aria-label={`View details for ${farm.name}`}
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                                {onEdit && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => onEdit(farm)}
-                                                        className="h-8 w-8 p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
-                                                        aria-label={`Edit ${farm.name}`}
-                                                    >
-                                                        <Edit className="h-4 w-4" />
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2 text-sm">
-                                                <Badge variant="secondary" className="border-blue-200 bg-blue-50 text-blue-700">
-                                                    {farm.total_area || 'N/A'} area
-                                                </Badge>
-
-                                            </div>
-
-                                            <div className="flex items-start gap-2 text-sm text-gray-600">
-                                                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                                                <span className="line-clamp-2">{getFarmAddress(farm)}</span>
-                                            </div>
-
-                                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                <Calendar className="h-4 w-4" aria-hidden="true" />
-                                                <span>Created: {timeStampToDate(farm.created_at)}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))
-                    ) : (
-                        <div className="py-12 text-center text-gray-500">
-                            <Tractor className="mx-auto mb-4 h-12 w-12 text-gray-300" aria-hidden="true" />
-                            <p className="text-lg font-medium">{search ? 'No farms found matching your search.' : 'No farms found.'}</p>
-                            {search && <p className="mt-1 text-sm">Try adjusting your search terms</p>}
+                </CardHeader>
+                <CardContent className="p-0">
+                    {farms.data.length === 0 ? (
+                        <div className="flex h-64 flex-col items-center justify-center text-center">
+                            <Tractor className="mb-4 h-12 w-12 text-gray-300" />
+                            <h3 className="mb-2 text-lg font-medium text-gray-900">No farms found</h3>
+                            <p className="max-w-md text-gray-500">
+                                {search
+                                    ? 'No farms match your search criteria. Try adjusting your search terms.'
+                                    : 'There are no farms registered in the system yet.'}
+                            </p>
                         </div>
-                    )}
-                </div>
-
-                {/* Desktop Table View */}
-                <div className="hidden lg:block">
-                    <div className="overflow-x-auto">
-                        <Table>
-                            <TableHeader className="bg-[#619154]">
-                                <TableRow>
-                                    <TableHead className="font-semibold text-white">Farm Name</TableHead>
-                                    <TableHead className="font-semibold text-white">Farm Owner</TableHead>
-                                    <TableHead className="font-semibold text-white">Total Area (ha)</TableHead>
-                                    {/* <TableHead className="text-white font-semibold">Previous Crops</TableHead> */}
-                                    <TableHead className="font-semibold text-white">Location</TableHead>
-                                    <TableHead className="font-semibold text-white">Created At</TableHead>
-                                    <TableHead className="text-center font-semibold text-white">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {farms.data.length > 0 ? (
-                                    farms.data.map((farm: Farm) => (
-                                        <TableRow key={farm.id} className="border-b border-[#D6E3D4] transition-colors hover:bg-[#F0F7ED]">
-                                            <TableCell className="font-medium text-[#619154]">
-                                                <div className="flex items-center gap-2">
-                                                    <Tractor className="h-4 w-4 text-[#619154]" aria-hidden="true" />
-                                                    {farm.name || 'N/A'}
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader className='bg-[#619154]'>
+                                    <TableRow>
+                                        <TableHead className="w-[200px] font-semibold text-white">Farm Details</TableHead>
+                                        <TableHead className="w-[150px] font-semibold text-white">Owner</TableHead>
+                                        <TableHead className="w-[120px] font-semibold text-white">Area (ha)</TableHead>
+                                        <TableHead className="w-[180px] font-semibold text-white">Previous Crops</TableHead>
+                                        <TableHead className="w-[250px] font-semibold text-white">Location</TableHead>
+                                        <TableHead className="w-[120px] font-semibold text-white">Created</TableHead>
+                                        <TableHead className="w-[80px] font-semibold text-white">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {farms.data.map((farm, index) => (
+                                        <TableRow key={farm.id} className="transition-colors hover:bg-[#F8FAF8]" aria-rowindex={index + 2}>
+                                            <TableCell className="font-medium">
+                                                <div className="space-y-1">
+                                                    <div className="text-sm font-semibold text-gray-900">{farm.name}</div>
+                                                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                                                        <Tractor className="h-3 w-3" />
+                                                        Farm ID: {farm.id}
+                                                    </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-medium text-[#619154]">{farm.farmer?.last_name || 'N/A'}</TableCell>
-                                            <TableCell className="text-[#619154]">
-                                                <Badge variant="secondary" className="border-blue-200 bg-blue-50 text-blue-700">
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
+                                                    <User className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                                                    <span className="text-sm font-medium text-gray-700">{getFarmerName(farm)}</span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                    <Calendar className="mr-1 h-3 w-3" />
                                                     {farm.total_area || 'N/A'}
                                                 </Badge>
                                             </TableCell>
-                                            {/* <TableCell className="text-[#619154]">
-                                                {farm.prev_crops ? (
-                                                    <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
-                                                        <Sprout className="w-3 h-3 mr-1" aria-hidden="true" />
-                                                        {farm.prev_crops}
-                                                    </Badge>
-                                                ) : (
-                                                    <span className="text-gray-500">N/A</span>
-                                                )}
-                                            </TableCell> */}
-                                            <TableCell className="max-w-xs text-[#619154]">
-                                                <span title={getFarmAddress(farm)} className="block truncate">
-                                                    {getFarmAddress(farm)}
-                                                </span>
-                                            </TableCell>
-                                            <TableCell className="text-[#619154]">{timeStampToDate(farm.created_at)}</TableCell>
                                             <TableCell>
-                                                <div className="flex items-center justify-center space-x-2">
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="flex cursor-help items-center gap-2">
+                                                            <Calendar className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                                                            <span className="text-sm text-gray-700">
+                                                                {truncateText(farm.prev_crops || 'No previous crops', 25)}
+                                                            </span>
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p className="max-w-xs">{farm.prev_crops || 'No previous crops recorded'}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="flex cursor-help items-center gap-2">
+                                                            <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                                                            <span className="text-sm text-gray-700">
+                                                                {truncateText(getFarmAddress(farm), 30)}
+                                                            </span>
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p className="max-w-xs">{getFarmAddress(farm)}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="text-xs text-gray-700">{timeStampToDate(farm.created_at)}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-2">
                                                     {onView && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => onView(farm)}
-                                                            className="h-8 w-8 cursor-pointer p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
-                                                            aria-label={`View details for ${farm.name}`}
-                                                        >
-                                                            <Eye className="h-4 w-4" />
-                                                        </Button>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    onClick={() => onView(farm)}
+                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    aria-label={`View details for ${farm.name}`}
+                                                                >
+                                                                    <Eye className="h-4 w-4 text-[#619154]" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>View farm details</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     )}
                                                     {onEdit && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => onEdit(farm)}
-                                                            className="h-8 w-8 cursor-pointer p-0 text-[#619154] hover:bg-[#F0F7ED] hover:text-[#4F7A43] focus:ring-2 focus:ring-[#619154] focus:ring-offset-2"
-                                                            aria-label={`Edit ${farm.name}`}
-                                                        >
-                                                            <Edit className="h-4 w-4" />
-                                                        </Button>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    onClick={() => onEdit(farm)}
+                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    aria-label={`Edit ${farm.name}`}
+                                                                >
+                                                                    <Edit className="h-4 w-4 text-[#619154]" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Edit farm</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={7} className="py-12 text-center text-gray-500">
-                                            <div className="flex flex-col items-center">
-                                                <Tractor className="mb-4 h-12 w-12 text-gray-300" aria-hidden="true" />
-                                                <p className="text-lg font-medium">
-                                                    {search ? 'No farms found matching your search.' : 'No farms found.'}
-                                                </p>
-                                                {search && <p className="mt-1 text-sm">Try adjusting your search terms</p>}
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
-                </div>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
 
-                {/* Pagination */}
-                {farms.last_page > 1 && (
-                    <div className="border-t border-[#D6E3D4] p-4">
-                        <PaginationData
-                            currentPage={farms.current_page}
-                            totalPages={farms.last_page}
-                            onPageChange={handlePageChange}
-                        />
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+                    {farms.last_page > 1 && (
+                        <div className="border-t border-[#D6E3D4] px-6 py-4">
+                            <PaginationData
+                                currentPage={farms.current_page}
+                                totalPages={farms.last_page}
+                                onPageChange={handlePageChange}
+                            />
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </TooltipProvider>
     );
 }

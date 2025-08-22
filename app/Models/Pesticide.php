@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Pesticide extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'company',
         'active_ingredient',
@@ -18,11 +21,13 @@ class Pesticide extends Model
         'expiry_date',
         'mode_of_entry',
         'crops',
-        'pest_weeds_diseases',
+        'pests',
+        'weeds',
+        'diseases',
         'recommended_rate',
         'MRL',
         'PHI',
-        're_entry_period'
+        're_entry_period',
     ];
 
     public function recommendations()

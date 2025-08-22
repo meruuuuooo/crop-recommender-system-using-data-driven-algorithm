@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Fertilizer;
+use App\Models\Pesticide;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Fertilizer;
-use App\Models\Crop;
-use App\Models\Category;
 
 class RecommendationController extends Controller
 {
@@ -26,10 +25,10 @@ class RecommendationController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('product_name', 'LIKE', "%{$search}%")
-                  ->orWhere('company', 'LIKE', "%{$search}%")
-                  ->orWhere('type_of_product', 'LIKE', "%{$search}%")
-                  ->orWhere('target_crops', 'LIKE', "%{$search}%")
-                  ->orWhere('registration_number', 'LIKE', "%{$search}%");
+                    ->orWhere('company', 'LIKE', "%{$search}%")
+                    ->orWhere('type_of_product', 'LIKE', "%{$search}%")
+                    ->orWhere('target_crops', 'LIKE', "%{$search}%")
+                    ->orWhere('registration_number', 'LIKE', "%{$search}%");
             });
         }
 
@@ -49,7 +48,7 @@ class RecommendationController extends Controller
         ]);
     }
 
-    Public function showFertilizer(Request $request, $fertilizer)
+    public function showFertilizer(Request $request, $fertilizer)
     {
         $fertilizer = Fertilizer::findOrFail($fertilizer);
 
@@ -60,6 +59,69 @@ class RecommendationController extends Controller
 
     public function pesticide(Request $request)
     {
-        return Inertia::render('recommendation/pesticide');
+        $search = $request->get('search', '');
+        $cropSearch = $request->get('crop_search', '');
+        $pestSearch = $request->get('pest_search', '');
+        $weedSearch = $request->get('weed_search', '');
+        $diseaseSearch = $request->get('disease_search', '');
+        $toxicitySearch = $request->get('toxicity_search', '');
+        $perPage = $request->get('per_page', 12);
+
+        $query = Pesticide::query();
+
+        // General search
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'LIKE', "%{$search}%")
+                    ->orWhere('company', 'LIKE', "%{$search}%")
+                    ->orWhere('active_ingredient', 'LIKE', "%{$search}%")
+                    ->orWhere('registration_number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Specific field searches
+        if ($cropSearch) {
+            $query->where('crops', 'LIKE', "%{$cropSearch}%");
+        }
+
+        if ($pestSearch) {
+            $query->where('pests', 'LIKE', "%{$pestSearch}%");
+        }
+
+        if ($weedSearch) {
+            $query->where('weeds', 'LIKE', "%{$weedSearch}%");
+        }
+
+        if ($diseaseSearch) {
+            $query->where('diseases', 'LIKE', "%{$diseaseSearch}%");
+        }
+
+        if ($toxicitySearch) {
+            $query->where('toxicity_category', 'LIKE', "%{$toxicitySearch}%");
+        }
+
+        $pesticides = $query->paginate($perPage)->withQueryString();
+
+        return Inertia::render('recommendation/pesticide', [
+            'pesticides' => $pesticides,
+            'filters' => [
+                'search' => $search,
+                'crop_search' => $cropSearch,
+                'pest_search' => $pestSearch,
+                'weed_search' => $weedSearch,
+                'disease_search' => $diseaseSearch,
+                'toxicity_search' => $toxicitySearch,
+                'per_page' => $perPage,
+            ],
+        ]);
+    }
+
+    public function showPesticide(Request $request, $pesticide)
+    {
+        $pesticide = Pesticide::findOrFail($pesticide);
+
+        return Inertia::render('recommendation/showPesticide', [
+            'pesticide' => $pesticide,
+        ]);
     }
 }

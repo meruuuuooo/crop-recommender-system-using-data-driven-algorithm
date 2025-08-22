@@ -33,14 +33,16 @@ return new class extends Migration
             $table->text('uses')->nullable();
             $table->string('toxicity_category')->nullable();
             $table->string('registration_number')->nullable();
-            $table->date('expiry_date')->nullable();
+            $table->string('expiry_date')->nullable();
             $table->string('mode_of_entry')->nullable();
             $table->text('crops')->nullable();
-            $table->text('pest_weeds_diseases')->nullable();
-            $table->string('recommended_rate')->nullable();
-            $table->string('MRL')->nullable();
-            $table->string('PHI')->nullable();
-            $table->string('re_entry_period')->nullable();
+            $table->text('pests')->nullable();
+            $table->text('weeds')->nullable();
+            $table->text('diseases')->nullable();
+            $table->longText('recommended_rate')->nullable();
+            $table->text('MRL')->nullable();
+            $table->text('PHI')->nullable();
+            $table->longText('re_entry_period')->nullable();
             $table->timestamps();
         });
 

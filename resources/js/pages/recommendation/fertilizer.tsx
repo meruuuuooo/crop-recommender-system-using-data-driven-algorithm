@@ -4,9 +4,9 @@ import { type BreadcrumbItem } from '@/types';
 import type { Fertilizer } from '@/types/fertilizer';
 import { Head, router } from '@inertiajs/react';
 import FertilizerTable from './partials/fertilizerTable';
-import RecommendFertilizerCard from './partials/recommendFertilizerCard';
+// import RecommendFertilizerCard from './partials/recommendFertilizerCard';
 import type { PaginationDataProps } from '@/types/fertilizer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -21,40 +21,40 @@ interface FertilizerPageProps {
         search: string;
         per_page: number;
     };
-    categories?: {
-        id: number;
-        name: string;
-        crops: {
-            id: number;
-            name: string;
-            season: string;
-            category_id: number;
-            description: string;
-        }[];
-    }[];
+    // categories?: {
+    //     id: number;
+    //     name: string;
+    //     crops: {
+    //         id: number;
+    //         name: string;
+    //         season: string;
+    //         category_id: number;
+    //         description: string;
+    //     }[];
+    // }[];
 }
 
-export default function Fertilizer({ fertilizers, filters, categories = [] }: FertilizerPageProps) {
+export default function Fertilizer({ fertilizers, filters }: FertilizerPageProps) {
     const currentPage = fertilizers?.current_page || 1;
     const totalPages = fertilizers?.last_page || 1;
     const fertilizerData = fertilizers?.data || [];
 
-    // Transform categories data for the component
-    const transformedCategories = categories.map(cat => ({
-        id: String(cat.id),
-        name: cat.name,
-        description: cat.name
-    }));
+    // // Transform categories data for the component
+    // const transformedCategories = categories.map(cat => ({
+    //     id: String(cat.id),
+    //     name: cat.name,
+    //     description: cat.name
+    // }));
 
-    // Extract all crops from categories
-    const allCrops = categories.flatMap(cat =>
-        cat.crops.map(crop => ({
-            id: String(crop.id),
-            name: crop.name,
-            category_id: String(cat.id),
-            season: crop.season
-        }))
-    );
+    // // Extract all crops from categories
+    // const allCrops = categories.flatMap(cat =>
+    //     cat.crops.map(crop => ({
+    //         id: String(crop.id),
+    //         name: crop.name,
+    //         category_id: String(cat.id),
+    //         season: crop.season
+    //     }))
+    // );
 
     const handleView = (fertilizer: Fertilizer) => {
         router.get(route('recommendation.showFertilizer', fertilizer.id), {}, {
@@ -93,7 +93,7 @@ export default function Fertilizer({ fertilizers, filters, categories = [] }: Fe
                         <HeadingSmall title="Fertilizer Management" description="Browse fertilizers and get personalized recommendations." />
                     </div>
 
-                    <Tabs defaultValue="recommendations" className="w-full">
+                    {/* <Tabs defaultValue="recommendations" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-6">
                             <TabsTrigger value="recommendations" className="text-[#619154] data-[state=active]:bg-[#619154] data-[state=active]:text-white">
                                 Get Recommendations
@@ -111,7 +111,11 @@ export default function Fertilizer({ fertilizers, filters, categories = [] }: Fe
                         </TabsContent>
 
                         <TabsContent value="browse" className="space-y-6">
-                            <FertilizerTable
+
+                        </TabsContent>
+                    </Tabs> */}
+
+                    <FertilizerTable
                                 fertilizers={fertilizerData}
                                 onView={handleView}
                                 onSearch={handleSearch}
@@ -126,8 +130,6 @@ export default function Fertilizer({ fertilizers, filters, categories = [] }: Fe
                                 }}
                                 onPageChange={handlePageChange}
                             />
-                        </TabsContent>
-                    </Tabs>
                 </div>
             </div>
         </AppLayout>

@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\CropController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmerController;
-use App\Http\Controllers\CropController;
 use App\Http\Controllers\RecommendationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,14 +53,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
         Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');
+        Route::get('/pesticide/show/{pesticide}', [RecommendationController::class, 'showPesticide'])->name('pesticide.show');
     });
-
-
 
     Route::get('reports', function () {
         return Inertia::render('reports/index');
     })->name('reports');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
