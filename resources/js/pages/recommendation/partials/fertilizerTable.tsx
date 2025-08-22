@@ -173,9 +173,9 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className={`text-xs ${getProductTypeColor(fertilizer.type_of_product)}`}>
+                                                <Badge variant="outline" className={`text-xs ${getProductTypeColor(fertilizer.type_of_product || '')}`}>
                                                     <Package className="mr-1 h-3 w-3" />
-                                                    {fertilizer.type_of_product}
+                                                    {fertilizer.type_of_product || 'N/A'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
@@ -184,7 +184,7 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                                                         <div className="flex cursor-help items-center gap-2">
                                                             <FlaskConical className="h-4 w-4 flex-shrink-0 text-gray-400" />
                                                             <span className="text-sm text-gray-700">
-                                                                {truncateText(fertilizer.guaranteed_analysis, 25)}
+                                                                {truncateText(fertilizer.guaranteed_analysis || 'No analysis available', 25)}
                                                             </span>
                                                         </div>
                                                     </TooltipTrigger>
@@ -199,7 +199,7 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                                                         <div className="flex cursor-help items-center gap-2">
                                                             <Sprout className="h-4 w-4 flex-shrink-0 text-gray-400" />
                                                             <span className="text-sm text-gray-700">
-                                                                {truncateText(fertilizer.target_crops, 25)}
+                                                                {truncateText(fertilizer.target_crops || 'No target crops specified', 25)}
                                                             </span>
                                                         </div>
                                                     </TooltipTrigger>
@@ -210,13 +210,13 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                                             </TableCell>
                                             <TableCell>
                                                 <div className="space-y-1">
-                                                    <div className="text-xs text-gray-700">{timeStampToDate(fertilizer.expiry_date)}</div>
-                                                    {isExpired(fertilizer.expiry_date) ? (
+                                                    <div className="text-xs text-gray-700">{fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</div>
+                                                    {fertilizer.expiry_date && isExpired(fertilizer.expiry_date) ? (
                                                         <Badge variant="destructive" className="text-xs">
                                                             <AlertTriangle className="mr-1 h-3 w-3" />
                                                             Expired
                                                         </Badge>
-                                                    ) : isExpiringSoon(fertilizer.expiry_date) ? (
+                                                    ) : fertilizer.expiry_date && isExpiringSoon(fertilizer.expiry_date) ? (
                                                         <Badge variant="outline" className="border-yellow-200 bg-yellow-50 text-xs text-yellow-700">
                                                             <AlertTriangle className="mr-1 h-3 w-3" />
                                                             Expiring Soon

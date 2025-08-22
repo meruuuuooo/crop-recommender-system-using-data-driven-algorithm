@@ -11,9 +11,11 @@ import Swal from 'sweetalert2';
 export default function EditCropForm({ crop, categories }: EditCropProps) {
     const { data, setData, put, processing, errors } = useForm({
         name: crop?.name || '',
-        season: crop?.season || '',
+        season: crop?.season || crop?.crop_season || '',
         description: crop?.description || '',
-        varieties: crop?.varieties || '',
+        varieties: Array.isArray(crop?.varieties)
+            ? crop.varieties.map(v => v.variety_name).join(', ')
+            : crop?.varieties || '',
         category_id: crop?.category_id?.toString() || crop?.category?.id?.toString() || '',
     });
 
@@ -25,7 +27,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(route('management.crop.update', crop), {
+        put(route('management.crop.update', crop.id), {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
@@ -71,7 +73,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                                 id="cropName"
                                 name="name"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.name}
+                                value={data.name as string}
                                 onChange={(e) => setData('name', e.target.value)}
                                 required
                                 autoComplete="off"
@@ -94,7 +96,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                             </Label>
                             <SearchableSelect
                                 options={seasonOptions}
-                                value={data.season}
+                                value={data.season as string}
                                 onValueChange={(value) => setData('season', value)}
                                 placeholder="Select Growing Season"
                                 searchPlaceholder="Search seasons..."
@@ -119,7 +121,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                                 id="cropvariety"
                                 name="variety"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.varieties}
+                                value={data.varieties as string}
                                 onChange={(e) => setData('varieties', e.target.value)}
                                 required
                                 autoComplete="off"
@@ -150,7 +152,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                                 label: category.name,
                                 description: category.description,
                             }))}
-                            value={data.category_id}
+                            value={data.category_id as string}
                             onValueChange={(value) => setData('category_id', value)}
                             placeholder="Select Crop Category"
                             searchPlaceholder="Search categories..."
@@ -178,7 +180,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                             id="description"
                             name="description"
                             className="min-h-[100px] w-full resize-y rounded-md border border-[#D6E3D4] px-3 py-2 text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                            value={data.description}
+                            value={data.description as string}
                             onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
                             placeholder="Enter a detailed description of the crop, its characteristics, growing conditions, etc."
                             aria-describedby={errors.description ? 'description-error' : 'description-help'}

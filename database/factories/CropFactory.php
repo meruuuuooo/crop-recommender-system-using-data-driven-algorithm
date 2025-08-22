@@ -17,13 +17,10 @@ class CropFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
-            'season' => $this->faker->randomElement(['wet', 'dry']),
-            'varieties' => $this->faker->sentence,
-            'category_id' => rand(1, 5),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'category_id' => \App\Models\Category::factory(),
+            'name' => fake()->word(),
+            'crop_season' => fake()->randomElement(['wet', 'dry', 'all year']),
+            'description' => fake()->sentence(),
         ];
     }
 }

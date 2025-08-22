@@ -150,7 +150,7 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                         <SearchableSelect
                             options={farmers.map((farmer) => ({
                                 value: String(farmer.id),
-                                label: `${farmer.first_name} ${farmer.middle_name ? farmer.middle_name + ' ' : ''}${farmer.last_name}`,
+                                label: `${farmer.firstname} ${farmer.middlename ? farmer.middlename + ' ' : ''}${farmer.lastname}`,
                             }))}
                             value={data.farmer_id}
                             onValueChange={(value) => setData('farmer_id', value)}

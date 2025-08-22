@@ -32,7 +32,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
             href: '/recommendation/fertilizer',
         },
         {
-            title: fertilizer.product_name,
+            title: fertilizer.product_name || 'Unknown Product',
             href: `/recommendation/fertilizer/show/${fertilizer.id}`,
         },
     ];
@@ -120,7 +120,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
 
                         <div class="section">
                             <h2>Registration Information</h2>
-                            <p><strong>Expiry Date:</strong> ${timeStampToDate(fertilizer.expiry_date)}</p>
+                            <p><strong>Expiry Date:</strong> ${fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</p>
                         </div>
                     </body>
                 </html>
@@ -181,17 +181,17 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                         <div className="flex flex-col gap-2">
                                             <Badge
                                                 variant="outline"
-                                                className={`${getProductTypeColor(fertilizer.type_of_product)}`}
+                                                className={`${getProductTypeColor(fertilizer.type_of_product || '')}`}
                                             >
                                                 <Package className="h-3 w-3 mr-1" />
-                                                {fertilizer.type_of_product}
+                                                {fertilizer.type_of_product || 'Unknown Type'}
                                             </Badge>
-                                            {isExpired(fertilizer.expiry_date) ? (
+                                            {fertilizer.expiry_date && isExpired(fertilizer.expiry_date) ? (
                                                 <Badge variant="destructive">
                                                     <AlertTriangle className="h-3 w-3 mr-1" />
                                                     Expired
                                                 </Badge>
-                                            ) : isExpiringSoon(fertilizer.expiry_date) ? (
+                                            ) : fertilizer.expiry_date && isExpiringSoon(fertilizer.expiry_date) ? (
                                                 <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
                                                     <AlertTriangle className="h-3 w-3 mr-1" />
                                                     Expiring Soon
@@ -212,12 +212,12 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                                 <Package className="h-4 w-4 text-[#619154]" />
                                                 Product Type
                                             </h4>
-                                            <p className="text-gray-700 mb-2">{fertilizer.type_of_product}</p>
+                                            <p className="text-gray-700 mb-2">{fertilizer.type_of_product || 'Unknown Type'}</p>
                                             <Badge
                                                 variant="outline"
-                                                className={`${getProductTypeColor(fertilizer.type_of_product)}`}
+                                                className={`${getProductTypeColor(fertilizer.type_of_product || '')}`}
                                             >
-                                                {fertilizer.type_of_product}
+                                                {fertilizer.type_of_product || 'Unknown Type'}
                                             </Badge>
                                         </div>
                                         <div>
@@ -232,7 +232,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span className="text-gray-600">Expiry Date:</span>
-                                                    <span className="text-gray-900">{timeStampToDate(fertilizer.expiry_date)}</span>
+                                                    <span className="text-gray-900">{fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -319,10 +319,10 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                             <h4 className="font-semibold text-gray-900 mb-2">Product Type</h4>
                                             <Badge
                                                 variant="outline"
-                                                className={`${getProductTypeColor(fertilizer.type_of_product)}`}
+                                                className={`${getProductTypeColor(fertilizer.type_of_product || '')}`}
                                             >
                                                 <Package className="h-3 w-3 mr-1" />
-                                                {fertilizer.type_of_product}
+                                                {fertilizer.type_of_product || 'Unknown Type'}
                                             </Badge>
                                         </div>
 
@@ -367,8 +367,8 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                     <div className="space-y-4">
                                         <div>
                                             <h4 className="font-semibold text-gray-900 mb-2">Expiry Date</h4>
-                                            <p className="text-gray-700 mb-2">{timeStampToDate(fertilizer.expiry_date)}</p>
-                                            {isExpired(fertilizer.expiry_date) ? (
+                                            <p className="text-gray-700 mb-2">{fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date available'}</p>
+                                            {fertilizer.expiry_date && isExpired(fertilizer.expiry_date) ? (
                                                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                                                     <div className="flex items-center gap-2 text-red-700 mb-1">
                                                         <AlertTriangle className="h-4 w-4" />
@@ -378,7 +378,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                                         This product is no longer authorized for use.
                                                     </p>
                                                 </div>
-                                            ) : isExpiringSoon(fertilizer.expiry_date) ? (
+                                            ) : fertilizer.expiry_date && isExpiringSoon(fertilizer.expiry_date) ? (
                                                 <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                                                     <div className="flex items-center gap-2 text-yellow-700 mb-1">
                                                         <Timer className="h-4 w-4" />

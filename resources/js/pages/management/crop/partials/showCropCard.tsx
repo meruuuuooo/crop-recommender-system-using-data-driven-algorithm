@@ -63,8 +63,8 @@ export default function ViewCropCard({ crop }: ShowCropCardProps) {
                             <Badge variant="secondary" className="border-[#619154]/20 bg-[#619154]/10 text-[#619154]">
                                 ID: {crop.id}
                             </Badge>
-                            <Badge variant="secondary" className={getSeasonColor(crop.season)}>
-                                {crop.season}
+                            <Badge variant="secondary" className={getSeasonColor(crop.season || crop.crop_season || '')}>
+                                {crop.season || crop.crop_season}
                             </Badge>
                             {crop.category && (
                                 <Badge variant="outline" className="border-gray-300">
@@ -84,9 +84,9 @@ export default function ViewCropCard({ crop }: ShowCropCardProps) {
                 <CardContent>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <InfoField label="Crop Name" value={crop.name} />
-                        <InfoField label="Growing Season" value={crop.season} />
+                        <InfoField label="Growing Season" value={crop.season || crop.crop_season} />
                         {crop.category && <InfoField label="Category" value={crop.category.name} />}
-                        {crop.varieties && <InfoField label="Varieties" value={crop.varieties} />}
+                        {crop.varieties && <InfoField label="Varieties" value={Array.isArray(crop.varieties) ? crop.varieties.map(v => v.variety_name).join(', ') : crop.varieties} />}
                         {crop.description && <InfoField label="Description" value={crop.description} fullWidth />}
                     </div>
                 </CardContent>

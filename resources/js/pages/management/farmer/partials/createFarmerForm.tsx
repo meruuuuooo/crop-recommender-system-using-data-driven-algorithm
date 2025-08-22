@@ -10,9 +10,9 @@ import Swal from 'sweetalert2';
 
 export default function CreateFarmerForm({ provinces, municipalities, barangays }: CreateFarmerProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
+        firstname: '',
+        middlename: '',
+        lastname: '',
         contact_number: '',
         farming_experience: '',
         province_id: '',
@@ -73,15 +73,15 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                                 id="firstname"
                                 name="first_name"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.first_name}
-                                onChange={(e) => setData('first_name', e.target.value)}
+                                value={data.firstname}
+                                onChange={(e) => setData('firstname', e.target.value)}
                                 required
                                 autoComplete="given-name"
                                 placeholder="Enter first name"
-                                aria-describedby={errors.first_name ? 'firstname-error' : undefined}
-                                aria-invalid={errors.first_name ? 'true' : 'false'}
+                                aria-describedby={errors.firstname ? 'firstname-error' : undefined}
+                                aria-invalid={errors.firstname ? 'true' : 'false'}
                             />
-                            <InputError message={errors.first_name} id="firstname-error" />
+                            <InputError message={errors.firstname} id="firstname-error" />
                         </div>
 
                         <div className="space-y-2">
@@ -92,14 +92,14 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                                 id="middlename"
                                 name="middle_name"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.middle_name}
-                                onChange={(e) => setData('middle_name', e.target.value)}
+                                value={data.middlename}
+                                onChange={(e) => setData('middlename', e.target.value)}
                                 autoComplete="additional-name"
                                 placeholder="Enter middle name"
-                                aria-describedby={errors.middle_name ? 'middlename-error' : undefined}
-                                aria-invalid={errors.middle_name ? 'true' : 'false'}
+                                aria-describedby={errors.middlename ? 'middlename-error' : undefined}
+                                aria-invalid={errors.middlename ? 'true' : 'false'}
                             />
-                            <InputError message={errors.middle_name} id="middlename-error" />
+                            <InputError message={errors.middlename} id="middlename-error" />
                         </div>
 
                         <div className="space-y-2">
@@ -113,15 +113,15 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                                 id="lastname"
                                 name="last_name"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.last_name}
-                                onChange={(e) => setData('last_name', e.target.value)}
+                                value={data.lastname}
+                                onChange={(e) => setData('lastname', e.target.value)}
                                 required
                                 autoComplete="family-name"
                                 placeholder="Enter last name"
-                                aria-describedby={errors.last_name ? 'lastname-error' : undefined}
-                                aria-invalid={errors.last_name ? 'true' : 'false'}
+                                aria-describedby={errors.lastname ? 'lastname-error' : undefined}
+                                aria-invalid={errors.lastname ? 'true' : 'false'}
                             />
-                            <InputError message={errors.last_name} id="lastname-error" />
+                            <InputError message={errors.lastname} id="lastname-error" />
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,6 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
                                 value={data.farming_experience}
                                 onChange={(e) => setData('farming_experience', e.target.value)}
-                                required
                                 autoComplete="off"
                                 placeholder="e.g., 5"
                                 type="number"

@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\farmer;
-use App\Http\Controllers\Controller;
-use App\Models\Province;
-use App\Models\Municipality;
 use App\Models\Barangay;
+use App\Models\farmer;
 use App\Models\Location;
+use App\Models\Municipality;
+use App\Models\Province;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class FarmerController extends Controller
 {
@@ -26,35 +25,35 @@ class FarmerController extends Controller
             'location.province',
             'location.municipality',
             'location.barangay',
-            'user:id,last_name,email'
+            'user:id,lastname,email',
         ])
-        ->when($search, function ($query, $search) {
-            return $query->where(function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('middle_name', 'like', "%{$search}%")
-                  ->orWhere('contact_number', 'like', "%{$search}%")
-                  ->orWhereHas('location.province', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.municipality', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.barangay', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
-            });
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate($perPage)
-        ->withQueryString();
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('firstname', 'like', "%{$search}%")
+                        ->orWhere('lastname', 'like', "%{$search}%")
+                        ->orWhere('middlename', 'like', "%{$search}%")
+                        ->orWhere('contact_number', 'like', "%{$search}%")
+                        ->orWhereHas('location.province', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.municipality', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.barangay', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('management/farmer/index', [
             'farmers' => $farmers,
             'filters' => [
                 'search' => $search,
-                'per_page' => $perPage
-            ]
+                'per_page' => $perPage,
+            ],
         ]);
     }
 
@@ -64,14 +63,14 @@ class FarmerController extends Controller
     public function create()
     {
 
-       $province = Province::all();
+        $province = Province::all();
         $municipality = Municipality::all();
         $barangay = Barangay::all();
 
         return Inertia::render('management/farmer/create', [
             'provinces' => $province,
             'municipalities' => $municipality,
-            'barangays' => $barangay
+            'barangays' => $barangay,
         ]);
     }
 
@@ -84,15 +83,15 @@ class FarmerController extends Controller
         // dd($request->all());
 
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
             'contact_number' => 'required|string|max:15',
-            'farming_experience' => 'nullable|string|max:255',
+            'farming_experience' => 'nullable|numeric',
             'street' => 'required|string|max:255',
             'province_id' => 'required|exists:provinces,id',
             'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id'
+            'barangay_id' => 'required|exists:barangays,id',
         ]);
 
         $location = Location::create([
@@ -105,9 +104,9 @@ class FarmerController extends Controller
         $user_id = Auth::user()->id;
 
         $farmer = farmer::create([
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name,
+            'firstname' => $request->firstname,
+            'middlename' => $request->middlename,
+            'lastname' => $request->lastname,
             'contact_number' => $request->contact_number,
             'farming_experience' => $request->farming_experience,
             'registration_date' => now(),
@@ -130,11 +129,11 @@ class FarmerController extends Controller
             'location.province',
             'location.municipality',
             'location.barangay',
-            'user:id,last_name,email'
+            'user:id,lastname,email',
         ]);
 
         return Inertia::render('management/farmer/view', [
-            'farmer' => $farmer
+            'farmer' => $farmer,
         ]);
     }
 
@@ -151,14 +150,14 @@ class FarmerController extends Controller
             'location.province',
             'location.municipality',
             'location.barangay',
-            'user:id,last_name,email'
+            'user:id,lastname,email',
         ]);
 
         return Inertia::render('management/farmer/edit', [
             'farmer' => $farmer,
             'provinces' => $provinces,
             'municipalities' => $municipalities,
-            'barangays' => $barangays
+            'barangays' => $barangays,
         ]);
     }
 
@@ -168,11 +167,11 @@ class FarmerController extends Controller
     public function update(Request $request, farmer $farmer)
     {
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
             'contact_number' => 'required|string|max:255',
-            'farming_experience' => 'nullable|string|max:255',
+            'farming_experience' => 'nullable|numeric',
             'province_id' => 'required|exists:provinces,id',
             'municipality_id' => 'required|exists:municipalities,id',
             'barangay_id' => 'required|exists:barangays,id',
@@ -192,9 +191,9 @@ class FarmerController extends Controller
 
         // Update farmer
         $farmer->update([
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'last_name' => $request->last_name,
+            'firstname' => $request->firstname,
+            'middlename' => $request->middlename,
+            'lastname' => $request->lastname,
             'contact_number' => $request->contact_number,
             'farming_experience' => $request->farming_experience,
             'location_id' => $location->id,
@@ -206,7 +205,7 @@ class FarmerController extends Controller
             $otherFarmersWithSameLocation = farmer::where('location_id', $oldLocationId)
                 ->where('id', '!=', $farmer->id)
                 ->count();
-            
+
             if ($otherFarmersWithSameLocation === 0) {
                 Location::find($oldLocationId)?->delete();
             }

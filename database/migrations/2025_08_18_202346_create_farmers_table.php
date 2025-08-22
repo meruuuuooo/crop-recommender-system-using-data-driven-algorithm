@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('farmers', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('middle_name')->nullable();
-            $table->string('last_name');
-            $table->string('contact_number')->nullable();
-            $table->string('farming_experience')->nullable();
+            $table->string('firstname');
+            $table->string('middlename')->nullable();
+            $table->string('lastname');
+            $table->string('contact_number');
+            $table->integer('farming_experience');
             $table->date('registration_date');
-            $table->foreignId('location_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('location_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

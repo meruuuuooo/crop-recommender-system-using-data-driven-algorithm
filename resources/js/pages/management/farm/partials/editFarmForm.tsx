@@ -41,7 +41,7 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        put(route('management.farm.update', farm), {
+        put(route('management.farm.update', farm.id), {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
@@ -162,7 +162,7 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                         <SearchableSelect
                             options={(farmers || []).map((farmer) => ({
                                 value: String(farmer.id),
-                                label: `${farmer.first_name} ${farmer.middle_name ? farmer.middle_name + ' ' : ''}${farmer.last_name}`,
+                                label: `${farmer.firstname} ${farmer.middlename ? farmer.middlename + ' ' : ''}${farmer.lastname}`,
                             }))}
                             value={data.farmer_id}
                             onValueChange={(value) => setData('farmer_id', value)}

@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Props } from '@/types/farmer';
+import type { Municipality, Barangay } from '@/types/index';
 import { useForm } from '@inertiajs/react';
 import { useMemo } from 'react';
 import Swal from 'sweetalert2';
@@ -11,31 +12,31 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 
 export default function EditFarmerForm({ provinces, municipalities, barangays, farmer }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        first_name: farmer.first_name || '',
-        middle_name: farmer.middle_name || '',
-        last_name: farmer.last_name || '',
+        firstname: farmer.firstname || '',
+        middlename: farmer.middlename || '',
+        lastname: farmer.lastname || '',
         contact_number: farmer.contact_number || '',
         farming_experience: farmer.farming_experience || '',
-        province_id: String(farmer.location.province_id || ''),
-        municipality_id: String(farmer.location.municipality_id || ''),
-        barangay_id: String(farmer.location.barangay_id || ''),
-        street: farmer.location.street || '',
+        province_id: String(farmer.location?.province_id || ''),
+        municipality_id: String(farmer.location?.municipality_id || ''),
+        barangay_id: String(farmer.location?.barangay_id || ''),
+        street: farmer.location?.street || '',
     });
 
-    const filteredMunicipalities = municipalities.filter((municipality) => String(municipality.province_id) === String(data.province_id));
+    const filteredMunicipalities = municipalities.filter((municipality: Municipality) => String(municipality.province_id) === String(data.province_id));
 
     const filteredBarangays = useMemo(() => {
         // Use the current municipality_id from form data, or fall back to the original municipality_id from farmer
-        const municipalityId = data.municipality_id || (farmer.location.municipality_id ? String(farmer.location.municipality_id) : '') || '';
+        const municipalityId = data.municipality_id || (farmer.location?.municipality_id ? String(farmer.location.municipality_id) : '') || '';
         if (!municipalityId) return [];
 
-        return barangays.filter((barangay) => String(barangay.municipality_id) === municipalityId) || [];
-    }, [barangays, data.municipality_id, farmer.location.municipality_id]);
+        return barangays.filter((barangay: Barangay) => String(barangay.municipality_id) === municipalityId) || [];
+    }, [barangays, data.municipality_id, farmer.location?.municipality_id]);
 
     // Helper to get current barangay name for better UX
     const currentBarangayName = useMemo(() => {
         if (!data.barangay_id) return null;
-        const currentBarangay = barangays.find((b) => String(b.id) === data.barangay_id);
+        const currentBarangay = barangays.find((b: Barangay) => String(b.id) === data.barangay_id);
         return currentBarangay ? currentBarangay.name : null;
     }, [barangays, data.barangay_id]);
 
@@ -85,17 +86,17 @@ export default function EditFarmerForm({ provinces, municipalities, barangays, f
                             </Label>
                             <Input
                                 id="firstname"
-                                name="first_name"
+                                name="firstname"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.first_name}
-                                onChange={(e) => setData('first_name', e.target.value)}
+                                value={data.firstname}
+                                onChange={(e) => setData('firstname', e.target.value)}
                                 required
                                 autoComplete="given-name"
                                 placeholder="Enter first name"
-                                aria-describedby={errors.first_name ? 'firstname-error' : undefined}
-                                aria-invalid={errors.first_name ? 'true' : 'false'}
+                                aria-describedby={errors.firstname ? 'firstname-error' : undefined}
+                                aria-invalid={errors.firstname ? 'true' : 'false'}
                             />
-                            <InputError message={errors.first_name} id="firstname-error" />
+                            <InputError message={errors.firstname} id="firstname-error" />
                         </div>
 
                         <div className="space-y-2">
@@ -104,16 +105,16 @@ export default function EditFarmerForm({ provinces, municipalities, barangays, f
                             </Label>
                             <Input
                                 id="middlename"
-                                name="middle_name"
+                                name="middlename"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.middle_name}
-                                onChange={(e) => setData('middle_name', e.target.value)}
+                                value={data.middlename}
+                                onChange={(e) => setData('middlename', e.target.value)}
                                 autoComplete="additional-name"
                                 placeholder="Enter middle name"
-                                aria-describedby={errors.middle_name ? 'middlename-error' : undefined}
-                                aria-invalid={errors.middle_name ? 'true' : 'false'}
+                                aria-describedby={errors.middlename ? 'middlename-error' : undefined}
+                                aria-invalid={errors.middlename ? 'true' : 'false'}
                             />
-                            <InputError message={errors.middle_name} id="middlename-error" />
+                            <InputError message={errors.middlename} id="middlename-error" />
                         </div>
 
                         <div className="space-y-2">
@@ -125,17 +126,17 @@ export default function EditFarmerForm({ provinces, municipalities, barangays, f
                             </Label>
                             <Input
                                 id="lastname"
-                                name="last_name"
+                                name="lastname"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.last_name}
-                                onChange={(e) => setData('last_name', e.target.value)}
+                                value={data.lastname}
+                                onChange={(e) => setData('lastname', e.target.value)}
                                 required
                                 autoComplete="family-name"
                                 placeholder="Enter last name"
-                                aria-describedby={errors.last_name ? 'lastname-error' : undefined}
-                                aria-invalid={errors.last_name ? 'true' : 'false'}
+                                aria-describedby={errors.lastname ? 'lastname-error' : undefined}
+                                aria-invalid={errors.lastname ? 'true' : 'false'}
                             />
-                            <InputError message={errors.last_name} id="lastname-error" />
+                            <InputError message={errors.lastname} id="lastname-error" />
                         </div>
                     </div>
                 </div>

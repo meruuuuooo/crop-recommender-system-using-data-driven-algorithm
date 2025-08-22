@@ -20,11 +20,17 @@ return new class extends Migration
 
         Schema::create('crops', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('name');
-            $table->string('season');
+            $table->string('crop_season');
             $table->text('description')->nullable();
-            $table->string('varieties')->nullable();
-            $table->foreignId('category_id')->constrained('categories')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('crop_varieties', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
+            $table->string('variety');
             $table->timestamps();
         });
 
@@ -39,10 +45,10 @@ return new class extends Migration
 
         Schema::create('recommendations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('farmer_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('farm_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('crop_id')->constrained()->cascadeOnDelete();
-            $table->decimal('confidence_score', 5, 2)->nullable();
+            $table->foreignId('farmer_id')->constrained()->onDelete('cascade');
+            $table->foreignId('farm_id')->constrained()->onDelete('cascade');
+            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
+            $table->float('confidence_score');
             $table->date('recommendation_date');
             $table->timestamps();
         });
@@ -55,8 +61,8 @@ return new class extends Migration
     {
         Schema::dropIfExists('recommendations');
         Schema::dropIfExists('crop_nutrients');
+        Schema::dropIfExists('crop_varieties');
         Schema::dropIfExists('crops');
-        Schema::dropIfExists('varieties');
         Schema::dropIfExists('categories');
     }
 };

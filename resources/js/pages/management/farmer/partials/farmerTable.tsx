@@ -94,11 +94,12 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
     };
 
     const getFullName = (farmer: Farmer) => {
-        return `${farmer.first_name} ${farmer.middle_name ? farmer.middle_name + ' ' : ''}${farmer.last_name}`;
+        return `${farmer.firstname} ${farmer.middlename ? farmer.middlename + ' ' : ''}${farmer.lastname}`;
     };
 
     const getFullAddress = (farmer: Farmer) => {
-        return `${farmer.location.street}, ${farmer.location.barangay.name}, ${farmer.location.municipality.name}, ${farmer.location.province.name}`;
+        if (!farmer.location) return 'N/A';
+        return `${farmer.location.street || 'N/A'}, ${farmer.location.barangay?.name || 'N/A'}, ${farmer.location.municipality?.name || 'N/A'}, ${farmer.location.province?.name || 'N/A'}`;
     };
 
     return (

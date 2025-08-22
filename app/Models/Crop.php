@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Crop extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'name',
-        'season',
-        'description',
-        'varieties',
         'category_id',
+        'name',
+        'crop_season',
+        'description',
     ];
 
     public function nutrients()
@@ -21,19 +21,14 @@ class Crop extends Model
         return $this->hasOne(CropNutrient::class);
     }
 
+    public function varieties()
+    {
+        return $this->hasMany(CropVariety::class);
+    }
+
     public function recommendations()
     {
         return $this->hasMany(Recommendation::class);
-    }
-
-    public function fertilizerRecommendations()
-    {
-        return $this->hasMany(FertilizerRecommendation::class);
-    }
-
-    public function pesticideRecommendations()
-    {
-        return $this->hasMany(PesticideRecommendation::class);
     }
 
     public function cropCalendar()

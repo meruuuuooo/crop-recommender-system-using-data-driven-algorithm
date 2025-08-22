@@ -1,56 +1,8 @@
-export type Farmer = {
-    id: number;
-    first_name: string;
-    middle_name: string;
-    last_name: string;
-    contact_number: string;
-    farming_experience: string | null;
-    registration_date: string;
-    location: {
-        street: string;
-        province: {
-            id: number | string;
-            name: string;
-            region_code: string;
-        };
-        municipality: {
-            id: number | string;
-            name: string;
-            province_id: number | string;
-        };
-        barangay: {
-            id: number | string;
-            name: string;
-            municipality_id: number | string;
-        };
-    };
-    user: {
-        last_name: string;
-        email: string;
-    };
-    created_at: string;
-    updated_at: string;
-};
+import { Farmer, User, Location, Province, Municipality, Barangay, PaginatedResponse } from './index';
 
-export type PaginatedFarmers = {
-    data: Farmer[];
-    current_page: number;
-    first_page_url: string;
-    from: number;
-    last_page: number;
-    last_page_url: string;
-    links: Array<{
-        url: string | null;
-        label: string;
-        active: boolean;
-    }>;
-    next_page_url: string | null;
-    path: string;
-    per_page: number;
-    prev_page_url: string | null;
-    to: number;
-    total: number;
-};
+export type { Farmer, User, Location, Province, Municipality, Barangay };
+
+export type PaginatedFarmers = PaginatedResponse<Farmer>;
 
 export type FarmerIndexProps = {
     farmers: PaginatedFarmers;
@@ -60,34 +12,25 @@ export type FarmerIndexProps = {
     };
 };
 
-type Props = {
-    farmer: {
-        id: number;
-        first_name: string;
-        middle_name: string;
-        last_name: string;
-        contact_number: string;
-        farming_experience: string | null;
-        registration_date: string;
-        location: {
-            street: string;
-            province_id: number | string;
-            municipality_id: number | string;
-            barangay_id: number | string;
-        };
-        user: {
-            last_name: string;
-            email: string;
-        };
-        created_at: string;
-        updated_at: string;
-    };
-    provinces: { id: number | string; name: string }[];
-    municipalities: { id: number | string; name: string; province_id: number | string }[];
-    barangays: { id: number | string; name: string; municipality_id: number | string }[];
+export type FarmerShowProps = {
+    farmer: Farmer;
+    provinces: Province[];
+    municipalities: Municipality[];
+    barangays: Barangay[];
 };
-type CreateFarmerProps = {
-    provinces: { id: number | string; name: string }[];
-    municipalities: { id: number | string; name: string; province_id: number | string }[];
-    barangays: { id: number | string; name: string; municipality_id: number | string }[];
+
+export type CreateFarmerProps = {
+    provinces: Province[];
+    municipalities: Municipality[];
+    barangays: Barangay[];
 };
+
+export type EditFarmerProps = {
+    farmer: Farmer;
+    provinces: Province[];
+    municipalities: Municipality[];
+    barangays: Barangay[];
+};
+
+// Legacy type names for backward compatibility
+export type Props = EditFarmerProps;

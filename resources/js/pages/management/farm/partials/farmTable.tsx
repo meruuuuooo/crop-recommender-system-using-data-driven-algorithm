@@ -108,7 +108,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
 
     const getFarmerName = (farm: Farm) => {
         if (!farm.farmer) return 'Unknown Farmer';
-        return `${farm.farmer.first_name} ${farm.farmer.middle_name ? farm.farmer.middle_name + ' ' : ''}${farm.farmer.last_name}`;
+        return `${farm.farmer.firstname} ${farm.farmer.middlename ? farm.farmer.middlename + ' ' : ''}${farm.farmer.lastname}`;
     };
 
     return (

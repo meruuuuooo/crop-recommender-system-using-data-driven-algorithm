@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('crop_calendar', function (Blueprint $table) {
+        Schema::create('crop_calendars', function (Blueprint $table) {
             $table->id();
             $table->foreignId('crop_id')->constrained()->cascadeOnDelete();
             $table->string('activity');
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('crop_calendar');
+        Schema::dropIfExists('crop_calendars');
     }
 };

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barangay;
 use App\Models\Farm;
 use App\Models\Farmer;
 use App\Models\Location;
-use App\Models\Province;
 use App\Models\Municipality;
-use App\Models\Barangay;
-use App\Http\Controllers\Controller;
+use App\Models\Province;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -27,39 +26,39 @@ class FarmController extends Controller
             'location.municipality',
             'location.barangay',
             'farmer' => function ($query) {
-                $query->select('id', 'last_name', 'first_name', 'middle_name', 'contact_number');
-            }
+                $query->select('id', 'lastname', 'firstname', 'middlename', 'contact_number');
+            },
         ])
-        ->when($search, function ($query, $search) {
-            return $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('prev_crops', 'like', "%{$search}%")
-                  ->orWhereHas('farmer', function ($q) use ($search) {
-                      $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('middle_name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.province', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.municipality', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.barangay', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
-            });
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate($perPage)
-        ->withQueryString();
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('prev_crops', 'like', "%{$search}%")
+                        ->orWhereHas('farmer', function ($q) use ($search) {
+                            $q->where('firstname', 'like', "%{$search}%")
+                                ->orWhere('lastname', 'like', "%{$search}%")
+                                ->orWhere('middlename', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.province', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.municipality', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.barangay', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('management/farm/index', [
             'farms' => $farms,
             'filters' => [
                 'search' => $search,
-                'per_page' => $perPage
-            ]
+                'per_page' => $perPage,
+            ],
         ]);
     }
 
@@ -126,8 +125,8 @@ class FarmController extends Controller
             'location.municipality',
             'location.barangay',
             'farmer' => function ($query) {
-                $query->select('id', 'last_name', 'first_name', 'middle_name', 'contact_number');
-            }
+                $query->select('id', 'lastname', 'firstname', 'middlename', 'contact_number');
+            },
         ])->findOrFail($farm->id);
 
         return Inertia::render('management/farm/view', [
@@ -149,7 +148,7 @@ class FarmController extends Controller
             'location.province',
             'location.municipality',
             'location.barangay',
-            'farmer'
+            'farmer',
         ]);
 
         return Inertia::render('management/farm/edit', [

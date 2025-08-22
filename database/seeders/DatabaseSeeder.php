@@ -5,11 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\LocationSeeder;
-use Database\Seeders\FarmerFarmSeeder;
-use Database\Seeders\CategorySeeder;
-use Database\Seeders\CropSeeder;
-use Database\Seeders\FertilizerSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,20 +15,34 @@ class DatabaseSeeder extends Seeder
     {
         User::factory()->create([
             'name' => 'Test User',
-            'first_name' => 'Test',
-            'middle_name' => 'Middle',
-            'last_name' => 'User',
+            'firstname' => 'Test',
+            'middlename' => 'Middle',
+            'lastname' => 'User',
             'contact_number' => '1234567890',
             'email' => 'test@example.com',
         ]);
 
-        (new LocationSeeder())->run();
+        (new LocationSeeder)->run();
 
-        (new FarmerFarmSeeder())->run();
+        (new FarmerFarmSeeder)->run();
 
-        (new CategorySeeder())->run();
+        (new CategorySeeder)->run();
 
-        (new CropSeeder())->run();
+        (new CropSeeder)->run();
+
+        (new SoilTypeSeeder)->run();
+
+        (new SeasonSeeder)->run();
+
+        (new FertilizerLevelSeeder)->run();
+
+        (new NutrientTypeSeeder)->run();
+
+        (new CropVarietySeeder)->run();
+
+        (new FertilizerRecommendationDetailsSeeder)->run();
+
+        // (new FertilizerSeeder)->run(); // Disabled temporarily
 
     }
 }

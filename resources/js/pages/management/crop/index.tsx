@@ -17,6 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function Crop({ crops, filters }: CropIndexProps) {
 
+
     const handleView = (crop: Crop) => {
         router.get(route('management.crop.show', crop.id));
     }

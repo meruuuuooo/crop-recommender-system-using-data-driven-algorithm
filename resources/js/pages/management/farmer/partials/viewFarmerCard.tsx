@@ -13,15 +13,16 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
     };
 
     const getFullName = (farmer: Farmer) => {
-        const middleInitial = farmer.middle_name ? ` ${farmer.middle_name.charAt(0)}.` : '';
-        return `${farmer.first_name}${middleInitial} ${farmer.last_name}`;
+        const middleInitial = farmer.middlename ? ` ${farmer.middlename.charAt(0)}.` : '';
+        return `${farmer.firstname}${middleInitial} ${farmer.lastname}`;
     };
 
     const getFullAddress = (farmer: Farmer) => {
-        return `${farmer.location.street}, ${farmer.location.barangay.name}, ${farmer.location.municipality.name}, ${farmer.location.province.name}`;
+        if (!farmer.location) return 'N/A';
+        return `${farmer.location.street || 'N/A'}, ${farmer.location.barangay?.name || 'N/A'}, ${farmer.location.municipality?.name || 'N/A'}, ${farmer.location.province?.name || 'N/A'}`;
     };
 
-    const InfoField = ({ label, value, fullWidth = false }: { label: string; value: string | number | null; fullWidth?: boolean }) => (
+    const InfoField = ({ label, value, fullWidth = false }: { label: string; value: string | number | null | undefined; fullWidth?: boolean }) => (
         <div className={`space-y-2 ${fullWidth ? 'col-span-full' : ''}`}>
             <Label className="text-sm font-medium text-[#619154]">{label}</Label>
             <div className="text-gray-900 bg-gray-50 border border-gray-200 rounded-md px-3 py-2 min-h-[38px] flex items-center">
@@ -64,9 +65,9 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <InfoField label="First Name" value={farmer.first_name} />
-                        <InfoField label="Middle Name" value={farmer.middle_name} />
-                        <InfoField label="Last Name" value={farmer.last_name} />
+                        <InfoField label="First Name" value={farmer.firstname} />
+                        <InfoField label="Middle Name" value={farmer.middlename} />
+                        <InfoField label="Last Name" value={farmer.lastname} />
                     </div>
                 </CardContent>
             </Card>
@@ -94,11 +95,11 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
                 <CardContent>
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <InfoField label="Province" value={farmer.location.province.name} />
-                            <InfoField label="Municipality" value={farmer.location.municipality.name} />
-                            <InfoField label="Barangay" value={farmer.location.barangay.name} />
+                            <InfoField label="Province" value={farmer.location?.province?.name} />
+                            <InfoField label="Municipality" value={farmer.location?.municipality?.name} />
+                            <InfoField label="Barangay" value={farmer.location?.barangay?.name} />
                         </div>
-                        <InfoField label="Street Address" value={farmer.location.street} fullWidth />
+                        <InfoField label="Street Address" value={farmer.location?.street} fullWidth />
                         <InfoField label="Complete Address" value={getFullAddress(farmer)} fullWidth />
                     </div>
                 </CardContent>

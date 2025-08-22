@@ -20,7 +20,7 @@ class CropController extends Controller
         ->when($search, function ($query, $search) {
             return $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('season', 'like', "%{$search}%")
+                  ->orWhere('crop_season', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%")
                   ->orWhereHas('category', function ($q) use ($search) {
                       $q->where('name', 'like', "%{$search}%");

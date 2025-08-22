@@ -195,7 +195,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                                     {crop.varieties && (
                                                         <div className="flex items-center gap-1 text-xs text-gray-500">
                                                             <FileText className="h-3 w-3" />
-                                                            Varieties: {truncateText(crop.varieties, 20)}
+                                                            Varieties: {truncateText(Array.isArray(crop.varieties) ? crop.varieties.map(v => v.variety_name).join(', ') : crop.varieties, 20)}
                                                         </div>
                                                     )}
                                                 </div>
@@ -211,9 +211,9 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className={`text-xs ${getSeasonColor(crop.season)}`}>
+                                                <Badge variant="outline" className={`text-xs ${getSeasonColor(crop.season || crop.crop_season || '')}`}>
                                                     <Calendar className="mr-1 h-3 w-3" />
-                                                    {crop.season || 'N/A'}
+                                                    {crop.season || crop.crop_season || 'N/A'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
