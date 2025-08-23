@@ -23,23 +23,14 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('name');
             $table->string('crop_season');
-            $table->text('description')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('crop_varieties', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
-            $table->string('variety');
-            $table->timestamps();
-        });
-
-        Schema::create('crop_nutrients', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('crop_id')->constrained()->cascadeOnDelete();
-            $table->decimal('nitrogen', 5, 2)->nullable();
-            $table->decimal('phosphorus', 5, 2)->nullable();
-            $table->decimal('potassium', 5, 2)->nullable();
+            $table->string('soil_type')->nullable();
+            $table->string('time_of_planting');
+            $table->string('plant_population_per_hectare')->nullable();
+            $table->string('maturity');
+            $table->string('volume_of_production')->nullable();
+            $table->string('distance_of_planting_hills')->nullable();
+            $table->string('distance_of_planting_rows')->nullable();
+            $table->string('yield_per_hectare');
             $table->timestamps();
         });
 
@@ -60,8 +51,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('recommendations');
-        Schema::dropIfExists('crop_nutrients');
-        Schema::dropIfExists('crop_varieties');
         Schema::dropIfExists('crops');
         Schema::dropIfExists('categories');
     }

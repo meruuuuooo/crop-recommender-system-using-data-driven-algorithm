@@ -142,36 +142,22 @@ export interface Recommendation {
     pesticides?: PesticideRecommendation[];
 }
 
-export interface CropVariety {
-    id: number;
-    variety_name: string;
-    maturity_days: number;
-    crop_id: number;
-    created_at: string;
-    updated_at: string;
-    crop?: Crop;
-}
-
 export interface Crop {
     id: number;
     name: string;
-    scientific_name?: string;
-    type: string;
+    soil_type: string;
+    crop_season: string;
+    time_of_planting: string;
+    plant_population_per_hectare: string;
+    maturity: string;
+    volume_of_production: string;
+    distance_of_planting_hills: string;
+    distance_of_planting_rows: string;
+    yield_per_hectare: string;
     category_id: number;
     created_at: string;
     updated_at: string;
     category?: Category;
-    varieties?: CropVariety[];
-    // Legacy fields for backward compatibility
-    season?: string;
-    crop_season?: string;
-    description?: string;
-    nutrients?: {
-        id?: number;
-        nitrogen?: number;
-        phosphorus?: number;
-        potassium?: number;
-    };
     [key: string]: unknown; // This allows for additional properties and routing...
 }
 

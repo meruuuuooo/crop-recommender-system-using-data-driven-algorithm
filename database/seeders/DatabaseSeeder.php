@@ -29,19 +29,6 @@ class DatabaseSeeder extends Seeder
         (new CategorySeeder)->run();
 
         (new CropSeeder)->run();
-
-        (new SoilTypeSeeder)->run();
-
-        (new SeasonSeeder)->run();
-
-        (new FertilizerLevelSeeder)->run();
-
-        (new NutrientTypeSeeder)->run();
-
-        (new CropVarietySeeder)->run();
-
-        (new FertilizerRecommendationDetailsSeeder)->run();
-
         // (new FertilizerSeeder)->run(); // Disabled temporarily
 
     }

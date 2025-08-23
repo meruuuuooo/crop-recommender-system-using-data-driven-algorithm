@@ -13,27 +13,19 @@ class Crop extends Model
         'category_id',
         'name',
         'crop_season',
-        'description',
+        'soil_type',
+        'time_of_planting',
+        'plant_population_per_hectare',
+        'maturity',
+        'volume_of_production',
+        'distance_of_planting_hills',
+        'distance_of_planting_rows',
+        'yield_per_hectare',
     ];
-
-    public function nutrients()
-    {
-        return $this->hasOne(CropNutrient::class);
-    }
-
-    public function varieties()
-    {
-        return $this->hasMany(CropVariety::class);
-    }
 
     public function recommendations()
     {
         return $this->hasMany(Recommendation::class);
-    }
-
-    public function cropCalendar()
-    {
-        return $this->hasMany(CropCalendar::class);
     }
 
     public function category()

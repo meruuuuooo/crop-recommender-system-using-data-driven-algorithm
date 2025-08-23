@@ -2,10 +2,9 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { useForm } from '@inertiajs/react';
-import { FormEventHandler, ChangeEvent } from 'react';
+import { FormEventHandler } from 'react';
 import Swal from 'sweetalert2';
 import { route } from 'ziggy-js';
 
@@ -21,9 +20,15 @@ type CreateCropProps = {
 export default function CreateCropForm({ categories }: CreateCropProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
-        season: '',
-        description: '',
-        varieties: '',
+        crop_season: '',
+        soil_type: '',
+        time_of_planting: '',
+        plant_population_per_hectare: '',
+        maturity: '',
+        volume_of_production: '',
+        distance_of_planting_hills: '',
+        distance_of_planting_rows: '',
+        yield_per_hectare: '',
         category_id: '',
     });
 
@@ -106,39 +111,188 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                             </Label>
                             <SearchableSelect
                                 options={seasonOptions}
-                                value={data.season}
-                                onValueChange={(value) => setData('season', value)}
+                                value={data.crop_season}
+                                onValueChange={(value) => setData('crop_season', value)}
                                 placeholder="Select Growing Season"
                                 searchPlaceholder="Search seasons..."
                                 clearable
-                                aria-describedby={errors.season ? "season-error" : "season-help"}
-                                aria-invalid={errors.season ? "true" : "false"}
+                                aria-describedby={errors.crop_season ? "season-error" : "season-help"}
+                                aria-invalid={errors.crop_season ? "true" : "false"}
                             />
                             <div id="season-help" className="text-xs text-gray-500">
                                 Choose when this crop is typically grown
                             </div>
-                            <InputError message={errors.season} id="season-error" />
+                            <InputError message={errors.crop_season} id="season-error" />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="cropvariety" className="text-sm font-medium text-gray-700">
-                                Crop Variety <span className="text-red-500" aria-label="required">*</span>
+                            <Label htmlFor="soil_type" className="text-sm font-medium text-gray-700">
+                                Soil Type <span className="text-gray-500 text-xs">(Optional)</span>
                             </Label>
                             <Input
-                                id="cropvariety"
-                                name="variety"
+                                id="soil_type"
+                                name="soil_type"
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
-                                value={data.varieties}
-                                onChange={(e) => setData('varieties', e.target.value)}
+                                value={data.soil_type}
+                                onChange={(e) => setData('soil_type', e.target.value)}
+                                autoComplete="off"
+                                placeholder="Enter preferred soil type (e.g., Clay, Loam, Sandy)"
+                                aria-describedby={errors.soil_type ? "soil-type-error" : "soil-type-help"}
+                                aria-invalid={errors.soil_type ? "true" : "false"}
+                            />
+                            <div id="soil-type-help" className="text-xs text-gray-500">
+                                Enter the preferred soil type for this crop
+                            </div>
+                            <InputError message={errors.soil_type} id="soil-type-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="time_of_planting" className="text-sm font-medium text-gray-700">
+                                Time of Planting <span className="text-red-500" aria-label="required">*</span>
+                            </Label>
+                            <Input
+                                id="time_of_planting"
+                                name="time_of_planting"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.time_of_planting}
+                                onChange={(e) => setData('time_of_planting', e.target.value)}
                                 required
                                 autoComplete="off"
-                                placeholder="Enter crop variety (e.g., Basmati, Sweet Corn, Cherry Tomato)"
-                                aria-describedby={errors.varieties ? "crop-varieties-error" : "crop-varieties-help"}
-                                aria-invalid={errors.varieties ? "true" : "false"}
+                                placeholder="Enter planting time (e.g., May-June, Early rainy season)"
+                                aria-describedby={errors.time_of_planting ? "planting-time-error" : "planting-time-help"}
+                                aria-invalid={errors.time_of_planting ? "true" : "false"}
                             />
-                            <div id="crop-varieties-help" className="text-xs text-gray-500">
-                                Enter the specific variety of the crop
+                            <div id="planting-time-help" className="text-xs text-gray-500">
+                                Enter the best time to plant this crop
                             </div>
-                            <InputError message={errors.varieties} id="crop-varieties-error" />
+                            <InputError message={errors.time_of_planting} id="planting-time-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="maturity" className="text-sm font-medium text-gray-700">
+                                Maturity Period <span className="text-red-500" aria-label="required">*</span>
+                            </Label>
+                            <Input
+                                id="maturity"
+                                name="maturity"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.maturity}
+                                onChange={(e) => setData('maturity', e.target.value)}
+                                required
+                                autoComplete="off"
+                                placeholder="Enter maturity period (e.g., 90-120 days, 3-4 months)"
+                                aria-describedby={errors.maturity ? "maturity-error" : "maturity-help"}
+                                aria-invalid={errors.maturity ? "true" : "false"}
+                            />
+                            <div id="maturity-help" className="text-xs text-gray-500">
+                                Enter how long it takes for the crop to mature
+                            </div>
+                            <InputError message={errors.maturity} id="maturity-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="yield_per_hectare" className="text-sm font-medium text-gray-700">
+                                Yield per Hectare <span className="text-red-500" aria-label="required">*</span>
+                            </Label>
+                            <Input
+                                id="yield_per_hectare"
+                                name="yield_per_hectare"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.yield_per_hectare}
+                                onChange={(e) => setData('yield_per_hectare', e.target.value)}
+                                required
+                                autoComplete="off"
+                                placeholder="Enter expected yield (e.g., 4-6 tons/ha, 25-30 sacks/ha)"
+                                aria-describedby={errors.yield_per_hectare ? "yield-error" : "yield-help"}
+                                aria-invalid={errors.yield_per_hectare ? "true" : "false"}
+                            />
+                            <div id="yield-help" className="text-xs text-gray-500">
+                                Enter the expected yield per hectare
+                            </div>
+                            <InputError message={errors.yield_per_hectare} id="yield-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="plant_population_per_hectare" className="text-sm font-medium text-gray-700">
+                                Plant Population per Hectare <span className="text-gray-500 text-xs">(Optional)</span>
+                            </Label>
+                            <Input
+                                id="plant_population_per_hectare"
+                                name="plant_population_per_hectare"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.plant_population_per_hectare}
+                                onChange={(e) => setData('plant_population_per_hectare', e.target.value)}
+                                autoComplete="off"
+                                placeholder="Enter plant population (e.g., 25,000 plants/ha, 150,000 seeds/ha)"
+                                aria-describedby={errors.plant_population_per_hectare ? "population-error" : "population-help"}
+                                aria-invalid={errors.plant_population_per_hectare ? "true" : "false"}
+                            />
+                            <div id="population-help" className="text-xs text-gray-500">
+                                Enter the recommended number of plants per hectare
+                            </div>
+                            <InputError message={errors.plant_population_per_hectare} id="population-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="volume_of_production" className="text-sm font-medium text-gray-700">
+                                Volume of Production <span className="text-gray-500 text-xs">(Optional)</span>
+                            </Label>
+                            <Input
+                                id="volume_of_production"
+                                name="volume_of_production"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.volume_of_production}
+                                onChange={(e) => setData('volume_of_production', e.target.value)}
+                                autoComplete="off"
+                                placeholder="Enter production volume (e.g., 500 kg/harvest, 20 sacks/harvest)"
+                                aria-describedby={errors.volume_of_production ? "volume-error" : "volume-help"}
+                                aria-invalid={errors.volume_of_production ? "true" : "false"}
+                            />
+                            <div id="volume-help" className="text-xs text-gray-500">
+                                Enter the typical volume of production per harvest
+                            </div>
+                            <InputError message={errors.volume_of_production} id="volume-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="distance_of_planting_hills" className="text-sm font-medium text-gray-700">
+                                Distance Between Hills <span className="text-gray-500 text-xs">(Optional)</span>
+                            </Label>
+                            <Input
+                                id="distance_of_planting_hills"
+                                name="distance_of_planting_hills"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.distance_of_planting_hills}
+                                onChange={(e) => setData('distance_of_planting_hills', e.target.value)}
+                                autoComplete="off"
+                                placeholder="Enter distance between hills (e.g., 20 cm, 15-20 cm)"
+                                aria-describedby={errors.distance_of_planting_hills ? "hills-distance-error" : "hills-distance-help"}
+                                aria-invalid={errors.distance_of_planting_hills ? "true" : "false"}
+                            />
+                            <div id="hills-distance-help" className="text-xs text-gray-500">
+                                Enter the recommended spacing between individual plants or hills
+                            </div>
+                            <InputError message={errors.distance_of_planting_hills} id="hills-distance-error" />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="distance_of_planting_rows" className="text-sm font-medium text-gray-700">
+                                Distance Between Rows <span className="text-gray-500 text-xs">(Optional)</span>
+                            </Label>
+                            <Input
+                                id="distance_of_planting_rows"
+                                name="distance_of_planting_rows"
+                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                value={data.distance_of_planting_rows}
+                                onChange={(e) => setData('distance_of_planting_rows', e.target.value)}
+                                autoComplete="off"
+                                placeholder="Enter distance between rows (e.g., 25 cm, 20-30 cm)"
+                                aria-describedby={errors.distance_of_planting_rows ? "rows-distance-error" : "rows-distance-help"}
+                                aria-invalid={errors.distance_of_planting_rows ? "true" : "false"}
+                            />
+                            <div id="rows-distance-help" className="text-xs text-gray-500">
+                                Enter the recommended spacing between planting rows
+                            </div>
+                            <InputError message={errors.distance_of_planting_rows} id="rows-distance-error" />
                         </div>
                     </div>
                 </div>
@@ -170,34 +324,6 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                             Choose a category to help classify this crop (e.g., Cereals, Vegetables, Fruits)
                         </div>
                         <InputError message={errors.category_id} id="category-error" />
-                    </div>
-                </div>
-
-                {/* Crop Description Section */}
-                <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6" role="region" aria-labelledby="description-heading">
-                    <h3 id="description-heading" className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
-                        Crop Description
-                    </h3>
-                    <div className="space-y-2">
-                        <Label htmlFor="description" className="text-sm font-medium text-gray-700">
-                            Description <span className="text-gray-500 text-xs">(Optional)</span>
-                        </Label>
-
-                        <Textarea
-                            id="description"
-                            name="description"
-                            className="w-full min-h-[100px] border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent resize-y rounded-md px-3 py-2"
-                            value={data.description}
-                            onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setData('description', e.target.value)}
-                            placeholder="Enter a detailed description of the crop, its characteristics, growing conditions, etc."
-                            aria-describedby={errors.description ? "description-error" : "description-help"}
-                            aria-invalid={errors.description ? "true" : "false"}
-                            maxLength={1000}
-                        />
-                        <div id="description-help" className="text-xs text-gray-500">
-                            Provide additional information about the crop (max 1000 characters)
-                        </div>
-                        <InputError message={errors.description} id="description-error" />
                     </div>
                 </div>
 

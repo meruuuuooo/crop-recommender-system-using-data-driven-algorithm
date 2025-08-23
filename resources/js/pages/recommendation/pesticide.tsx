@@ -95,7 +95,7 @@ export default function Pesticide({ pesticides, filters }: PesticidePageProps) {
                     <div className="flex items-center justify-between">
                         <HeadingSmall
                             title="Pesticide Management"
-                            description="Get personalized pesticide recommendations and browse registered pesticides."
+                            description="Manage your pesticide recommendations efficiently."
                         />
                     </div>
 

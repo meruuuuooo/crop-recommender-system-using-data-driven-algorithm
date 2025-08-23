@@ -247,7 +247,7 @@ export default function PesticideTable({
                                     <Snail className="h-5 w-5 text-[#619154]" aria-hidden="true" />
                                     Pesticide Directory
                                 </CardTitle>
-                                <p className="mt-1 text-sm text-gray-600">Manage and view all registered pesticides in the system</p>
+                                <p className="mt-1 text-sm text-gray-600">Manage and view all registered pesticides in the Philippines </p>
                             </div>
                             <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                                 <div className="relative w-full sm:w-80">

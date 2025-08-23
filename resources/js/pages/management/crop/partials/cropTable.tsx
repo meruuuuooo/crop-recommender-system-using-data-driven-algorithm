@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Edit, Eye, Search, Sprout, Calendar, Tag, FileText } from 'lucide-react';
+import { Edit, Eye, Search, Sprout, Calendar, Tag } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
 import type { Crop, PaginatedCrops } from '@/types/crop';
@@ -91,11 +91,6 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
         });
     };
 
-    const truncateText = (text: string, maxLength: number = 50) => {
-        if (!text) return 'N/A';
-        return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
-    };
-
     const getSeasonColor = (season: string) => {
         const seasonLower = season?.toLowerCase() || '';
         switch (seasonLower) {
@@ -132,7 +127,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
                                 <Input
                                     id="crop-search"
-                                    placeholder="Search by crop name, season, description, category..."
+                                    placeholder="Search by crop name, season, soil type, planting time, maturity..."
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     className="pl-10 border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
@@ -178,10 +173,13 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                             <Table>
                                 <TableHeader className='bg-[#619154]'>
                                     <TableRow>
-                                        <TableHead className="w-[200px] font-semibold text-white">Crop Details</TableHead>
+                                        <TableHead className="w-[200px] font-semibold text-white">Crop Name</TableHead>
                                         <TableHead className="w-[150px] font-semibold text-white">Category</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Season</TableHead>
-                                        <TableHead className="w-[250px] font-semibold text-white">Description</TableHead>
+                                        <TableHead className="w-[120px] font-semibold text-white">Soil Type</TableHead>
+                                        <TableHead className="w-[140px] font-semibold text-white">Planting Time</TableHead>
+                                        <TableHead className="w-[120px] font-semibold text-white">Maturity</TableHead>
+                                        <TableHead className="w-[120px] font-semibold text-white">Yield/Ha</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Created</TableHead>
                                         <TableHead className="w-[80px] font-semibold text-white">Actions</TableHead>
                                     </TableRow>
@@ -189,16 +187,8 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                 <TableBody>
                                     {crops.data.map((crop, index) => (
                                         <TableRow key={crop.id} className="transition-colors hover:bg-[#F8FAF8]" aria-rowindex={index + 2}>
-                                            <TableCell className="font-medium">
-                                                <div className="space-y-1">
-                                                    <div className="text-sm font-semibold text-gray-900">{crop.name}</div>
-                                                    {crop.varieties && (
-                                                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                                                            <FileText className="h-3 w-3" />
-                                                            Varieties: {truncateText(Array.isArray(crop.varieties) ? crop.varieties.map(v => v.variety_name).join(', ') : crop.varieties, 20)}
-                                                        </div>
-                                                    )}
-                                                </div>
+                                            <TableCell>
+                                                <div className="font-medium text-gray-900">{crop.name}</div>
                                             </TableCell>
                                             <TableCell>
                                                 {crop.category?.name ? (
@@ -211,25 +201,22 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                                 )}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className={`text-xs ${getSeasonColor(crop.season || crop.crop_season || '')}`}>
+                                                <Badge variant="outline" className={`text-xs ${getSeasonColor(crop.crop_season || '')}`}>
                                                     <Calendar className="mr-1 h-3 w-3" />
-                                                    {crop.season || crop.crop_season || 'N/A'}
+                                                    {crop.crop_season || 'N/A'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <div className="flex cursor-help items-center gap-2">
-                                                            <FileText className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                                                            <span className="text-sm text-gray-700">
-                                                                {truncateText(crop.description || 'No description', 30)}
-                                                            </span>
-                                                        </div>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p className="max-w-xs">{crop.description || 'No description'}</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
+                                                <div className="text-sm text-gray-700">{crop.soil_type || 'N/A'}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="text-sm text-gray-700">{crop.time_of_planting || 'N/A'}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="text-sm text-gray-700">{crop.maturity || 'N/A'}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="text-sm text-gray-700">{crop.yield_per_hectare || 'N/A'}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="text-xs text-gray-700">{timeStampToDate(crop.created_at)}</div>
