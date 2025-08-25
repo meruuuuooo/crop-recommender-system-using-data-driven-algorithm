@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Management\FarmRequest;
 use App\Models\Barangay;
 use App\Models\Farm;
 use App\Models\Farmer;
 use App\Models\Location;
 use App\Models\Municipality;
 use App\Models\Province;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -84,33 +86,25 @@ class FarmController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(FarmRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'total_area' => 'required|numeric|min:0',
-            'prev_crops' => 'nullable|string|max:255',
-            'farmer_id' => 'required|exists:farmers,id',
-            'province_id' => 'required|exists:provinces,id',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id',
-        ]);
+        $validated = $request->validated();
 
         $location = Location::create([
-            'province_id' => $request->province_id,
-            'municipality_id' => $request->municipality_id,
-            'barangay_id' => $request->barangay_id,
+            'province_id' => $validated['province_id'],
+            'municipality_id' => $validated['municipality_id'],
+            'barangay_id' => $validated['barangay_id'],
         ]);
 
-        $farm = Farm::create([
-            'name' => $request->name,
-            'total_area' => $request->total_area,
-            'prev_crops' => $request->prev_crops,
-            'farmer_id' => $request->farmer_id,
+        $farmer_id = Farmer::find($validated['farmer_id']);
+
+        Farm::create([
+            'name' => $validated['name'],
+            'total_area' => $validated['total_area'],
+            'prev_crops' => $validated['prev_crops'],
+            'farmer_id' => $farmer_id->id,
             'location_id' => $location->id,
         ]);
-
-        $farm->save();
 
         return redirect()->route('management.farm.create')->with('success', 'Farm created successfully.');
     }
@@ -163,31 +157,25 @@ class FarmController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Farm $farm)
+    public function update(FarmRequest $request, Farm $farm): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'total_area' => 'required|numeric|min:0',
-            'prev_crops' => 'nullable|string|max:255',
-            'farmer_id' => 'required|exists:farmers,id',
-            'province_id' => 'required|exists:provinces,id',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id',
-        ]);
+        $validated = $request->validated();
 
         $location = Location::create([
-            'province_id' => $request->province_id,
-            'municipality_id' => $request->municipality_id,
-            'barangay_id' => $request->barangay_id,
+            'province_id' => $validated['province_id'],
+            'municipality_id' => $validated['municipality_id'],
+            'barangay_id' => $validated['barangay_id'],
         ]);
+
+        $farmer_id = Farmer::find($validated['farmer_id']);
+
         $farm->update([
-            'name' => $request->name,
-            'total_area' => $request->total_area,
-            'prev_crops' => $request->prev_crops,
-            'farmer_id' => $request->farmer_id,
+            'name' => $validated['name'],
+            'total_area' => $validated['total_area'],
+            'prev_crops' => $validated['prev_crops'],
+            'farmer_id' => $farmer_id->id,
             'location_id' => $location->id,
         ]);
-        $farm->save();
 
         return redirect()->route('management.farm.index')->with('success', 'Farm updated successfully.');
     }

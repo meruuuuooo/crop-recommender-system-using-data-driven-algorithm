@@ -14,11 +14,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
         crop_season: crop?.crop_season || '',
         soil_type: crop?.soil_type || '',
         time_of_planting: crop?.time_of_planting || '',
-        plant_population_per_hectare: crop?.plant_population_per_hectare || '',
         maturity: crop?.maturity || '',
-        volume_of_production: crop?.volume_of_production || '',
-        distance_of_planting_hills: crop?.distance_of_planting_hills || '',
-        distance_of_planting_rows: crop?.distance_of_planting_rows || '',
         yield_per_hectare: crop?.yield_per_hectare || '',
         category_id: crop?.category_id?.toString() || crop?.category?.id?.toString() || '',
     });
@@ -116,7 +112,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
 
                         <div className="space-y-2">
                             <Label htmlFor="soil_type" className="text-sm font-medium text-gray-700">
-                                Soil Type <span className="text-gray-500 text-xs">(Optional)</span>
+                                Soil Type <span className="text-xs text-gray-500">(Optional)</span>
                             </Label>
                             <Input
                                 id="soil_type"
@@ -150,7 +146,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                                 onChange={(e) => setData('time_of_planting', e.target.value)}
                                 required
                                 autoComplete="off"
-                                placeholder="Enter planting time (e.g., May-June, Early rainy season)"
+                                placeholder="Enter planting time (e.g., May-June)"
                                 aria-describedby={errors.time_of_planting ? 'planting-time-error' : 'planting-time-help'}
                                 aria-invalid={errors.time_of_planting ? 'true' : 'false'}
                             />
@@ -208,90 +204,6 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                                 Enter the expected yield per hectare
                             </div>
                             <InputError message={errors.yield_per_hectare} id="yield-error" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="plant_population_per_hectare" className="text-sm font-medium text-gray-700">
-                                Plant Population per Hectare <span className="text-gray-500 text-xs">(Optional)</span>
-                            </Label>
-                            <Input
-                                id="plant_population_per_hectare"
-                                name="plant_population_per_hectare"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.plant_population_per_hectare}
-                                onChange={(e) => setData('plant_population_per_hectare', e.target.value)}
-                                autoComplete="off"
-                                placeholder="Enter plant population (e.g., 25,000 plants/ha, 150,000 seeds/ha)"
-                                aria-describedby={errors.plant_population_per_hectare ? 'population-error' : 'population-help'}
-                                aria-invalid={errors.plant_population_per_hectare ? 'true' : 'false'}
-                            />
-                            <div id="population-help" className="text-xs text-gray-500">
-                                Enter the recommended number of plants per hectare
-                            </div>
-                            <InputError message={errors.plant_population_per_hectare} id="population-error" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="volume_of_production" className="text-sm font-medium text-gray-700">
-                                Volume of Production <span className="text-gray-500 text-xs">(Optional)</span>
-                            </Label>
-                            <Input
-                                id="volume_of_production"
-                                name="volume_of_production"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.volume_of_production}
-                                onChange={(e) => setData('volume_of_production', e.target.value)}
-                                autoComplete="off"
-                                placeholder="Enter production volume (e.g., 500 kg/harvest, 20 sacks/harvest)"
-                                aria-describedby={errors.volume_of_production ? 'volume-error' : 'volume-help'}
-                                aria-invalid={errors.volume_of_production ? 'true' : 'false'}
-                            />
-                            <div id="volume-help" className="text-xs text-gray-500">
-                                Enter the typical volume of production per harvest
-                            </div>
-                            <InputError message={errors.volume_of_production} id="volume-error" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="distance_of_planting_hills" className="text-sm font-medium text-gray-700">
-                                Distance Between Hills <span className="text-gray-500 text-xs">(Optional)</span>
-                            </Label>
-                            <Input
-                                id="distance_of_planting_hills"
-                                name="distance_of_planting_hills"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.distance_of_planting_hills}
-                                onChange={(e) => setData('distance_of_planting_hills', e.target.value)}
-                                autoComplete="off"
-                                placeholder="Enter distance between hills (e.g., 20 cm, 15-20 cm)"
-                                aria-describedby={errors.distance_of_planting_hills ? 'hills-distance-error' : 'hills-distance-help'}
-                                aria-invalid={errors.distance_of_planting_hills ? 'true' : 'false'}
-                            />
-                            <div id="hills-distance-help" className="text-xs text-gray-500">
-                                Enter the recommended spacing between individual plants or hills
-                            </div>
-                            <InputError message={errors.distance_of_planting_hills} id="hills-distance-error" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="distance_of_planting_rows" className="text-sm font-medium text-gray-700">
-                                Distance Between Rows <span className="text-gray-500 text-xs">(Optional)</span>
-                            </Label>
-                            <Input
-                                id="distance_of_planting_rows"
-                                name="distance_of_planting_rows"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.distance_of_planting_rows}
-                                onChange={(e) => setData('distance_of_planting_rows', e.target.value)}
-                                autoComplete="off"
-                                placeholder="Enter distance between rows (e.g., 25 cm, 20-30 cm)"
-                                aria-describedby={errors.distance_of_planting_rows ? 'rows-distance-error' : 'rows-distance-help'}
-                                aria-invalid={errors.distance_of_planting_rows ? 'true' : 'false'}
-                            />
-                            <div id="rows-distance-help" className="text-xs text-gray-500">
-                                Enter the recommended spacing between planting rows
-                            </div>
-                            <InputError message={errors.distance_of_planting_rows} id="rows-distance-error" />
                         </div>
                     </div>
                 </div>

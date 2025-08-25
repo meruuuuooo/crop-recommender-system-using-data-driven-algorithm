@@ -1,9 +1,7 @@
 import HeadingSmall from '@/components/heading-small';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { Head, router } from '@inertiajs/react';
 import FarmTable from './partials/farmTable';
 import type { Farm, FarmIndexProps } from '@/types/farm';
 
@@ -32,18 +30,12 @@ export default function Farm({ farms, filters }: FarmIndexProps) {
                     {/* Header Section */}
                     <div className="flex items-center justify-between">
                         <HeadingSmall title="Farm Management" description="Manage farm details and information." />
-                        <Link href={route('management.farm.create')}>
-                            <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Farm
-                            </Button>
-                        </Link>
                     </div>
 
                     <FarmTable
                         farms={farms}
                         filters={filters}
-                        onView={handleView} 
+                        onView={handleView}
                         onEdit={handleEdit}
                     />
                 </div>

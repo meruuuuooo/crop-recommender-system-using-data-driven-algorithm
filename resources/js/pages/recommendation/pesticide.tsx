@@ -21,6 +21,7 @@ interface PesticidePageProps {
         weed_search: string;
         disease_search: string;
         toxicity_search: string;
+        pesticide_search: string;
         per_page: number;
     };
 }
@@ -95,7 +96,7 @@ export default function Pesticide({ pesticides, filters }: PesticidePageProps) {
                     <div className="flex items-center justify-between">
                         <HeadingSmall
                             title="Pesticide Management"
-                            description="Manage your pesticide recommendations efficiently."
+                            description="View all registered pesticides in the philippines."
                         />
                     </div>
 

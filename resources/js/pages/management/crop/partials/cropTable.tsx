@@ -1,16 +1,18 @@
+import { PaginationData } from '@/components/paginationData';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Edit, Eye, Search, Sprout, Calendar, Tag } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { router } from '@inertiajs/react';
 import type { Crop, PaginatedCrops } from '@/types/crop';
-import { PaginationData } from '@/components/paginationData';
+import { router } from '@inertiajs/react';
+import { Calendar, Edit, Eye, Search, Sprout, Tag } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 
 interface CropTableProps {
     crops: PaginatedCrops;
@@ -34,19 +36,23 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
     // Debounced search effect
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            router.get(route('management.crop.index'), {
-                search: search,
-                per_page: perPage,
-                page: 1 // Reset to first page when searching
-            }, {
-                preserveState: true,
-                preserveScroll: true,
-                replace: true
-            });
+            router.get(
+                route('management.crop.index'),
+                {
+                    search: search,
+                    per_page: perPage,
+                    page: 1, // Reset to first page when searching
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    replace: true,
+                },
+            );
         }, 300);
 
         return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     // Handle per page change
@@ -54,26 +60,34 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
         const newPerPage = parseInt(value);
         setPerPage(newPerPage);
 
-        router.get(route('management.crop.index'), {
-            search,
-            per_page: newPerPage,
-            page: 1
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('management.crop.index'),
+            {
+                search,
+                per_page: newPerPage,
+                page: 1,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     // Handle pagination
     const handlePageChange = (page: number) => {
-        router.get(route('management.crop.index'), {
-            search,
-            per_page: perPage,
-            page
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('management.crop.index'),
+            {
+                search,
+                per_page: perPage,
+                page,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     // Sync local state with props when they change
@@ -109,28 +123,19 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
         <TooltipProvider>
             <Card className="border-[#D6E3D4]" role="region" aria-labelledby="crops-table-heading">
                 <CardHeader className="pb-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <CardTitle id="crops-table-heading" className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                                <Sprout className="w-5 h-5 text-[#619154]" aria-hidden="true" />
-                                Crops Directory
-                            </CardTitle>
-                            <p className="text-sm text-gray-600 mt-1">
-                                Manage and view all registered crops in the system
-                            </p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
                                 <Label htmlFor="crop-search" className="sr-only">
                                     Search crops
                                 </Label>
-                                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
+                                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
                                 <Input
                                     id="crop-search"
                                     placeholder="Search by crop name, season, soil type, planting time, maturity..."
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
-                                    className="pl-10 border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                    className="border-[#D6E3D4] pl-10 focus:border-[#619154] focus:ring-[#619154]"
                                     aria-describedby="search-hint"
                                 />
                             </div>
@@ -150,10 +155,18 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="text-sm text-gray-500 whitespace-nowrap">
+                            <div className="text-sm whitespace-nowrap text-gray-500">
                                 Showing <span className="font-medium">{crops.from || 0}</span>-<span className="font-medium">{crops.to || 0}</span> of{' '}
                                 <span className="font-medium">{crops.total}</span> crops
                             </div>
+                        </div>
+                        <div>
+                            <Link href={route('management.crop.create')}>
+                                <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Add Crop
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </CardHeader>
@@ -171,7 +184,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className='bg-[#619154]'>
+                                <TableHeader className="bg-[#619154]">
                                     <TableRow>
                                         <TableHead className="w-[200px] font-semibold text-white">Crop Name</TableHead>
                                         <TableHead className="w-[150px] font-semibold text-white">Category</TableHead>
@@ -192,7 +205,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                             </TableCell>
                                             <TableCell>
                                                 {crop.category?.name ? (
-                                                    <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 text-xs">
+                                                    <Badge variant="outline" className="border-indigo-200 bg-indigo-50 text-xs text-indigo-700">
                                                         <Tag className="mr-1 h-3 w-3" />
                                                         {crop.category.name}
                                                     </Badge>
@@ -270,11 +283,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
 
                     {crops.last_page > 1 && (
                         <div className="border-t border-[#D6E3D4] px-6 py-4">
-                            <PaginationData
-                                currentPage={crops.current_page}
-                                totalPages={crops.last_page}
-                                onPageChange={handlePageChange}
-                            />
+                            <PaginationData currentPage={crops.current_page} totalPages={crops.last_page} onPageChange={handlePageChange} />
                         </div>
                     )}
                 </CardContent>

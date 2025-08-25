@@ -17,7 +17,7 @@ import {
     Shield,
     AlertTriangle,
     Clock,
-    Bug,
+    Snail,
     Activity
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -151,7 +151,7 @@ export default function PesticideTable({
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <CardTitle id="pesticides-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                                <Bug className="h-5 w-5 text-[#619154]" aria-hidden="true" />
+                                <Snail className="h-5 w-5 text-[#619154]" aria-hidden="true" />
                                 Pesticide Directory
                             </CardTitle>
                             <p className="mt-1 text-sm text-gray-600">Manage and view all registered pesticides in the system</p>
@@ -188,7 +188,7 @@ export default function PesticideTable({
                 <CardContent className="p-0">
                     {pesticides.length === 0 ? (
                         <div className="flex h-64 flex-col items-center justify-center text-center">
-                            <Bug className="h-12 w-12 text-gray-300 mb-4" />
+                            <Snail className="h-12 w-12 text-gray-300 mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 mb-2">No pesticides found</h3>
                             <p className="text-gray-500 max-w-md">
                                 {search ?
@@ -288,7 +288,7 @@ export default function PesticideTable({
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
                                                         <div className="flex items-center gap-2 cursor-help">
-                                                            <Bug className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                                                            <Snail className="h-4 w-4 text-gray-400 flex-shrink-0" />
                                                             <span className="text-sm text-gray-700">
                                                                 {truncateText(pesticide.pests || pesticide.weeds || pesticide.diseases, 25)}
                                                             </span>

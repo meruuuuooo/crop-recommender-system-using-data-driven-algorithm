@@ -29,9 +29,4 @@ class Pesticide extends Model
         'PHI',
         're_entry_period',
     ];
-
-    public function recommendations()
-    {
-        return $this->hasMany(PesticideRecommendation::class);
-    }
 }

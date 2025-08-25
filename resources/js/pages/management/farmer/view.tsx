@@ -11,7 +11,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/management/farmer',
     },
     {
-        title: 'View Farmer',
+        title: 'Farmer',
         href: '/management/farmer/show',
     },
 ];

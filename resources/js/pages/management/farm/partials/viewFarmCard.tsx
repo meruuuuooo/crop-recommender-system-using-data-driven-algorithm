@@ -20,7 +20,7 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
     }
 
     const ownerName = farm.farmer
-        ? `${farm.farmer.first_name || ''} ${farm.farmer.middle_name ? farm.farmer.middle_name + ' ' : ''}${farm.farmer.last_name || ''}`.trim()
+        ? `${farm.farmer.firstname || ''} ${farm.farmer.middlename ? farm.farmer.middlename + ' ' : ''}${farm.farmer.lastname || ''}`.trim()
         : 'N/A';
 
     const addressParts = [];

@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Management\FarmerRequest;
 use App\Models\Barangay;
-use App\Models\farmer;
+use App\Models\Farmer;
 use App\Models\Location;
 use App\Models\Municipality;
 use App\Models\Province;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Farm;
 
 class FarmerController extends Controller
 {
@@ -21,7 +24,7 @@ class FarmerController extends Controller
         $search = $request->get('search');
         $perPage = $request->get('per_page', 10);
 
-        $farmers = farmer::with([
+        $farmers = Farmer::with([
             'location.province',
             'location.municipality',
             'location.barangay',
@@ -77,53 +80,40 @@ class FarmerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(FarmerRequest $request): RedirectResponse
     {
         // To view all request data
         // dd($request->all());
 
-        $request->validate([
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'nullable|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:15',
-            'farming_experience' => 'nullable|numeric',
-            'street' => 'required|string|max:255',
-            'province_id' => 'required|exists:provinces,id',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id',
-        ]);
+        $request = $request->validated();
 
         $location = Location::create([
-            'province_id' => $request->province_id,
-            'municipality_id' => $request->municipality_id,
-            'barangay_id' => $request->barangay_id,
-            'street' => $request->street,
+            'province_id' => $request['province_id'],
+            'municipality_id' => $request['municipality_id'],
+            'barangay_id' => $request['barangay_id'],
+            'street' => $request['street'],
         ]);
 
         $user_id = Auth::user()->id;
 
-        $farmer = farmer::create([
-            'firstname' => $request->firstname,
-            'middlename' => $request->middlename,
-            'lastname' => $request->lastname,
-            'contact_number' => $request->contact_number,
-            'farming_experience' => $request->farming_experience,
+        Farmer::create([
+            'firstname' => $request['firstname'],
+            'middlename' => $request['middlename'],
+            'lastname' => $request['lastname'],
+            'contact_number' => $request['contact_number'],
+            'farming_experience' => $request['farming_experience'],
             'registration_date' => now(),
             'location_id' => $location->id,
             'user_id' => $user_id,
         ]);
 
-        $farmer->save();
-
         return redirect()->route('management.farmer.index')->with('success', 'Farmer created successfully.');
-
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(farmer $farmer)
+    public function show(Farmer $farmer)
     {
         $farmer->load([
             'location.province',
@@ -138,9 +128,45 @@ class FarmerController extends Controller
     }
 
     /**
+     * Show the farms owned by the specified farmer.
+     */
+    // public function showFarms(Farmer $farmer, Request $request)
+    // {
+
+    //     $search = $request->get('search');
+    //     $perPage = $request->get('per_page', 10);
+
+    //     $farms = Farm::with('location', 'farmer:id,firstname,lastname')
+    //         ->where('farmer_id', $farmer->id)
+    //         ->when(request('search'), function ($query, $search) {
+    //             $query->where('name', 'like', "%{$search}%")
+    //                 ->orWhere('size', 'like', "%{$search}%")
+    //                 ->orWhereHas('location.province', function ($q) use ($search) {
+    //                     $q->where('name', 'like', "%{$search}%");
+    //                 })
+    //                 ->orWhereHas('location.municipality', function ($q) use ($search) {
+    //                     $q->where('name', 'like', "%{$search}%");
+    //                 })
+    //                 ->orWhereHas('location.barangay', function ($q) use ($search) {
+    //                     $q->where('name', 'like', "%{$search}%");
+    //                 });
+    //         })->orderBy('created_at', 'desc')
+    //         ->paginate(5)
+    //         ->withQueryString();
+
+    //     return Inertia::render('management/farmer/partials/viewFarmFarmerTable', [
+    //         'farms' => $farms,
+    //         'filters' => [
+    //             'search' => $search,
+    //             'per_page' => $perPage,
+    //         ],
+    //     ]);
+    // }
+
+    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(farmer $farmer)
+    public function edit(Farmer $farmer)
     {
         $provinces = Province::all();
         $municipalities = Municipality::all();
@@ -164,52 +190,28 @@ class FarmerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, farmer $farmer)
+    public function update(FarmerRequest $request, Farmer $farmer): RedirectResponse
     {
-        $request->validate([
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'nullable|string|max:255',
-            'lastname' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:255',
-            'farming_experience' => 'nullable|numeric',
-            'province_id' => 'required|exists:provinces,id',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id',
-            'street' => 'required|string|max:255',
-        ]);
-
-        // Store the old location ID for potential cleanup
-        $oldLocationId = $farmer->location_id;
+        $validated = $request->validated();
 
         // Create a new location for this farmer
         $location = Location::create([
-            'province_id' => $request->province_id,
-            'municipality_id' => $request->municipality_id,
-            'barangay_id' => $request->barangay_id,
-            'street' => $request->street,
+            'province_id' => $validated['province_id'],
+            'municipality_id' => $validated['municipality_id'],
+            'barangay_id' => $validated['barangay_id'],
+            'street' => $validated['street'],
         ]);
 
         // Update farmer
         $farmer->update([
-            'firstname' => $request->firstname,
-            'middlename' => $request->middlename,
-            'lastname' => $request->lastname,
-            'contact_number' => $request->contact_number,
-            'farming_experience' => $request->farming_experience,
+            'firstname' => $validated['firstname'],
+            'middlename' => $validated['middlename'],
+            'lastname' => $validated['lastname'],
+            'contact_number' => $validated['contact_number'],
+            'farming_experience' => $validated['farming_experience'],
             'location_id' => $location->id,
         ]);
 
-        // Check if the old location is still being used by other farmers
-        // If not, delete it to prevent orphaned records
-        if ($oldLocationId) {
-            $otherFarmersWithSameLocation = farmer::where('location_id', $oldLocationId)
-                ->where('id', '!=', $farmer->id)
-                ->count();
-
-            if ($otherFarmersWithSameLocation === 0) {
-                Location::find($oldLocationId)?->delete();
-            }
-        }
 
         return redirect()->route('management.farmer.index')->with('success', 'Farmer updated successfully.');
     }

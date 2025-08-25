@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Farmer;
 use App\Models\Fertilizer;
 use App\Models\Pesticide;
 use Illuminate\Http\Request;
@@ -12,7 +13,12 @@ class RecommendationController extends Controller
 {
     public function crop(Request $request)
     {
-        return Inertia::render('recommendation/crop');
+
+        $farmers = Farmer::all();
+
+        return Inertia::render('recommendation/crop', [
+            'farmers' => $farmers,
+        ]);
     }
 
     public function fertilizer(Request $request)
@@ -65,6 +71,7 @@ class RecommendationController extends Controller
         $weedSearch = $request->get('weed_search', '');
         $diseaseSearch = $request->get('disease_search', '');
         $toxicitySearch = $request->get('toxicity_search', '');
+        $pesticideSearch = $request->get('pesticide_search', '');
         $perPage = $request->get('per_page', 12);
 
         $query = Pesticide::query();
@@ -73,7 +80,6 @@ class RecommendationController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('product_name', 'LIKE', "%{$search}%")
-                    ->orWhere('company', 'LIKE', "%{$search}%")
                     ->orWhere('active_ingredient', 'LIKE', "%{$search}%")
                     ->orWhere('registration_number', 'LIKE', "%{$search}%");
             });
@@ -100,6 +106,10 @@ class RecommendationController extends Controller
             $query->where('toxicity_category', 'LIKE', "%{$toxicitySearch}%");
         }
 
+        if ($pesticideSearch) {
+            $query->where('product_name', 'LIKE', "%{$pesticideSearch}%");
+        }
+
         $pesticides = $query->paginate($perPage)->withQueryString();
 
         return Inertia::render('recommendation/pesticide', [
@@ -111,6 +121,7 @@ class RecommendationController extends Controller
                 'weed_search' => $weedSearch,
                 'disease_search' => $diseaseSearch,
                 'toxicity_search' => $toxicitySearch,
+                'pesticide_search' => $pesticideSearch,
                 'per_page' => $perPage,
             ],
         ]);

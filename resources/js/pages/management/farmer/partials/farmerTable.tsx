@@ -1,16 +1,16 @@
+import { PaginationData } from '@/components/paginationData';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Calendar, Edit, Eye, MapPin, Phone, Search, User, Users } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { router } from '@inertiajs/react';
 import { type Farmer, type PaginatedFarmers } from '@/types/farmer';
-import { PaginationData } from '@/components/paginationData';
+import { Link, router } from '@inertiajs/react';
+import { Calendar, Edit, Eye, MapPin, Phone, Plus, Search, User, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface FarmerTableProps {
     farmers: PaginatedFarmers;
@@ -35,43 +35,55 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
     // Debounced search effect
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            router.get(route('management.farmer.index'), {
-                search: search,
-                per_page: perPage,
-                page: 1 // Reset to first page when searching
-            }, {
-                preserveState: true,
-                preserveScroll: true,
-            });
+            router.get(
+                route('management.farmer.index'),
+                {
+                    search: search,
+                    per_page: perPage,
+                    page: 1, // Reset to first page when searching
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                },
+            );
         }, 300);
 
         return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search]);    // Handle per page change
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]); // Handle per page change
     const handlePerPageChange = (value: string) => {
         const newPerPage = parseInt(value);
         setPerPage(newPerPage);
 
-        router.get(route('management.farmer.index'), {
-            search,
-            per_page: newPerPage,
-            page: 1 // Reset to first page when changing per page
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('management.farmer.index'),
+            {
+                search,
+                per_page: newPerPage,
+                page: 1, // Reset to first page when changing per page
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     // Handle pagination
     const handlePageChange = (page: number) => {
-        router.get(route('management.farmer.index'), {
-            search,
-            per_page: perPage,
-            page
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('management.farmer.index'),
+            {
+                search,
+                per_page: perPage,
+                page,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     // Sync local state with props when they change
@@ -107,13 +119,6 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
             <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farmers-table-heading">
                 <CardHeader className="pb-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <CardTitle id="farmers-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                                <Users className="h-5 w-5 text-[#619154]" aria-hidden="true" />
-                                Farmers Directory
-                            </CardTitle>
-                            <p className="mt-1 text-sm text-gray-600">Manage and view all registered farmers in the system</p>
-                        </div>
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
                                 <Label htmlFor="farmer-search" className="sr-only">
@@ -146,9 +151,17 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                 </Select>
                             </div>
                             <div className="text-sm whitespace-nowrap text-gray-500">
-                                Showing <span className="font-medium">{farmers.from || 0}</span>-<span className="font-medium">{farmers.to || 0}</span> of{' '}
-                                <span className="font-medium">{farmers.total}</span> farmers
+                                Showing <span className="font-medium">{farmers.from || 0}</span>-
+                                <span className="font-medium">{farmers.to || 0}</span> of <span className="font-medium">{farmers.total}</span> farmers
                             </div>
+                        </div>
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                            <Link href={route('management.farmer.create')}>
+                                <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Add Farmer
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </CardHeader>
@@ -166,7 +179,7 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className='bg-[#619154]'>
+                                <TableHeader className="bg-[#619154]">
                                     <TableRow>
                                         <TableHead className="w-[200px] font-semibold text-white">Farmer Details</TableHead>
                                         <TableHead className="w-[150px] font-semibold text-white">Contact</TableHead>
@@ -195,7 +208,7 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 text-xs">
+                                                <Badge variant="outline" className="border-green-200 bg-green-50 text-xs text-green-700">
                                                     <Calendar className="mr-1 h-3 w-3" />
                                                     {farmer.farming_experience ? `${farmer.farming_experience} years` : 'N/A'}
                                                 </Badge>
@@ -205,9 +218,7 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                                     <TooltipTrigger asChild>
                                                         <div className="flex cursor-help items-center gap-2">
                                                             <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                                                            <span className="text-sm text-gray-700">
-                                                                {truncateText(getFullAddress(farmer), 30)}
-                                                            </span>
+                                                            <span className="text-sm text-gray-700">{truncateText(getFullAddress(farmer), 30)}</span>
                                                         </div>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
@@ -267,11 +278,7 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
 
                     {farmers.last_page > 1 && (
                         <div className="border-t border-[#D6E3D4] px-6 py-4">
-                            <PaginationData
-                                currentPage={farmers.current_page}
-                                totalPages={farmers.last_page}
-                                onPageChange={handlePageChange}
-                            />
+                            <PaginationData currentPage={farmers.current_page} totalPages={farmers.last_page} onPageChange={handlePageChange} />
                         </div>
                     )}
                 </CardContent>

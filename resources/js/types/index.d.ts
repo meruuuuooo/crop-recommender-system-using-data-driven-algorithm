@@ -48,6 +48,12 @@ export interface User {
     [key: string]: unknown; // This allows for additional properties and routing...
 }
 
+export interface SelectFarmers {
+    id: number;
+    firstname: string;
+    lastname: string;
+}
+
 export interface Farmer {
     id: number;
     firstname: string;
@@ -148,11 +154,7 @@ export interface Crop {
     soil_type: string;
     crop_season: string;
     time_of_planting: string;
-    plant_population_per_hectare: string;
     maturity: string;
-    volume_of_production: string;
-    distance_of_planting_hills: string;
-    distance_of_planting_rows: string;
     yield_per_hectare: string;
     category_id: number;
     created_at: string;
@@ -174,11 +176,13 @@ export interface Category {
 export interface Soil {
     id: number;
     ph_level: number;
-    nitrogen_content: number;
-    phosphorus_content: number;
-    potassium_content: number;
+    nitrogen_level: string;
+    phosphorus_level: string;
+    potassium_level: string;
+    nitrogen: number;
+    phosphorus: number;
+    potassium: number;
     organic_matter: number;
-    soil_type_id: number;
     farm_id: number;
     created_at: string;
     updated_at: string;
@@ -216,18 +220,6 @@ export interface Season {
     updated_at: string;
 }
 
-export interface FertilizerRecommendation {
-    id: number;
-    recommendation_id: number;
-    fertilizer_id: number;
-    application_rate: number;
-    application_timing: string;
-    created_at: string;
-    updated_at: string;
-    recommendation?: Recommendation;
-    fertilizer?: Fertilizer;
-    details?: FertilizerRecommendationDetails[];
-}
 
 export interface Fertilizer {
     id: number;
@@ -247,47 +239,6 @@ export interface Fertilizer {
     [key: string]: unknown; // This allows for additional properties and routing...
 }
 
-export interface FertilizerRecommendationDetails {
-    id: number;
-    fertilizer_recommendation_id: number;
-    nutrient_type_id: number;
-    fertilizer_level_id: number;
-    amount: number;
-    created_at: string;
-    updated_at: string;
-    fertilizerRecommendation?: FertilizerRecommendation;
-    nutrientType?: NutrientType;
-    fertilizerLevel?: FertilizerLevel;
-}
-
-export interface NutrientType {
-    id: number;
-    name: string;
-    description?: string;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface FertilizerLevel {
-    id: number;
-    level: string;
-    min_value: number;
-    max_value: number;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface PesticideRecommendation {
-    id: number;
-    recommendation_id: number;
-    pesticide_id: number;
-    application_rate: number;
-    application_timing: string;
-    created_at: string;
-    updated_at: string;
-    recommendation?: Recommendation;
-    pesticide?: Pesticide;
-}
 
 export interface Pesticide {
     id: number;

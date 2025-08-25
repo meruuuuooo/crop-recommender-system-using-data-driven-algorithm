@@ -25,11 +25,7 @@ return new class extends Migration
             $table->string('crop_season');
             $table->string('soil_type')->nullable();
             $table->string('time_of_planting');
-            $table->string('plant_population_per_hectare')->nullable();
             $table->string('maturity');
-            $table->string('volume_of_production')->nullable();
-            $table->string('distance_of_planting_hills')->nullable();
-            $table->string('distance_of_planting_rows')->nullable();
             $table->string('yield_per_hectare');
             $table->timestamps();
         });

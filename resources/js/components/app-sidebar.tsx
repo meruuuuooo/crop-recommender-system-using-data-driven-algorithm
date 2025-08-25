@@ -60,14 +60,33 @@ const mainNavItems: NavItem[] = [
         ],
     },
     {
-        title: 'Calendar',
-        href: '/calendar',
+        title: 'Cropping Calendar',
+        href: '/crop/calendar',
         icon: Calendar,
     },
     {
         title: 'Reports',
         href: '/reports',
         icon: ScrollText,
+
+        items: [
+            {
+                title: 'Farmers',
+                href: '/reports/farmer',
+                icon: User,
+            },
+            {
+                title: 'Farms',
+                href: '/reports/farm',
+                icon: Tractor,
+            },
+            {
+                title: 'Crops',
+                href: '/reports/crop',
+                icon: Sprout,
+            },
+            
+        ]
     },
 ];
 

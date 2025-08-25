@@ -509,11 +509,7 @@ class CropSeeder extends Seeder
                 'crop_season' => $crop['crop_season'],
                 'soil_type' => $crop['soil_type'],
                 'time_of_planting' => $crop['time_of_planting'],
-                'plant_population_per_hectare' => $crop['plant_population_per_hectare'] ?? null,
                 'maturity' => $crop['maturity'],
-                'volume_of_production' => $crop['volume_of_production'] ?? null,
-                'distance_of_planting_hills' => $crop['distance_of_planting_hills'] ?? null,
-                'distance_of_planting_rows' => $crop['distance_of_planting_rows'] ?? null,
                 'yield_per_hectare' => $crop['yield_per_hectare'],
             ]);
         }

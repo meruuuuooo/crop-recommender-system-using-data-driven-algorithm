@@ -15,11 +15,7 @@ class Crop extends Model
         'crop_season',
         'soil_type',
         'time_of_planting',
-        'plant_population_per_hectare',
         'maturity',
-        'volume_of_production',
-        'distance_of_planting_hills',
-        'distance_of_planting_rows',
         'yield_per_hectare',
     ];
 

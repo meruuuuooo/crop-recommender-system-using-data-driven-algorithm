@@ -25,6 +25,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('farm_id')->constrained()->onDelete('cascade');
             $table->string('soil_type');
+            $table->string('nitrogen_level');
+            $table->string('phosphorus_level')->nullable();
+            $table->string('potassium_level')->nullable();
             $table->float('nitrogen');
             $table->float('phosphorus');
             $table->float('potassium');

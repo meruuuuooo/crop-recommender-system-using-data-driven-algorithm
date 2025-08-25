@@ -1,7 +1,7 @@
 import { PaginationData } from '@/components/paginationData';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -98,14 +98,7 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
         <TooltipProvider>
             <Card className="border-[#D6E3D4]" role="region" aria-labelledby="fertilizers-table-heading">
                 <CardHeader className="pb-4">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <CardTitle id="fertilizers-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                                <FlaskConical className="h-5 w-5 text-[#619154]" aria-hidden="true" />
-                                Fertilizer Directory
-                            </CardTitle>
-                            <p className="mt-1 text-sm text-gray-600">Manage and view all registered fertilizers in the system</p>
-                        </div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
                                 <Label htmlFor="fertilizer-search" className="sr-only">
@@ -143,7 +136,7 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className='bg-[#619154]'>
+                                <TableHeader className="bg-[#619154]">
                                     <TableRow>
                                         <TableHead className="w-[200px] font-semibold text-white">Product Details</TableHead>
                                         <TableHead className="w-[150px] font-semibold text-white">Company</TableHead>
@@ -173,7 +166,10 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className={`text-xs ${getProductTypeColor(fertilizer.type_of_product || '')}`}>
+                                                <Badge
+                                                    variant="outline"
+                                                    className={`text-xs ${getProductTypeColor(fertilizer.type_of_product || '')}`}
+                                                >
                                                     <Package className="mr-1 h-3 w-3" />
                                                     {fertilizer.type_of_product || 'N/A'}
                                                 </Badge>
@@ -210,7 +206,9 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                                             </TableCell>
                                             <TableCell>
                                                 <div className="space-y-1">
-                                                    <div className="text-xs text-gray-700">{fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</div>
+                                                    <div className="text-xs text-gray-700">
+                                                        {fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}
+                                                    </div>
                                                     {fertilizer.expiry_date && isExpired(fertilizer.expiry_date) ? (
                                                         <Badge variant="destructive" className="text-xs">
                                                             <AlertTriangle className="mr-1 h-3 w-3" />

@@ -46,7 +46,7 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: 'There was an error creating the farmer. Please check the form and try again.',
+                    text: 'There was an error creating the farm. Please check the form and try again.',
                     confirmButtonColor: '#dc2626',
                 });
             },

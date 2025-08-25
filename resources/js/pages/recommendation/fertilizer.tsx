@@ -90,9 +90,8 @@ export default function Fertilizer({ fertilizers, filters }: FertilizerPageProps
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
                 <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
                     <div className="flex items-center justify-between">
-                        <HeadingSmall title="Fertilizer Management" description="Browse fertilizers and get personalized recommendations." />
+                        <HeadingSmall title="Fertilizer Management" description="View all registered fertilizers in the philippines" />
                     </div>
-
                     {/* <Tabs defaultValue="recommendations" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 mb-6">
                             <TabsTrigger value="recommendations" className="text-[#619154] data-[state=active]:bg-[#619154] data-[state=active]:text-white">

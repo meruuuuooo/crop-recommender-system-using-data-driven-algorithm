@@ -25,6 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/edit/{farmer}', [FarmerController::class, 'edit'])->name('edit');
         Route::put('/{farmer}', [FarmerController::class, 'update'])->name('update');
         // Route::delete('/{farmer}', [FarmerController::class, 'destroy'])->name('destroy');
+
+        //show farms owned by farmer
+        // Route::get('/farm/show/{farmer}', [FarmerController::class, 'showFarms'])->name('farm.show');
     });
 
     // Farm Management
@@ -56,9 +59,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pesticide/show/{pesticide}', [RecommendationController::class, 'showPesticide'])->name('pesticide.show');
     });
 
-    Route::get('reports', function () {
-        return Inertia::render('reports/index');
-    })->name('reports');
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/farmer', function () {
+            return Inertia::render('reports/farmerReports');
+        })->name('farmer');
+
+        Route::get('/farm', function () {
+            return Inertia::render('reports/farmReports');
+        })->name('farm');
+
+        Route::get('/crop', function () {
+            return Inertia::render('reports/cropReports');
+        })->name('crop');
+    });
+
+    Route::get('/crop/calendar', function () {
+        return Inertia::render('croppingCalendar', [
+            'crops' => \App\Models\Crop::with('category')->find(1),
+        ]);
+    })->name('crop.calendar');
+
 });
 
 require __DIR__.'/settings.php';

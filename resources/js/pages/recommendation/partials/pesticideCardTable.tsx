@@ -11,17 +11,14 @@ import {
     // Activity,
     AlertTriangle,
     Bug,
-    Building,
     Calendar,
     // Clock,
     Eye,
     FileText,
     Filter,
-    FlaskConical,
     Leaf,
     Search,
     Shield,
-    Snail,
     Sprout,
     X,
 } from 'lucide-react';
@@ -49,6 +46,7 @@ interface PesticideTableProps {
         weed_search: string;
         disease_search: string;
         toxicity_search: string;
+        pesticide_search: string;
         per_page: number;
     };
     pagination?: PaginationInfo;
@@ -71,6 +69,7 @@ export default function PesticideTable({
     const [weedSearch, setWeedSearch] = useState(filters?.weed_search || '');
     const [diseaseSearch, setDiseaseSearch] = useState(filters?.disease_search || '');
     const [toxicitySearch, setToxicitySearch] = useState(filters?.toxicity_search || '');
+    const [pesticideSearch, setPesticideSearch] = useState(filters?.pesticide_search || '');
     const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
@@ -84,6 +83,7 @@ export default function PesticideTable({
             setWeedSearch(filters.weed_search || '');
             setDiseaseSearch(filters.disease_search || '');
             setToxicitySearch(filters.toxicity_search || '');
+            setPesticideSearch(filters.pesticide_search || '');
         }
     }, [filters]);
 
@@ -141,6 +141,15 @@ export default function PesticideTable({
         }, 500);
         return () => clearTimeout(timeoutId);
     }, [toxicitySearch, onFilterSearch, filters?.toxicity_search]);
+
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (onFilterSearch && pesticideSearch !== (filters?.pesticide_search || '')) {
+                onFilterSearch('pesticide_search', pesticideSearch);
+            }
+        }, 500);
+        return () => clearTimeout(timeoutId);
+    }, [pesticideSearch, onFilterSearch, filters?.pesticide_search]);
 
     const timeStampToDate = (timestamp: string) => {
         const date = new Date(timestamp);
@@ -236,19 +245,36 @@ export default function PesticideTable({
         return search || cropSearch || pestSearch || weedSearch || diseaseSearch || toxicitySearch;
     };
 
+    const formulationType = (formulation: string) => {
+        const formulationLower = formulation?.toLowerCase() || '';
+        switch (formulationLower) {
+            case 'ec':
+            case 'emulsifiable concentrate':
+                return 'Emulsifiable Concentrate (EC)';
+            case 'sc':
+            case 'suspension concentrate':
+                return 'Suspension Concentrate (SC)';
+            case 'wp':
+            case 'wettable powder':
+                return 'Wettable Powder (WP)';
+            case 'granules':
+            case 'gr':
+                return 'Granules (GR)';
+            case 'dusts':
+            case 'dust':
+                return 'Dusts (D)';
+            default:
+                return formulation || 'N/A';
+        }
+    }
+
+
     return (
         <TooltipProvider>
             <Card className="border-[#D6E3D4]" role="region" aria-labelledby="pesticides-table-heading">
                 <CardHeader className="pb-4">
                     <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <CardTitle id="pesticides-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                                    <Snail className="h-5 w-5 text-[#619154]" aria-hidden="true" />
-                                    Pesticide Directory
-                                </CardTitle>
-                                <p className="mt-1 text-sm text-gray-600">Manage and view all registered pesticides in the Philippines </p>
-                            </div>
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                             <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                                 <div className="relative w-full sm:w-80">
                                     <Label htmlFor="pesticide-search" className="sr-only">
@@ -375,6 +401,19 @@ export default function PesticideTable({
                                                 className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
+                                                <Shield className="h-4 w-4 text-yellow-600" />
+                                                Type of Pesticide
+                                            </Label>
+                                            <Input
+                                                id="toxicity-search"
+                                                placeholder="Search by toxicity (1-4, where 1=most toxic, 4=least toxic)..."
+                                                value={pesticideSearch}
+                                                onChange={(e) => setToxicitySearch(e.target.value)}
+                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                            />
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -406,10 +445,10 @@ export default function PesticideTable({
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className='bg-[#619154]'>
+                                <TableHeader className="bg-[#619154]">
                                     <TableRow>
                                         <TableHead className="w-[200px] font-semibold text-white">Product Details</TableHead>
-                                        <TableHead className="w-[150px] font-semibold text-white">Company</TableHead>
+                                        <TableHead className="w-[200px] font-semibold text-white">Type of Pesticide</TableHead>
                                         <TableHead className="w-[180px] font-semibold text-white">Active Ingredient</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Formulation</TableHead>
                                         <TableHead className="w-[100px] font-semibold text-white">Toxicity</TableHead>
@@ -433,16 +472,21 @@ export default function PesticideTable({
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Building className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                                                    <span className="truncate text-sm font-medium text-gray-700">{pesticide.company}</span>
-                                                </div>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div className="flex cursor-help items-center gap-2">
+                                                            <span className="text-sm text-gray-700">{truncateText(pesticide.uses, 25)}</span>
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p className="max-w-xs">{pesticide.uses}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
                                                         <div className="flex cursor-help items-center gap-2">
-                                                            <FlaskConical className="h-4 w-4 flex-shrink-0 text-gray-400" />
                                                             <span className="text-sm text-gray-700">
                                                                 {truncateText(pesticide.active_ingredient, 25)}
                                                             </span>
@@ -454,9 +498,22 @@ export default function PesticideTable({
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className={`text-xs ${getFormulationColor(pesticide.formulation_type)}`}>
-                                                    {pesticide.formulation_type}
-                                                </Badge>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className={`text-xs ${getFormulationColor(pesticide.formulation_type)}`}
+                                                        >
+                                                            {pesticide.formulation_type}
+                                                        </Badge>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <div className="space-y-1">
+                                                            <p className="font-medium">Formulation Type</p>
+                                                            <p className="text-xs">{formulationType(pesticide.formulation_type)}</p>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
                                             </TableCell>
                                             <TableCell>
                                                 <Tooltip>
@@ -482,9 +539,7 @@ export default function PesticideTable({
                                                     <TooltipTrigger asChild>
                                                         <div className="flex cursor-help items-center gap-2">
                                                             <Sprout className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                                                            <span className="text-sm text-gray-700">
-                                                                {truncateText(pesticide.crops, 25)}
-                                                            </span>
+                                                            <span className="text-sm text-gray-700">{truncateText(pesticide.crops, 25)}</span>
                                                         </div>
                                                     </TooltipTrigger>
                                                     <TooltipContent>

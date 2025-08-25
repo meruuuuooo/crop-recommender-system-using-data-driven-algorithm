@@ -8,9 +8,13 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Reports',
         href: '/reports',
     },
+    {
+        title: 'Crops',
+        href: '/reports/crops',
+    },
 ];
 
-export default function Reports() {
+export default function CropReports() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports" />

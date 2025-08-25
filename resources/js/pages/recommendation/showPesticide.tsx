@@ -1,14 +1,12 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import type { Pesticide } from '@/types/pesticide';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import React from 'react';
 import {
-    ArrowLeft,
     Building,
     Calendar,
     FileText,
@@ -25,7 +23,6 @@ import {
     Info,
     Timer,
     Scale,
-    FileDown
 } from 'lucide-react';
 
 interface ShowPesticideProps {
@@ -127,123 +124,100 @@ export default function ShowPesticide({ pesticide }: ShowPesticideProps) {
         }
     };
 
-    const handleExportPDF = () => {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>${pesticide.product_name} - Pesticide Details</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; }
-                            .header { border-bottom: 2px solid #619154; padding-bottom: 10px; margin-bottom: 20px; }
-                            .section { margin-bottom: 20px; }
-                            .label { font-weight: bold; }
-                            .badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-                            .toxicity-1 { background-color: #fee2e2; color: #991b1b; }
-                            .toxicity-2 { background-color: #fff7ed; color: #c2410c; }
-                            .toxicity-3 { background-color: #fefce8; color: #a16207; }
-                            .toxicity-4 { background-color: #f0fdf4; color: #166534; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>${pesticide.product_name}</h1>
-                            <p><strong>Company:</strong> ${pesticide.company}</p>
-                            <p><strong>Registration Number:</strong> ${pesticide.registration_number}</p>
-                            <span class="badge toxicity-${pesticide.toxicity_category}">Category ${pesticide.toxicity_category}</span>
-                        </div>
+    // const handleExportPDF = () => {
+    //     const printWindow = window.open('', '_blank');
+    //     if (printWindow) {
+    //         printWindow.document.write(`
+    //             <html>
+    //                 <head>
+    //                     <title>${pesticide.product_name} - Pesticide Details</title>
+    //                     <style>
+    //                         body { font-family: Arial, sans-serif; margin: 20px; }
+    //                         .header { border-bottom: 2px solid #619154; padding-bottom: 10px; margin-bottom: 20px; }
+    //                         .section { margin-bottom: 20px; }
+    //                         .label { font-weight: bold; }
+    //                         .badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    //                         .toxicity-1 { background-color: #fee2e2; color: #991b1b; }
+    //                         .toxicity-2 { background-color: #fff7ed; color: #c2410c; }
+    //                         .toxicity-3 { background-color: #fefce8; color: #a16207; }
+    //                         .toxicity-4 { background-color: #f0fdf4; color: #166534; }
+    //                     </style>
+    //                 </head>
+    //                 <body>
+    //                     <div class="header">
+    //                         <h1>${pesticide.product_name}</h1>
+    //                         <p><strong>Company:</strong> ${pesticide.company}</p>
+    //                         <p><strong>Registration Number:</strong> ${pesticide.registration_number}</p>
+    //                         <span class="badge toxicity-${pesticide.toxicity_category}">Category ${pesticide.toxicity_category}</span>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Active Ingredient</h2>
-                            <p>${pesticide.active_ingredient}</p>
-                            <p><strong>Formulation:</strong> ${pesticide.formulation_type}</p>
-                            <p><strong>Concentration:</strong> ${pesticide.concentration || 'N/A'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Active Ingredient</h2>
+    //                         <p>${pesticide.active_ingredient}</p>
+    //                         <p><strong>Formulation:</strong> ${pesticide.formulation_type}</p>
+    //                         <p><strong>Concentration:</strong> ${pesticide.concentration || 'N/A'}</p>
+    //                     </div>
 
-                        ${pesticide.crops ? `
-                        <div class="section">
-                            <h2>Target Crops</h2>
-                            <p>${pesticide.crops}</p>
-                        </div>
-                        ` : ''}
+    //                     ${pesticide.crops ? `
+    //                     <div class="section">
+    //                         <h2>Target Crops</h2>
+    //                         <p>${pesticide.crops}</p>
+    //                     </div>
+    //                     ` : ''}
 
-                        ${pesticide.pests ? `
-                        <div class="section">
-                            <h2>Target Pests</h2>
-                            <p>${pesticide.pests}</p>
-                        </div>
-                        ` : ''}
+    //                     ${pesticide.pests ? `
+    //                     <div class="section">
+    //                         <h2>Target Pests</h2>
+    //                         <p>${pesticide.pests}</p>
+    //                     </div>
+    //                     ` : ''}
 
-                        ${pesticide.weeds ? `
-                        <div class="section">
-                            <h2>Target Weeds</h2>
-                            <p>${pesticide.weeds}</p>
-                        </div>
-                        ` : ''}
+    //                     ${pesticide.weeds ? `
+    //                     <div class="section">
+    //                         <h2>Target Weeds</h2>
+    //                         <p>${pesticide.weeds}</p>
+    //                     </div>
+    //                     ` : ''}
 
-                        ${pesticide.diseases ? `
-                        <div class="section">
-                            <h2>Target Diseases</h2>
-                            <p>${pesticide.diseases}</p>
-                        </div>
-                        ` : ''}
+    //                     ${pesticide.diseases ? `
+    //                     <div class="section">
+    //                         <h2>Target Diseases</h2>
+    //                         <p>${pesticide.diseases}</p>
+    //                     </div>
+    //                     ` : ''}
 
-                        <div class="section">
-                            <h2>Safety Information</h2>
-                            <p><strong>Toxicity Category:</strong> ${pesticide.toxicity_category} - ${getToxicityDescription(pesticide.toxicity_category)}</p>
-                            <p><strong>PHI (Pre-Harvest Interval):</strong> ${pesticide.PHI || 'N/A'}</p>
-                            <p><strong>REI (Re-entry Interval):</strong> ${pesticide.re_entry_period || 'N/A'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Safety Information</h2>
+    //                         <p><strong>Toxicity Category:</strong> ${pesticide.toxicity_category} - ${getToxicityDescription(pesticide.toxicity_category)}</p>
+    //                         <p><strong>PHI (Pre-Harvest Interval):</strong> ${pesticide.PHI || 'N/A'}</p>
+    //                         <p><strong>REI (Re-entry Interval):</strong> ${pesticide.re_entry_period || 'N/A'}</p>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Application Information</h2>
-                            <p><strong>Recommended Rate:</strong> ${pesticide.recommended_rate || 'Not specified'}</p>
-                            <p><strong>Maximum Residue Limit (MRL):</strong> ${pesticide.MRL || 'Not specified'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Application Information</h2>
+    //                         <p><strong>Recommended Rate:</strong> ${pesticide.recommended_rate || 'Not specified'}</p>
+    //                         <p><strong>Maximum Residue Limit (MRL):</strong> ${pesticide.MRL || 'Not specified'}</p>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Registration Information</h2>
-                            <p><strong>Expiry Date:</strong> ${timeStampToDate(pesticide.expiry_date)}</p>
-                            <p><strong>Mode of Entry:</strong> ${pesticide.mode_of_entry || 'N/A'}</p>
-                            <p><strong>Uses:</strong> ${pesticide.uses || 'N/A'}</p>
-                        </div>
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        }
-    };
+    //                     <div class="section">
+    //                         <h2>Registration Information</h2>
+    //                         <p><strong>Expiry Date:</strong> ${timeStampToDate(pesticide.expiry_date)}</p>
+    //                         <p><strong>Mode of Entry:</strong> ${pesticide.mode_of_entry || 'N/A'}</p>
+    //                         <p><strong>Uses:</strong> ${pesticide.uses || 'N/A'}</p>
+    //                     </div>
+    //                 </body>
+    //             </html>
+    //         `);
+    //         printWindow.document.close();
+    //         printWindow.print();
+    //     }
+    // };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${pesticide.product_name} - Pesticide Details`} />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
                 <div className="flex flex-col gap-6">
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                        <Link
-                            href={route('recommendation.pesticide')}
-                            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#619154] transition-colors"
-                        >
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to Pesticides
-                        </Link>
-
-                        <div className="flex items-center gap-3">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleExportPDF}
-                                className="border-[#D6E3D4] hover:bg-[#F8FAF8] hover:border-[#619154]"
-                            >
-                                <FileDown className="h-4 w-4 mr-2" />
-                                Export PDF
-                            </Button>
-                        </div>
-                    </div>
-
                     {/* Main Content */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Main Information */}
