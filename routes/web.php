@@ -75,7 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/crop/calendar', function () {
         return Inertia::render('croppingCalendar', [
-            'crops' => \App\Models\Crop::with('category')->find(1),
+            'crops' => \App\Models\Crop::with('category')->get(),
+            'categories' => \App\Models\Category::has('crops')->orderBy('name')->get(),
         ]);
     })->name('crop.calendar');
 
