@@ -107,7 +107,7 @@ class RecommendationController extends Controller
         }
 
         if ($pesticideSearch) {
-            $query->where('product_name', 'LIKE', "%{$pesticideSearch}%");
+            $query->where('uses', 'LIKE', "%{$pesticideSearch}%");
         }
 
         $pesticides = $query->paginate($perPage)->withQueryString();

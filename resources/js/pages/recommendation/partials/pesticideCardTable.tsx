@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Pesticide } from '@/types/pesticide';
+
 import {
     // Activity,
     AlertTriangle,
@@ -300,7 +301,7 @@ export default function PesticideTable({
                                     Filters
                                     {hasActiveFilters() && (
                                         <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
-                                            {[search, cropSearch, pestSearch, weedSearch, diseaseSearch, toxicitySearch].filter(Boolean).length}
+                                            {[search, cropSearch, pestSearch, weedSearch, diseaseSearch, toxicitySearch, pesticideSearch].filter(Boolean).length}
                                         </Badge>
                                     )}
                                 </Button>
@@ -408,9 +409,9 @@ export default function PesticideTable({
                                             </Label>
                                             <Input
                                                 id="toxicity-search"
-                                                placeholder="Search by toxicity (1-4, where 1=most toxic, 4=least toxic)..."
+                                                placeholder="Search by pesticide type (insecticide, herbicide, fungicide, etc.)..."
                                                 value={pesticideSearch}
-                                                onChange={(e) => setToxicitySearch(e.target.value)}
+                                                onChange={(e) => setPesticideSearch(e.target.value)}
                                                 className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
