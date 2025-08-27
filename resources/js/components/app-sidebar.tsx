@@ -66,27 +66,8 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Reports',
-        href: '/reports',
+        href: '/reports/index',
         icon: ScrollText,
-
-        items: [
-            {
-                title: 'Farmers',
-                href: '/reports/farmer',
-                icon: User,
-            },
-            {
-                title: 'Farms',
-                href: '/reports/farm',
-                icon: Tractor,
-            },
-            {
-                title: 'Crops',
-                href: '/reports/crop',
-                icon: Sprout,
-            },
-            
-        ]
     },
 ];
 

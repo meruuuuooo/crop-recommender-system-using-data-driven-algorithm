@@ -43,7 +43,7 @@ const chartConfig = {
 
 export default function ChartTooltipDefault() {
   return (
-    <Card>
+    <Card className="rounded-xl">
       <CardHeader>
         <CardTitle>Tooltip - Default</CardTitle>
         <CardDescription>

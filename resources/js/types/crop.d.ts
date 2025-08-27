@@ -1,6 +1,6 @@
-import { Crop, CropVariety, Category, PaginatedResponse } from './index';
+import { Crop, Category, PaginatedResponse } from './index';
 
-export type { Crop, CropVariety, Category };
+export type { Crop, Category };
 
 export type PaginatedCrops = PaginatedResponse<Crop>;
 

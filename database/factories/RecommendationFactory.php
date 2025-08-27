@@ -17,7 +17,13 @@ class RecommendationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'farmer_id' => \App\Models\Farmer::factory(),
+            'farm_id' => \App\Models\Farm::factory(),
+            'crop_id' => \App\Models\Crop::factory(),
+            'confidence_score' => fake()->randomFloat(2, 0, 1),
+            'recommendation_date' => fake()->date(),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

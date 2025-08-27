@@ -27,7 +27,7 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($crop_categories as $category) {
-            Category::factory()->create([
+            Category::create([
                 'id' => $category['id'],
                 'name' => $category['name'],
             ]);

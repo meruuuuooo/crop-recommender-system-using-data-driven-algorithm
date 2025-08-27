@@ -39,4 +39,9 @@ class Farmer extends Model
     {
         return $this->hasMany(Recommendation::class);
     }
+
+    public function soils()
+    {
+        return $this->hasManyThrough(Soil::class, Farm::class);
+    }
 }

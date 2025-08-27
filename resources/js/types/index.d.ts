@@ -190,14 +190,6 @@ export interface Soil {
     farm?: Farm;
 }
 
-export interface SoilType {
-    id: number;
-    name: string;
-    description?: string;
-    created_at: string;
-    updated_at: string;
-}
-
 export interface Climate {
     id: number;
     temperature: number;
@@ -209,15 +201,6 @@ export interface Climate {
     updated_at: string;
     season?: Season;
     farm?: Farm;
-}
-
-export interface Season {
-    id: number;
-    name: string;
-    start_month: number;
-    end_month: number;
-    created_at: string;
-    updated_at: string;
 }
 
 

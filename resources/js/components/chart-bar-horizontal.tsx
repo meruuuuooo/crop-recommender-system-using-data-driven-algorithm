@@ -38,7 +38,7 @@ const chartConfig = {
 
 export default function ChartBarHorizontal() {
   return (
-    <Card>
+    <Card className="rounded-xl">
       <CardHeader>
         <CardTitle>Bar Chart - Horizontal</CardTitle>
         <CardDescription>January - June 2024</CardDescription>

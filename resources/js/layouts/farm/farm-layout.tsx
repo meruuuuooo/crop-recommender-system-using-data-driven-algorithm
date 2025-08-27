@@ -8,23 +8,23 @@ import { type PropsWithChildren } from 'react';
 
 const sidebarNavItems: NavItem[] = [
     {
-        title: 'Profile',
-        href: '/settings/profile',
+        title: 'Soil Test Results and History',
+        href: '/report/farmers',
         icon: null,
     },
     {
-        title: 'Password',
-        href: '/settings/password',
+        title: 'Farms',
+        href: '/report/farms',
         icon: null,
     },
     {
-        title: 'Appearance',
-        href: '/settings/appearance',
+        title: 'Crops',
+        href: '/report/crops',
         icon: null,
     },
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+export default function FarmLayout({ children }: PropsWithChildren) {
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
         return null;
@@ -38,7 +38,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                 <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto">
                     <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
                         <div className="flex items-center justify-between">
-                            <Heading title="Settings" description="Manage your profile and account settings" />
+                            <Heading title="Farms Reports" description="This page contains reports focused on farms, thier locations, and associated data like soil and climate condition." />
                         </div>
                         <div className="flex flex-col gap-6 space-y-8 rounded-sm border border-sidebar-border/70 bg-white p-8 lg:flex-row lg:space-y-0 lg:space-x-12 dark:border-sidebar-border">
                             <aside className="w-full max-w-xl lg:w-48">

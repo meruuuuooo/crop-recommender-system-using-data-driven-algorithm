@@ -31,5 +31,8 @@ class DatabaseSeeder extends Seeder
         (new CropSeeder)->run();
         // (new FertilizerSeeder)->run(); // Disabled temporarily
 
+        (new SoilClimateSeeder)->run();
+        (new RecommendationSeeder)->run();
+
     }
 }

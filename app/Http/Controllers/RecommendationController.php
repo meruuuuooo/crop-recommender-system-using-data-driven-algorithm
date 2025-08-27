@@ -13,7 +13,6 @@ class RecommendationController extends Controller
 {
     public function crop(Request $request)
     {
-
         $farmers = Farmer::all();
 
         return Inertia::render('recommendation/crop', [

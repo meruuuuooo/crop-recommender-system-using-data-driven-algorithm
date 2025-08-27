@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Soil extends Model
 {
+
+    use HasFactory;
     protected $fillable = [
         'farm_id',
         'soil_type',
@@ -22,5 +25,10 @@ class Soil extends Model
     public function farm()
     {
         return $this->belongsTo(Farm::class);
+    }
+
+    public function farmer()
+    {
+        return $this->farm->farmer();
     }
 }

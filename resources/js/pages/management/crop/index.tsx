@@ -3,7 +3,6 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
 import CropTable from './partials/cropTable';
-import { Button } from '@/components/ui/button';
 import type { Crop, CropIndexProps } from '@/types/crop';
 
 const breadcrumbs: BreadcrumbItem[] = [

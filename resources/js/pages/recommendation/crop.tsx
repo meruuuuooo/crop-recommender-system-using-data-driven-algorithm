@@ -119,6 +119,40 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
         }
     };
 
+    // Dummy data for Recommendation Results
+    const recommendationResults = [
+        {
+            crop: 'Rice',
+            confidence: 0.92,
+            date: '2025-08-27',
+            action: 'Fertilizer',
+        },
+        {
+            crop: 'Corn',
+            confidence: 0.85,
+            date: '2025-08-27',
+            action: 'Fertilizer',
+        },
+    ];
+
+    // Dummy data for Recent Recommendations
+    const recentRecommendations = [
+        {
+            date: '2025-08-26',
+            crop: 'Wheat',
+            farmer: 'Juan Dela Cruz',
+            score: 0.88,
+            action: 'Fertilizer',
+        },
+        {
+            date: '2025-08-25',
+            crop: 'Soybean',
+            farmer: 'Maria Santos',
+            score: 0.81,
+            action: 'Fertilizer',
+        },
+    ];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Crop Recommendation" />
@@ -532,45 +566,101 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                             <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="py-8 text-center text-gray-500">
-                                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
-                                    <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                            {recommendationResults.length === 0 ? (
+                                <div className="py-8 text-center text-gray-500">
+                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                        <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <p className="text-base">Click "Generate Recommendation" to see your results</p>
+                                    <p className="mt-1 text-sm text-gray-400">All required fields must be completed first</p>
                                 </div>
-                                <p className="text-base">Click "Generate Recommendation" to see your results</p>
-                                <p className="mt-1 text-sm text-gray-400">All required fields must be completed first</p>
-                            </div>
+                            ) : (
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full text-left text-sm">
+                                        <thead>
+                                            <tr className="bg-gray-50">
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Crop Name</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Confidence Score</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Recommendation Date</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {recommendationResults.map((item, idx) => (
+                                                <tr key={idx} className="border-b last:border-0">
+                                                    <td className="px-4 py-2">{item.crop}</td>
+                                                    <td className="px-4 py-2">{(item.confidence * 100).toFixed(1)}%</td>
+                                                    <td className="px-4 py-2">{item.date}</td>
+                                                    <td className="px-4 py-2">
+                                                        <Button size="sm" variant="outline">{item.action}</Button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
-                    <Card className="border-[#D6E3D4]" role="region" aria-labelledby="results-heading">
+                    <Card className="border-[#D6E3D4]" role="region" aria-labelledby="recent-results-heading">
                         <CardHeader>
-                            <CardTitle id="results-heading" className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
+                            <CardTitle id="recent-results-heading" className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
                                 Recent Recommendation Results
                             </CardTitle>
                             <p className="text-sm text-gray-600">Recent personalized crop recommendations will appear here.</p>
                         </CardHeader>
                         <CardContent>
-                            <div className="py-8 text-center text-gray-500">
-                                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
-                                    <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                        />
-                                    </svg>
+                            {recentRecommendations.length === 0 ? (
+                                <div className="py-8 text-center text-gray-500">
+                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                        <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <p className="text-base">Click "Generate Recommendation" to see your results</p>
+                                    <p className="mt-1 text-sm text-gray-400">All required fields must be completed first</p>
                                 </div>
-                                <p className="text-base">Click "Generate Recommendation" to see your results</p>
-                                <p className="mt-1 text-sm text-gray-400">All required fields must be completed first</p>
-                            </div>
+                            ) : (
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full text-left text-sm">
+                                        <thead>
+                                            <tr className="bg-gray-50">
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Date</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Crop</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Farmer</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Score</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {recentRecommendations.map((item, idx) => (
+                                                <tr key={idx} className="border-b last:border-0">
+                                                    <td className="px-4 py-2">{item.date}</td>
+                                                    <td className="px-4 py-2">{item.crop}</td>
+                                                    <td className="px-4 py-2">{item.farmer}</td>
+                                                    <td className="px-4 py-2">{(item.score * 100).toFixed(1)}%</td>
+                                                    <td className="px-4 py-2">
+                                                        <Button size="sm" variant="outline">{item.action}</Button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

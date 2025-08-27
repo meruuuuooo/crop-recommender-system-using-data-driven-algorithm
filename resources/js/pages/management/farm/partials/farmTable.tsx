@@ -53,7 +53,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
 
         return () => clearTimeout(timeoutId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search]); 
+    }, [search]);
 
     // Handle per page change
     const handlePerPageChange = (value: string) => {

@@ -4,6 +4,7 @@ use App\Http\Controllers\CropController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -60,17 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('/farmer', function () {
-            return Inertia::render('reports/farmerReports');
-        })->name('farmer');
-
-        Route::get('/farm', function () {
-            return Inertia::render('reports/farmReports');
-        })->name('farm');
-
-        Route::get('/crop', function () {
-            return Inertia::render('reports/cropReports');
-        })->name('crop');
+        Route::get('/index', [ReportController::class, 'index'])->name('index');
     });
 
     Route::get('/crop/calendar', function () {
