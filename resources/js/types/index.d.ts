@@ -135,17 +135,16 @@ export interface Farm {
 
 export interface Recommendation {
     id: number;
-    name: string;
     farmer_id: number;
-    crop_variety_id: number;
     farm_id: number;
+    crop_id: number;
+    confidence_score: number;
+    recommendation_date: string;
     created_at: string;
     updated_at: string;
     farmer?: Farmer;
-    cropVariety?: CropVariety;
     farm?: Farm;
-    fertilizers?: FertilizerRecommendation[];
-    pesticides?: PesticideRecommendation[];
+    crop?: Crop;
 }
 
 export interface Crop {

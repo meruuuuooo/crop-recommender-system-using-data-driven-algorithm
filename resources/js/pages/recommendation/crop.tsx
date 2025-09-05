@@ -5,8 +5,15 @@ import { Label } from '@/components/ui/label';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, Farmer } from '@/types';
+import { type BreadcrumbItem, Farmer, Recommendation } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+// import { Separator } from '@radix-ui/react-separator';
+import React from 'react';
+import { Eye } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+
+
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Recommendation Crop',
@@ -14,12 +21,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Crop({ farmers }: { farmers: Farmer[] }) {
+export default function Crop({ farmers, recent_recommendations }: { farmers: Farmer[]; recent_recommendations: Recommendation[] }) {
     const { data, setData, post, processing, errors } = useForm({
         soilType: '',
         nitrogen_level: '',
         potassium_level: '',
         phosphorus_level: '',
+        nitrogen: '',
+        potassium: '',
+        phosphorus: '',
         ph_level: 7.0,
         temperature: '',
         rainfall: '',
@@ -27,15 +37,10 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
         farmer_id: '',
     });
 
+    console.log('Recent Recommendations:', recent_recommendations);
 
     const handleGenerateRecommendation = () => {
-
-        post('/recommendation/crop', {
-            onSuccess: () => {
-                // Optionally reset the form or show a success message
-            },
-        });
-
+        console.log('Form Data:', data);
     };
 
     const handleFetchClimate = () => {
@@ -48,78 +53,130 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
         }));
     };
 
-    const getNitrogenRange = (level: string) => {
-        switch (level) {
-            case 'very_low':
-                return '<0.05%';
-            case 'low':
-                return '0.05-0.15%';
-            case 'medium':
-                return '>0.15-0.2%';
-            case 'high':
-                return '>0.2-0.3%';
-            case 'very_high':
-                return '>0.3%';
-            default:
-                return 'Total Nitrogen (%)';
-        }
-    };
+    // const getNitrogenValue = (level: string) => {
+    //     switch (level) {
+    //         case 'very_low':
+    //             return 0.03;
+    //         case 'low':
+    //             return 0.1;
+    //         case 'medium':
+    //             return 0.18;
+    //         case 'high':
+    //             return 0.25;
+    //         case 'very_high':
+    //             return 0.35;
+    //         default:
+    //             return '';
+    //     }
+    // }
 
-    const getPotassiumRange = (level: string) => {
-        switch (level) {
-            case 'very_low':
-                return '<0.3 cmol/kg';
-            case 'low':
-                return '0.3-1.0 cmol/kg';
-            case 'medium':
-                return '1.0-3.0 cmol/kg';
-            case 'high':
-                return '3.0-8.0 cmol/kg';
-            case 'very_high':
-                return '>8.0 cmol/kg';
-            default:
-                return 'Exchangeable K (cmol/kg)';
-        }
-    };
+    // const getPotassiumValue = (level: string) => {
+    //     switch (level) {
+    //         case 'very_low':
+    //             return 0.1;
+    //         case 'low':
+    //             return 0.3;
+    //         case 'medium':
+    //             return 0.5;
+    //         case 'high':
+    //             return 0.7;
+    //         case 'very_high':
+    //             return 0.9;
+    //         default:
+    //             return '';
+    //     }
+    // }
 
-    const getPhosphorusRange = (level: string) => {
-        // Bray or Olsen method is determined by pH
-        const isBrayMethod = parseFloat(data.ph_level as unknown as string) <= 5.5;
+    // const getPhosphorusValue = (level: string) => {
+    //     switch (level) {
+    //         case 'very_low':
+    //             return 0.1;
+    //         case 'low':
+    //             return 0.3;
+    //         case 'medium':
+    //             return 0.5;
+    //         case 'high':
+    //             return 0.7;
+    //         case 'very_high':
+    //             return 0.9;
+    //         default:
+    //             return '';
+    //     }
+    // }
 
-        if (isBrayMethod) {
-            switch (level) {
-                case 'very_low':
-                    return '<3 mg/kg (Bray)';
-                case 'low':
-                    return '3-10 mg/kg (Bray)';
-                case 'medium':
-                    return '>10-20 mg/kg (Bray)';
-                case 'high':
-                    return '>20-30 mg/kg (Bray)';
-                case 'very_high':
-                    return '>30 mg/kg (Bray)';
-                default:
-                    return 'Available P (Bray)';
-            }
-        } else {
-            switch (level) {
-                case 'very_low':
-                    return '<3 mg/kg (Olsen)';
-                case 'low':
-                    return '0-7 mg/kg (Olsen)';
-                case 'medium':
-                    return '>7-25 mg/kg (Olsen)';
-                case 'high':
-                    return '>25-33 mg/kg (Olsen)';
-                case 'very_high':
-                    return '>33 mg/kg (Olsen)';
-                default:
-                    return 'Available P (Olsen)';
-            }
-        }
-    };
+    // const getNitrogenRange = (level: string) => {
+    //     switch (level) {
+    //         case 'very_low':
+    //             return '<0.05%';
+    //         case 'low':
+    //             return '0.05-0.15%';
+    //         case 'medium':
+    //             return '>0.15-0.2%';
+    //         case 'high':
+    //             return '>0.2-0.3%';
+    //         case 'very_high':
+    //             return '>0.3%';
+    //         default:
+    //             return 'Total Nitrogen (%)';
+    //     }
+    // };
+
+    // const getPotassiumRange = (level: string) => {
+    //     switch (level) {
+    //         case 'very_low':
+    //             return '<0.3 cmol/kg';
+    //         case 'low':
+    //             return '0.3-1.0 cmol/kg';
+    //         case 'medium':
+    //             return '1.0-3.0 cmol/kg';
+    //         case 'high':
+    //             return '3.0-8.0 cmol/kg';
+    //         case 'very_high':
+    //             return '>8.0 cmol/kg';
+    //         default:
+    //             return 'Exchangeable K (cmol/kg)';
+    //     }
+    // };
+
+    // const getPhosphorusRange = (level: string) => {
+    //     // Bray or Olsen method is determined by pH
+    //     const isBrayMethod = parseFloat(data.ph_level as unknown as string) <= 5.5;
+
+    //     if (isBrayMethod) {
+    //         switch (level) {
+    //             case 'very_low':
+    //                 return '<3 mg/kg (Bray)';
+    //             case 'low':
+    //                 return '3-10 mg/kg (Bray)';
+    //             case 'medium':
+    //                 return '>10-20 mg/kg (Bray)';
+    //             case 'high':
+    //                 return '>20-30 mg/kg (Bray)';
+    //             case 'very_high':
+    //                 return '>30 mg/kg (Bray)';
+    //             default:
+    //                 return 'Available P (Bray)';
+    //         }
+    //     } else {
+    //         switch (level) {
+    //             case 'very_low':
+    //                 return '<3 mg/kg (Olsen)';
+    //             case 'low':
+    //                 return '0-7 mg/kg (Olsen)';
+    //             case 'medium':
+    //                 return '>7-25 mg/kg (Olsen)';
+    //             case 'high':
+    //                 return '>25-33 mg/kg (Olsen)';
+    //             case 'very_high':
+    //                 return '>33 mg/kg (Olsen)';
+    //             default:
+    //                 return 'Available P (Olsen)';
+    //         }
+    //     }
+    // };
 
     // Dummy data for Recommendation Results
+
     const recommendationResults = [
         {
             crop: 'Rice',
@@ -131,24 +188,6 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
             crop: 'Corn',
             confidence: 0.85,
             date: '2025-08-27',
-            action: 'Fertilizer',
-        },
-    ];
-
-    // Dummy data for Recent Recommendations
-    const recentRecommendations = [
-        {
-            date: '2025-08-26',
-            crop: 'Wheat',
-            farmer: 'Juan Dela Cruz',
-            score: 0.88,
-            action: 'Fertilizer',
-        },
-        {
-            date: '2025-08-25',
-            crop: 'Soybean',
-            farmer: 'Maria Santos',
-            score: 0.81,
             action: 'Fertilizer',
         },
     ];
@@ -247,11 +286,17 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                             </span>
                                         </legend>
                                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                                            <div className="space-y-2">
+                                            {/* <div className="space-y-2">
                                                 <Label htmlFor="nitrogen-level" className="text-sm font-medium text-gray-700">
                                                     Nitrogen (N)
                                                 </Label>
-                                                <Select onValueChange={(value) => setData('nitrogen_level', value)} value={data.nitrogen_level}>
+                                                <Select
+                                                    onValueChange={(value) => {
+                                                        setData('nitrogen_level', value);
+                                                        setData('nitrogen', String(getNitrogenValue(value)));
+                                                    }}
+                                                    value={data.nitrogen_level}
+                                                >
                                                     <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
@@ -294,7 +339,13 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                 <Label htmlFor="potassium-level" className="text-sm font-medium text-gray-700">
                                                     Potassium (K)
                                                 </Label>
-                                                <Select onValueChange={(value) => setData('potassium_level', value)} value={data.potassium_level}>
+                                                <Select
+                                                    onValueChange={(value) => {
+                                                        setData('potassium_level', value);
+                                                        setData('potassium', String(getPotassiumValue(value)));
+                                                    }}
+                                                    value={data.potassium_level}
+                                                >
                                                     <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
@@ -337,7 +388,13 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                 <Label htmlFor="phosphorus-level" className="text-sm font-medium text-gray-700">
                                                     Phosphorus (P)
                                                 </Label>
-                                                <Select onValueChange={(value) => setData('phosphorus_level', value)} value={data.phosphorus_level}>
+                                                <Select
+                                                    onValueChange={(value) => {
+                                                        setData('phosphorus_level', value);
+                                                        setData('phosphorus', String(getPhosphorusValue(value)));
+                                                    }}
+                                                    value={data.phosphorus_level}
+                                                >
                                                     <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
@@ -375,6 +432,85 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                     </SelectContent>
                                                 </Select>
                                                 <div className="text-xs text-gray-500">{getPhosphorusRange(data.phosphorus_level)}</div>
+                                            </div> */}
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="nitrogen" className="text-sm font-medium text-gray-700">
+                                                    Nitrogen (N) Value
+                                                    <span className="text-red-500" aria-label="required">
+                                                        {' '}
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id="nitrogen"
+                                                    name="nitrogen"
+                                                    className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                                    value={data.nitrogen}
+                                                    onChange={(e) => setData('nitrogen', e.target.value)}
+                                                    required
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    placeholder="Total Nitrogen (%)"
+                                                    aria-describedby="nitrogen-help"
+                                                    aria-invalid={!data.nitrogen ? 'true' : 'false'}
+                                                />
+                                                <div id="nitrogen-help" className="text-xs text-gray-500">
+                                                    Enter the total nitrogen value (%)
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="phosphorus" className="text-sm font-medium text-gray-700">
+                                                    Phosphorus (P) Value
+                                                    <span className="text-red-500" aria-label="required">
+                                                        {' '}
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id="phosphorus"
+                                                    name="phosphorus"
+                                                    className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                                    value={data.phosphorus}
+                                                    onChange={(e) => setData('phosphorus', e.target.value)}
+                                                    required
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    placeholder="Available Phosphorus (mg/kg)"
+                                                    aria-describedby="phosphorus-help"
+                                                    aria-invalid={!data.phosphorus ? 'true' : 'false'}
+                                                />
+                                                <div id="phosphorus-help" className="text-xs text-gray-500">
+                                                    Enter the available phosphorus value (mg/kg)
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="potassium" className="text-sm font-medium text-gray-700">
+                                                    Potassium (K) Value
+                                                    <span className="text-red-500" aria-label="required">
+                                                        {' '}
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id="potassium"
+                                                    name="potassium"
+                                                    className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                                    value={data.potassium}
+                                                    onChange={(e) => setData('potassium', e.target.value)}
+                                                    required
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    placeholder="Exchangeable Potassium (cmol/kg)"
+                                                    aria-describedby="potassium-help"
+                                                    aria-invalid={!data.potassium ? 'true' : 'false'}
+                                                />
+                                                <div id="potassium-help" className="text-xs text-gray-500">
+                                                    Enter the exchangeable potassium value (cmol/kg)
+                                                </div>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -401,7 +537,9 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                 aria-describedby="ph-help"
                                                 aria-invalid={!data.ph_level ? 'true' : 'false'}
                                             />
-                                            <span className="w-12 text-center text-lg font-bold text-gray-900">{Number(data.ph_level).toFixed(1)}</span>
+                                            <span className="w-12 text-center text-lg font-bold text-gray-900">
+                                                {Number(data.ph_level).toFixed(1)}
+                                            </span>
                                         </div>
                                         <div id="ph-help" className="text-xs text-gray-500">
                                             Soil acidity/alkalinity level (0-14 scale)
@@ -528,9 +666,9 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                             disabled={
                                 !data.farmer_id ||
                                 !data.soilType ||
-                                !data.nitrogen_level ||
-                                !data.potassium_level ||
-                                !data.phosphorus_level ||
+                                !data.nitrogen ||
+                                !data.potassium ||
+                                !data.phosphorus ||
                                 !data.ph_level ||
                                 !data.temperature ||
                                 !data.rainfall ||
@@ -568,7 +706,10 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                         <CardContent>
                             {recommendationResults.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
-                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                    <div
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                                        aria-hidden="true"
+                                    >
                                         <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
@@ -599,7 +740,9 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                     <td className="px-4 py-2">{(item.confidence * 100).toFixed(1)}%</td>
                                                     <td className="px-4 py-2">{item.date}</td>
                                                     <td className="px-4 py-2">
-                                                        <Button size="sm" variant="outline">{item.action}</Button>
+                                                        <Button size="sm" variant="outline">
+                                                            {item.action}
+                                                        </Button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -618,9 +761,12 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                             <p className="text-sm text-gray-600">Recent personalized crop recommendations will appear here.</p>
                         </CardHeader>
                         <CardContent>
-                            {recentRecommendations.length === 0 ? (
+                            {recent_recommendations.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
-                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                    <div
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                                        aria-hidden="true"
+                                    >
                                         <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
@@ -646,14 +792,31 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {recentRecommendations.map((item, idx) => (
+                                            {recent_recommendations.map((item, idx) => (
                                                 <tr key={idx} className="border-b last:border-0">
-                                                    <td className="px-4 py-2">{item.date}</td>
-                                                    <td className="px-4 py-2">{item.crop}</td>
-                                                    <td className="px-4 py-2">{item.farmer}</td>
-                                                    <td className="px-4 py-2">{(item.score * 100).toFixed(1)}%</td>
+                                                    <td className="px-4 py-2">{item.recommendation_date}</td>
+                                                    <td className="px-4 py-2">{item.crop?.name}</td>
+                                                    <td className="px-4 py-2">{item.farmer?.lastname ? item.farmer?.lastname : ''}</td>
+                                                    <td className="px-4 py-2">{(item.confidence_score * 100).toFixed(1)}%</td>
                                                     <td className="px-4 py-2">
-                                                        <Button size="sm" variant="outline">{item.action}</Button>
+                                                        <div className="flex items-center gap-2">
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    // aria-label={`View details for ${getFullName(farmer)}`}
+                                                                >
+                                                                    <Eye className="h-4 w-4 text-[#619154]" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>View</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+
+                                                </div>
                                                     </td>
                                                 </tr>
                                             ))}
