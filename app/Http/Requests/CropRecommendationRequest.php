@@ -28,9 +28,9 @@ class CropRecommendationRequest extends FormRequest
             'potassium_level' => 'required|string|in:very_low,low,medium,high,very_high',
             'phosphorus_level' => 'required|string|in:very_low,low,medium,high,very_high',
             'ph_level' => 'required|numeric|min:0|max:14',
-            'temperature' => 'required|numeric|min:-10|max:50',
-            'rainfall' => 'required|numeric|min:0|max:1000',
-            'humidity' => 'required|numeric|min:0|max:100',
+            'temperature' => 'required', 'numeric',
+            'rainfall' => 'required', 'numeric',
+            'humidity' => 'required', 'numeric',
         ];
     }
 

@@ -24,8 +24,8 @@ class CropRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:30', 'unique:crops,name,' . $this->route('crop')],
             'category_id' => ['required', 'exists:categories,id'],
-            'crop_season' => ['required', 'string', 'max:30'],
-            'soil_type' => ['nullable', 'string', 'max:30'],
+            'crop_season' => ['required', 'string', 'in:dry,wet,all season', 'max:30'],
+            'soil_type' => ['required', 'string', 'in:sand,Sandy loam,loam,Silt Loam,Clay Loam, Clay'],
             'time_of_planting' => ['nullable', 'string', 'max:30'],
             'maturity' => ['nullable', 'string', 'max:30'],
         ];
