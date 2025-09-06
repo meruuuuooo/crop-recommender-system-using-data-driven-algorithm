@@ -18,8 +18,6 @@ class RecommendationController extends Controller
 
         $recent_recommendations = Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get();
 
-        dd($recent_recommendations);
-
 
         return Inertia::render('recommendation/crop', [
             'farmers' => $farmers,

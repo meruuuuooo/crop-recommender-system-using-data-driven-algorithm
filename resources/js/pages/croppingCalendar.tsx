@@ -24,9 +24,13 @@ interface CroppingCalendarProps {
 const parseTimeOfPlanting = (timeOfPlanting: string) => {
     if (!timeOfPlanting ||
         timeOfPlanting.toLowerCase() === 'n/a' ||
-        timeOfPlanting.toLowerCase() === 'all season' ||
         timeOfPlanting.trim() === '') {
         return []; // Return empty array for no planting months
+    }
+
+    // Handle "All season" crops - they can be planted year-round
+    if (timeOfPlanting.toLowerCase() === 'all season') {
+        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // All 12 months
     }
 
     const months: Record<string, number> = {

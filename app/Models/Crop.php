@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Crop extends Model
 {
-    use HasFactory;
+    // use HasFactory;
 
     protected $fillable = [
         'category_id',
         'name',
-        'crop_season',
         'soil_type',
         'time_of_planting',
         'maturity',

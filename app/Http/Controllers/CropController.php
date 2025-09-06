@@ -23,7 +23,6 @@ class CropController extends Controller
                         ->orWhere('soil_type', 'like', "%{$search}%")
                         ->orWhere('time_of_planting', 'like', "%{$search}%")
                         ->orWhere('maturity', 'like', "%{$search}%")
-                        ->orWhere('yield_per_hectare', 'like', "%{$search}%")
                         ->orWhereHas('category', function ($q) use ($search) {
                             $q->where('name', 'like', "%{$search}%");
                         });
@@ -57,7 +56,6 @@ class CropController extends Controller
 
         Crop::create([
             'name' => $validated['name'],
-            'crop_season' => $validated['crop_season'],
             'soil_type' => $validated['soil_type'] ?? null,
             'time_of_planting' => $validated['time_of_planting'] ?? null,
             'maturity' => $validated['maturity'] ?? null,
@@ -100,7 +98,6 @@ class CropController extends Controller
 
         $crop->update([
             'name' => $validated['name'],
-            'crop_season' => $validated['crop_season'],
             'soil_type' => $validated['soil_type'] ?? null,
             'time_of_planting' => $validated['time_of_planting'] ?? null,
             'maturity' => $validated['maturity'] ?? null,

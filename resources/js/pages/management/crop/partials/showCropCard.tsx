@@ -23,20 +23,6 @@ export default function ViewCropCard({ crop }: ShowCropCardProps) {
         );
     }
 
-    const getSeasonColor = (season: string) => {
-        const seasonLower = season?.toLowerCase() || '';
-        switch (seasonLower) {
-            case 'wet':
-                return 'bg-blue-50 text-blue-700 border-blue-200';
-            case 'dry':
-                return 'bg-orange-50 text-orange-700 border-orange-200';
-            case 'all':
-                return 'bg-green-50 text-green-700 border-green-200';
-            default:
-                return 'bg-gray-50 text-gray-700 border-gray-200';
-        }
-    };
-
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -76,9 +62,13 @@ export default function ViewCropCard({ crop }: ShowCropCardProps) {
     const parseTimeOfPlanting = (timeOfPlanting: string) => {
         if (!timeOfPlanting ||
             timeOfPlanting.toLowerCase() === 'n/a' ||
-            timeOfPlanting.toLowerCase() === 'all season' ||
             timeOfPlanting.trim() === '') {
             return []; // Return empty array for no planting months
+        }
+
+        // Handle "All season" crops - they can be planted year-round
+        if (timeOfPlanting.toLowerCase() === 'all season') {
+            return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // All 12 months
         }
 
         const months: Record<string, number> = {
@@ -307,10 +297,6 @@ export default function ViewCropCard({ crop }: ShowCropCardProps) {
                                 <Info className="mr-1 h-3 w-3" />
                                 ID: {crop.id}
                             </Badge>
-                            <Badge variant="secondary" className={`px-3 py-1 ${getSeasonColor(crop.crop_season || '')}`}>
-                                <Calendar className="mr-1 h-3 w-3" />
-                                {crop.crop_season}
-                            </Badge>
                             {crop.category && (
                                 <Badge variant="outline" className="border-gray-300 px-3 py-1">
                                     <Tag className="mr-1 h-3 w-3" />
@@ -334,7 +320,6 @@ export default function ViewCropCard({ crop }: ShowCropCardProps) {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <InfoField icon={Sprout} label="Crop Name" value={crop.name} highlight />
-                        <InfoField icon={Calendar} label="Growing Season" value={crop.crop_season} />
                         {crop.category && <InfoField icon={Tag} label="Category" value={crop.category.name} />}
                         <InfoField icon={MapPin} label="Preferred Soil Type" value={crop.soil_type} />
                     </CardContent>

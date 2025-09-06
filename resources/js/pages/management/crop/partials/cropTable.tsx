@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Crop, PaginatedCrops } from '@/types/crop';
 import { router } from '@inertiajs/react';
-import { Calendar, Edit, Eye, Search, Sprout, Tag } from 'lucide-react';
+import { Edit, Eye, Search, Sprout, Tag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
@@ -105,20 +105,6 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
         });
     };
 
-    const getSeasonColor = (season: string) => {
-        const seasonLower = season?.toLowerCase() || '';
-        switch (seasonLower) {
-            case 'wet':
-                return 'bg-blue-50 text-blue-700 border-blue-200';
-            case 'dry':
-                return 'bg-orange-50 text-orange-700 border-orange-200';
-            case 'all':
-                return 'bg-green-50 text-green-700 border-green-200';
-            default:
-                return 'bg-slate-50 text-slate-700 border-slate-200';
-        }
-    };
-
     return (
         <TooltipProvider>
             <Card className="border-[#D6E3D4]" role="region" aria-labelledby="crops-table-heading">
@@ -188,11 +174,9 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                     <TableRow>
                                         <TableHead className="w-[200px] font-semibold text-white">Crop Name</TableHead>
                                         <TableHead className="w-[150px] font-semibold text-white">Category</TableHead>
-                                        <TableHead className="w-[120px] font-semibold text-white">Season</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Soil Type</TableHead>
-                                        <TableHead className="w-[140px] font-semibold text-white">Planting Time</TableHead>
+                                        <TableHead className="w-[140px] font-semibold text-white">time of planting</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Maturity</TableHead>
-                                        <TableHead className="w-[120px] font-semibold text-white">Yield/Ha</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Created</TableHead>
                                         <TableHead className="w-[80px] font-semibold text-white">Actions</TableHead>
                                     </TableRow>
@@ -213,12 +197,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                                     <span className="text-sm text-gray-500">N/A</span>
                                                 )}
                                             </TableCell>
-                                            <TableCell>
-                                                <Badge variant="outline" className={`text-xs ${getSeasonColor(crop.crop_season || '')}`}>
-                                                    <Calendar className="mr-1 h-3 w-3" />
-                                                    {crop.crop_season || 'N/A'}
-                                                </Badge>
-                                            </TableCell>
+
                                             <TableCell>
                                                 <div className="text-sm text-gray-700">{crop.soil_type || 'N/A'}</div>
                                             </TableCell>
@@ -227,9 +206,6 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                                             </TableCell>
                                             <TableCell>
                                                 <div className="text-sm text-gray-700">{crop.maturity || 'N/A'}</div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="text-sm text-gray-700">{crop.yield_per_hectare || 'N/A'}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="text-xs text-gray-700">{timeStampToDate(crop.created_at)}</div>

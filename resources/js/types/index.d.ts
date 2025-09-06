@@ -151,10 +151,8 @@ export interface Crop {
     id: number;
     name: string;
     soil_type: string;
-    crop_season: string;
     time_of_planting: string;
     maturity: string;
-    yield_per_hectare: string;
     category_id: number;
     created_at: string;
     updated_at: string;

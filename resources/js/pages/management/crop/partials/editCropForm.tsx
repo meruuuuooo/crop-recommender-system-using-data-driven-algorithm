@@ -11,19 +11,12 @@ import Swal from 'sweetalert2';
 export default function EditCropForm({ crop, categories }: EditCropProps) {
     const { data, setData, put, processing, errors } = useForm({
         name: crop?.name || '',
-        crop_season: crop?.crop_season || '',
         soil_type: crop?.soil_type || '',
         time_of_planting: crop?.time_of_planting || '',
         maturity: crop?.maturity || '',
-        yield_per_hectare: crop?.yield_per_hectare || '',
         category_id: crop?.category_id?.toString() || crop?.category?.id?.toString() || '',
     });
 
-    const seasonOptions = [
-        { value: 'wet', label: 'Wet Season' },
-        { value: 'dry', label: 'Dry Season' },
-        { value: 'all', label: 'All Seasons' },
-    ];
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -87,28 +80,7 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                             <InputError message={errors.name} id="crop-name-error" />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="season" className="text-sm font-medium text-gray-700">
-                                Growing Season{' '}
-                                <span className="text-red-500" aria-label="required">
-                                    *
-                                </span>
-                            </Label>
-                            <SearchableSelect
-                                options={seasonOptions}
-                                value={data.crop_season}
-                                onValueChange={(value) => setData('crop_season', value)}
-                                placeholder="Select Growing Season"
-                                searchPlaceholder="Search seasons..."
-                                clearable
-                                aria-describedby={errors.crop_season ? 'season-error' : 'season-help'}
-                                aria-invalid={errors.crop_season ? 'true' : 'false'}
-                            />
-                            <div id="season-help" className="text-xs text-gray-500">
-                                Update when this crop is typically grown
-                            </div>
-                            <InputError message={errors.crop_season} id="season-error" />
-                        </div>
+
 
                         <div className="space-y-2">
                             <Label htmlFor="soil_type" className="text-sm font-medium text-gray-700">
@@ -181,30 +153,6 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                             <InputError message={errors.maturity} id="maturity-error" />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="yield_per_hectare" className="text-sm font-medium text-gray-700">
-                                Yield per Hectare{' '}
-                                <span className="text-red-500" aria-label="required">
-                                    *
-                                </span>
-                            </Label>
-                            <Input
-                                id="yield_per_hectare"
-                                name="yield_per_hectare"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.yield_per_hectare}
-                                onChange={(e) => setData('yield_per_hectare', e.target.value)}
-                                required
-                                autoComplete="off"
-                                placeholder="Enter expected yield (e.g., 4-6 tons/ha, 25-30 sacks/ha)"
-                                aria-describedby={errors.yield_per_hectare ? 'yield-error' : 'yield-help'}
-                                aria-invalid={errors.yield_per_hectare ? 'true' : 'false'}
-                            />
-                            <div id="yield-help" className="text-xs text-gray-500">
-                                Enter the expected yield per hectare
-                            </div>
-                            <InputError message={errors.yield_per_hectare} id="yield-error" />
-                        </div>
                     </div>
                 </div>
 

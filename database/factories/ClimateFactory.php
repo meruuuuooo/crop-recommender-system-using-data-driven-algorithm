@@ -21,7 +21,7 @@ class ClimateFactory extends Factory
             'temperature' => fake()->randomFloat(1, 20.0, 35.0), // Celsius
             'rainfall' => fake()->randomFloat(2, 0, 500), // mm
             'humidity' => fake()->randomFloat(1, 40.0, 95.0), // percentage
-            'season' => fake()->randomElement(['Wet', 'Dry', 'Transition']),
+            'season' => fake()->randomElement(['Wet', 'Dry', 'All Season']),
             'climate_record_date' => fake()->date(),
         ];
     }

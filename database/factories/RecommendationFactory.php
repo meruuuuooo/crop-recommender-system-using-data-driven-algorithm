@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Crop;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Recommendation>
@@ -19,7 +20,7 @@ class RecommendationFactory extends Factory
         return [
             'farmer_id' => \App\Models\Farmer::factory(),
             'farm_id' => \App\Models\Farm::factory(),
-            'crop_id' => \App\Models\Crop::factory(),
+            'crop_id' => random_int(1, Crop::count()), // Assuming crops are already seeded
             'confidence_score' => fake()->randomFloat(2, 0, 1),
             'recommendation_date' => fake()->date(),
             'created_at' => now(),

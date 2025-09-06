@@ -8,15 +8,9 @@ test('crop model can be created with new fields', function () {
 
     $crop = Crop::factory()->create([
         'name' => 'Test Rice',
-        'crop_season' => 'wet',
         'soil_type' => 'clay',
         'time_of_planting' => 'May-June',
-        'plant_population_per_hectare' => '100,000 plants/ha',
         'maturity' => '120 days',
-        'volume_of_production' => '5 tons/ha',
-        'distance_of_planting_hills' => '30 cm',
-        'distance_of_planting_rows' => '60 cm',
-        'yield_per_hectare' => '4-6 tons/ha',
         'category_id' => $category->id,
     ]);
 

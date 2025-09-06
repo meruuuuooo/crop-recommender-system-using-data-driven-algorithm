@@ -20,19 +20,11 @@ type CreateCropProps = {
 export default function CreateCropForm({ categories }: CreateCropProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
-        crop_season: '',
         soil_type: '',
         time_of_planting: '',
         maturity: '',
         category_id: '',
     });
-
-
-    const seasonOptions = [
-        { value: 'wet', label: 'Wet Season' },
-        { value: 'dry', label: 'Dry Season' },
-        { value: 'all', label: 'All Seasons' },
-    ];
 
     const soilTypeOptions = [
         { value: 'sand', label: 'Sand' },
@@ -107,26 +99,6 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                                 Enter the common name of the crop
                             </div>
                             <InputError message={errors.name} id="crop-name-error" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="season" className="text-sm font-medium text-gray-700">
-                                Growing Season <span className="text-red-500" aria-label="required">*</span>
-                            </Label>
-                            <SearchableSelect
-                                options={seasonOptions}
-                                value={data.crop_season}
-                                onValueChange={(value) => setData('crop_season', value)}
-                                placeholder="Select Growing Season"
-                                searchPlaceholder="Search seasons..."
-                                clearable
-                                aria-describedby={errors.crop_season ? "season-error" : "season-help"}
-                                aria-invalid={errors.crop_season ? "true" : "false"}
-                            />
-                            <div id="season-help" className="text-xs text-gray-500">
-                                Choose when this crop is typically grown
-                            </div>
-                            <InputError message={errors.crop_season} id="season-error" />
                         </div>
 
                         <div className="space-y-2">
