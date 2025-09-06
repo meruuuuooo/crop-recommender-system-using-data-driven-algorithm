@@ -24,7 +24,6 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
         soil_type: '',
         time_of_planting: '',
         maturity: '',
-        yield_per_hectare: '',
         category_id: '',
     });
 
@@ -33,6 +32,15 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
         { value: 'wet', label: 'Wet Season' },
         { value: 'dry', label: 'Dry Season' },
         { value: 'all', label: 'All Seasons' },
+    ];
+
+    const soilTypeOptions = [
+        { value: 'sand', label: 'Sand' },
+        { value: 'sandy_loam', label: 'Sandy Loam' },
+        { value: 'loam', label: 'Loam' },
+        { value: 'silt_loam', label: 'Silt Loam' },
+        { value: 'clay_loam', label: 'Clay Loam' },
+        { value: 'clay', label: 'Clay' },
     ];
 
     const submit: FormEventHandler = (e) => {
@@ -78,7 +86,7 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                     <h3 id="crop-info-heading" className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
                         Crop Information
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="cropname" className="text-sm font-medium text-gray-700">
                                 Crop Name <span className="text-red-500" aria-label="required">*</span>
@@ -120,91 +128,71 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                             </div>
                             <InputError message={errors.crop_season} id="season-error" />
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="soil_type" className="text-sm font-medium text-gray-700">
                                 Soil Type <span className="text-gray-500 text-xs">(Optional)</span>
                             </Label>
-                            <Input
-                                id="soil_type"
-                                name="soil_type"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                            <SearchableSelect
+                                options={soilTypeOptions}
                                 value={data.soil_type}
-                                onChange={(e) => setData('soil_type', e.target.value)}
-                                autoComplete="off"
-                                placeholder="Enter preferred soil type (e.g., Clay, Loam, Sandy)"
+                                onValueChange={(value) => setData('soil_type', value)}
+                                placeholder="Select Soil Type"
+                                searchPlaceholder="Search soil types..."
+                                clearable
                                 aria-describedby={errors.soil_type ? "soil-type-error" : "soil-type-help"}
                                 aria-invalid={errors.soil_type ? "true" : "false"}
                             />
                             <div id="soil-type-help" className="text-xs text-gray-500">
-                                Enter the preferred soil type for this crop
+                                Choose the preferred soil type for this crop
                             </div>
                             <InputError message={errors.soil_type} id="soil-type-error" />
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="time_of_planting" className="text-sm font-medium text-gray-700">
-                                Time of Planting <span className="text-red-500" aria-label="required">*</span>
-                            </Label>
-                            <Input
-                                id="time_of_planting"
-                                name="time_of_planting"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
-                                value={data.time_of_planting}
-                                onChange={(e) => setData('time_of_planting', e.target.value)}
-                                required
-                                autoComplete="off"
-                                placeholder="Enter planting time (e.g., May-June)"
-                                aria-describedby={errors.time_of_planting ? "planting-time-error" : "planting-time-help"}
-                                aria-invalid={errors.time_of_planting ? "true" : "false"}
-                            />
-                            <div id="planting-time-help" className="text-xs text-gray-500">
-                                Enter the best time to plant this crop
-                            </div>
-                            <InputError message={errors.time_of_planting} id="planting-time-error" />
-                        </div>
+                        <div className="lg:col-span-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="time_of_planting" className="text-sm font-medium text-gray-700">
+                                        Time of Planting <span className="text-gray-500 text-xs">(Optional)</span>
+                                    </Label>
+                                    <Input
+                                        id="time_of_planting"
+                                        name="time_of_planting"
+                                        className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                        value={data.time_of_planting}
+                                        onChange={(e) => setData('time_of_planting', e.target.value)}
+                                        autoComplete="off"
+                                        placeholder="Enter planting time (e.g., May-June)"
+                                        aria-describedby={errors.time_of_planting ? "planting-time-error" : "planting-time-help"}
+                                        aria-invalid={errors.time_of_planting ? "true" : "false"}
+                                    />
+                                    <div id="planting-time-help" className="text-xs text-gray-500">
+                                        Enter the best time to plant this crop
+                                    </div>
+                                    <InputError message={errors.time_of_planting} id="planting-time-error" />
+                                </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="maturity" className="text-sm font-medium text-gray-700">
-                                Maturity Period <span className="text-red-500" aria-label="required">*</span>
-                            </Label>
-                            <Input
-                                id="maturity"
-                                name="maturity"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
-                                value={data.maturity}
-                                onChange={(e) => setData('maturity', e.target.value)}
-                                required
-                                autoComplete="off"
-                                placeholder="Enter maturity period (e.g., 90-120 days, 3-4 months)"
-                                aria-describedby={errors.maturity ? "maturity-error" : "maturity-help"}
-                                aria-invalid={errors.maturity ? "true" : "false"}
-                            />
-                            <div id="maturity-help" className="text-xs text-gray-500">
-                                Enter how long it takes for the crop to mature
+                                <div className="space-y-2">
+                                    <Label htmlFor="maturity" className="text-sm font-medium text-gray-700">
+                                        Maturity Period <span className="text-gray-500 text-xs">(Optional)</span>
+                                    </Label>
+                                    <Input
+                                        id="maturity"
+                                        name="maturity"
+                                        className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
+                                        value={data.maturity}
+                                        onChange={(e) => setData('maturity', e.target.value)}
+                                        autoComplete="off"
+                                        placeholder="Enter maturity period (e.g., 90-120 days, 3-4 months)"
+                                        aria-describedby={errors.maturity ? "maturity-error" : "maturity-help"}
+                                        aria-invalid={errors.maturity ? "true" : "false"}
+                                    />
+                                    <div id="maturity-help" className="text-xs text-gray-500">
+                                        Enter how long it takes for the crop to mature
+                                    </div>
+                                    <InputError message={errors.maturity} id="maturity-error" />
+                                </div>
                             </div>
-                            <InputError message={errors.maturity} id="maturity-error" />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="yield_per_hectare" className="text-sm font-medium text-gray-700">
-                                Yield per Hectare <span className="text-red-500" aria-label="required">*</span>
-                            </Label>
-                            <Input
-                                id="yield_per_hectare"
-                                name="yield_per_hectare"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
-                                value={data.yield_per_hectare}
-                                onChange={(e) => setData('yield_per_hectare', e.target.value)}
-                                required
-                                autoComplete="off"
-                                placeholder="Enter expected yield (e.g., 4-6 tons/ha, 25-30 sacks/ha)"
-                                aria-describedby={errors.yield_per_hectare ? "yield-error" : "yield-help"}
-                                aria-invalid={errors.yield_per_hectare ? "true" : "false"}
-                            />
-                            <div id="yield-help" className="text-xs text-gray-500">
-                                Enter the expected yield per hectare
-                            </div>
-                            <InputError message={errors.yield_per_hectare} id="yield-error" />
                         </div>
                     </div>
                 </div>
@@ -216,7 +204,7 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
                     </h3>
                     <div className="space-y-2">
                         <Label htmlFor="category" className="text-sm font-medium text-gray-700">
-                            Crop Category <span className="text-gray-500 text-xs">(Optional)</span>
+                            Crop Category
                         </Label>
                         <SearchableSelect
                             options={categories.map((category) => ({

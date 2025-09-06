@@ -21,7 +21,6 @@ class CropFactory extends Factory
         $soilTypes = ['clay', 'loam', 'sandy', 'silt'];
         $plantingTimes = ['May-June', 'October-November', 'January-February', 'March-April'];
         $maturityPeriods = ['90 days', '120 days', '60-90 days', '3-4 months'];
-        $yields = ['4-6 tons/ha', '3-5 tons/ha', '25-30 sacks/ha', '2-4 tons/ha'];
 
         return [
             'category_id' => \App\Models\Category::factory(),
@@ -30,7 +29,6 @@ class CropFactory extends Factory
             'soil_type' => fake()->randomElement($soilTypes),
             'time_of_planting' => fake()->randomElement($plantingTimes),
             'maturity' => fake()->randomElement($maturityPeriods),
-            'yield_per_hectare' => fake()->randomElement($yields),
         ];
     }
 }

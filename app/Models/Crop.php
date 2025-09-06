@@ -16,7 +16,6 @@ class Crop extends Model
         'soil_type',
         'time_of_planting',
         'maturity',
-        'yield_per_hectare',
     ];
 
     public function recommendations()

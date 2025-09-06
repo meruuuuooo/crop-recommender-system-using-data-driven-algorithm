@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Farmer;
 use App\Models\Fertilizer;
 use App\Models\Pesticide;
+use App\Models\Recommendation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,8 +16,14 @@ class RecommendationController extends Controller
     {
         $farmers = Farmer::all();
 
+        $recent_recommendations = Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get();
+
+        dd($recent_recommendations);
+
+
         return Inertia::render('recommendation/crop', [
             'farmers' => $farmers,
+            'recent_recommendations' => $recent_recommendations,
         ]);
     }
 

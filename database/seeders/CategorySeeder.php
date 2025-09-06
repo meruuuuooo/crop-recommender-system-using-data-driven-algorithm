@@ -14,21 +14,20 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
        $crop_categories = [
-            ['id' => 1, 'name' => 'Corn'],
-            ['id' => 2, 'name' => 'Fruit Trees'],
-            ['id' => 6, 'name' => 'Palm Trees'],
-            ['id' => 7, 'name' => 'Plantation Crops'],
-            ['id' => 8, 'name' => 'Rice'],
-            ['id' => 9, 'name' => 'Root Crops'],
-            ['id' => 10, 'name' => 'Fruit Vegetables'],
-            ['id' => 11, 'name' => 'Fruits'],
-            ['id' => 12, 'name' => 'Grasses'],
-            ['id' => 13, 'name' => 'Other Vegetables'],
+            ['name' => 'Corn'],
+            ['name' => 'Fruit Trees'],
+            ['name' => 'Palm Trees'],
+            ['name' => 'Plantation Crops'],
+            ['name' => 'Rice'],
+            ['name' => 'Root Crops'],
+            ['name' => 'Fruit Vegetables'],
+            ['name' => 'Fruits'],
+            ['name' => 'Grasses'],
+            ['name' => 'Vegetables'],
         ];
 
         foreach ($crop_categories as $category) {
             Category::create([
-                'id' => $category['id'],
                 'name' => $category['name'],
             ]);
         }

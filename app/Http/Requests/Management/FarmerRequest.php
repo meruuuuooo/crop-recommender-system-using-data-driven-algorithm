@@ -22,12 +22,12 @@ class FarmerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstname' => ['required', 'string', 'max:255'],
-            'lastname' => ['required', 'string', 'max:255'],
-            'middlename' => ['nullable', 'string', 'max:255'],
-            'contact_number' => ['required', 'string', 'max:15'],
-            'street' => ['required', 'string', 'max:255'],
-            'farming_experience' => ['nullable', 'numeric'],
+            'firstname' => ['required', 'string', 'max:50', 'regex:/^[a-zA-Z\s\-]+$/'],
+            'lastname' => ['required', 'string', 'max:50', 'regex:/^[a-zA-Z\s\-]+$/'],
+            'middlename' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z\s\-]+$/'],
+            'contact_number' => ['required', 'string', 'max:15', 'regex:/^[0-9]+$/'],
+            'farming_experience' => ['required', 'numeric'],
+            'street' => ['required', 'string', 'max:60'],
             'province_id' => ['required', 'exists:provinces,id'],
             'municipality_id' => ['required', 'exists:municipalities,id'],
             'barangay_id' => ['required', 'exists:barangays,id'],

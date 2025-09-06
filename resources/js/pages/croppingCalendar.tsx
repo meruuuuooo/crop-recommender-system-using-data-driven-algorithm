@@ -22,8 +22,11 @@ interface CroppingCalendarProps {
 }
 
 const parseTimeOfPlanting = (timeOfPlanting: string) => {
-    if (!timeOfPlanting || timeOfPlanting.toLowerCase() === 'all season') {
-        return Array.from({ length: 12 }, (_, i) => i + 1); // All months
+    if (!timeOfPlanting ||
+        timeOfPlanting.toLowerCase() === 'n/a' ||
+        timeOfPlanting.toLowerCase() === 'all season' ||
+        timeOfPlanting.trim() === '') {
+        return []; // Return empty array for no planting months
     }
 
     const months: Record<string, number> = {
@@ -99,10 +102,10 @@ const parseTimeOfPlanting = (timeOfPlanting: string) => {
 };
 
 const CropCalendarView = ({ crop }: { crop: Crop }) => {
-
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     const plantingMonths = parseTimeOfPlanting(crop.time_of_planting || '');
+    const hasPlantingData = plantingMonths.length > 0;
 
     const getMonthStatus = (monthIndex: number) => {
         const month = monthIndex + 1;
@@ -124,64 +127,104 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
     return(
         <Card className="border-[#D6E3D4]">
             <CardHeader>
-                <CardTitle className="text-xl font-bold text-gray-800">{crop.name}</CardTitle>
+                <CardTitle className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#619154]/10">
+                        <Sprout className="h-5 w-5 text-[#619154]" />
+                    </div>
+                    <div>
+                        <div className="text-xl font-bold text-gray-800">{crop.name}</div>
+                        {crop.category && (
+                            <div className="text-sm text-gray-500">{crop.category.name}</div>
+                        )}
+                    </div>
+                </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4">
-                    {/* Month Headers */}
-                    <div className="mb-2 grid grid-cols-12 gap-1">
-                        {months.map((month) => (
-                            <div key={month} className="py-2 text-center text-xs font-medium text-gray-700">
-                                {month}
-                            </div>
-                        ))}
-                    </div>
+                {hasPlantingData ? (
+                    <div className="space-y-6">
+                        {/* Calendar Grid */}
+                        <div className="overflow-x-auto">
+                            <div className="min-w-[600px]">
+                                {/* Month Headers */}
+                                <div className="mb-3 grid grid-cols-12 gap-2">
+                                    {months.map((month) => (
+                                        <div key={month} className="text-center">
+                                            <div className="rounded-lg bg-gray-50 py-2 text-xs font-semibold text-gray-700">
+                                                {month}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
 
-                    {/* Calendar Bar */}
-                    <div className="grid grid-cols-12 gap-1">
-                        {months.map((month, index) => {
-                            const status = getMonthStatus(index);
-                            return (
-                                <div
-                                    key={month}
-                                    className={`h-12 rounded border-2 transition-all duration-200 ${getMonthColor(status)}`}
-                                    title={`${month}: ${status === 'planting' ? 'Planting Season' : 'Inactive'}`}
-                                />
-                            );
-                        })}
-                    </div>
-
-                    {/* Legend */}
-                    <div className="flex flex-wrap items-center gap-4 border-t border-gray-200 pt-4">
-                        <div className="flex items-center gap-2">
-                            <div className="h-4 w-4 rounded border border-[#619154] bg-[#619154]"></div>
-                            <span className="text-sm text-gray-700">Planting Season</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="h-4 w-4 rounded border border-gray-300 bg-gray-200"></div>
-                            <span className="text-sm text-gray-700">Inactive Period</span>
-                        </div>
-                    </div>
-
-                    {/* Calendar Info */}
-                    <div className="rounded-lg border border-[#D6E3D4] bg-[#F8FAF8] p-4">
-                        <div className="mb-3 grid grid-cols-1 gap-4 text-sm md:grid-cols-2">
-                            <div>
-                                <span className="font-medium text-[#619154]">Planting Time:</span>
-                                <span className="ml-2 text-gray-700">{crop.time_of_planting || 'N/A'}</span>
-                            </div>
-                            <div>
-                                <span className="font-medium text-[#619154]">Maturity Period:</span>
-                                <span className="ml-2 text-gray-700">{crop.maturity || 'N/A'}</span>
+                                {/* Calendar Bars */}
+                                <div className="grid grid-cols-12 gap-2">
+                                    {months.map((month, index) => {
+                                        const status = getMonthStatus(index);
+                                        const isPlanting = status === 'planting';
+                                        return (
+                                            <div key={month} className="relative">
+                                                <div
+                                                    className={`h-16 rounded-lg border-2 transition-all duration-300 hover:scale-105 ${getMonthColor(status)} ${
+                                                        isPlanting ? 'shadow-md' : ''
+                                                    }`}
+                                                    title={`${month}: ${isPlanting ? 'Planting Season' : 'Inactive Period'}`}
+                                                >
+                                                    {isPlanting && (
+                                                        <div className="flex h-full items-center justify-center">
+                                                            <Sprout className="h-4 w-4 text-white" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
-                        <div className="border-t border-[#D6E3D4]/50 pt-3">
+
+                        {/* Legend */}
+                        <div className="flex flex-wrap items-center justify-center gap-6 rounded-lg bg-gray-50 p-4">
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-6 w-6 items-center justify-center rounded border border-[#619154] bg-[#619154]">
+                                    <Sprout className="h-3 w-3 text-white" />
+                                </div>
+                                <span className="text-sm font-medium text-gray-700">Planting Season</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="h-6 w-6 rounded border border-gray-300 bg-gray-200"></div>
+                                <span className="text-sm font-medium text-gray-700">Inactive Period</span>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-8">
+                        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                            <Sprout className="h-6 w-6 text-gray-400" />
+                        </div>
+                        <h4 className="text-sm font-medium text-gray-500 mb-1">No Planting Schedule</h4>
+                        <p className="text-xs text-gray-400">Planting time not specified</p>
+                    </div>
+                )}
+
+                {/* Calendar Summary Info */}
+                <div className="mt-6 rounded-lg border border-[#D6E3D4] bg-gradient-to-r from-[#F8FAF8] to-white p-4">
+                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                        <div>
+                            <span className="font-medium text-[#619154]">Planting Time:</span>
+                            <div className="mt-1 text-gray-700">{crop.time_of_planting || 'Not specified'}</div>
+                        </div>
+                        <div>
+                            <span className="font-medium text-[#619154]">Maturity Period:</span>
+                            <div className="mt-1 text-gray-700">{crop.maturity || 'Not specified'}</div>
+                        </div>
+                    </div>
+                    {hasPlantingData && (
+                        <div className="mt-3 border-t border-[#D6E3D4]/50 pt-3">
                             <p className="text-xs text-gray-600 italic">
-                                <span className="font-medium">Note:</span> DAP = Days after planting; DAT = Days after transplanting; DAS
-                                = Days after sowing
+                                <span className="font-medium">Note:</span> Green months indicate optimal planting periods for this crop.
                             </p>
                         </div>
-                    </div>
+                    )}
                 </div>
             </CardContent>
         </Card>

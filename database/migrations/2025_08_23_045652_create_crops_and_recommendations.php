@@ -24,9 +24,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('crop_season');
             $table->string('soil_type')->nullable();
-            $table->string('time_of_planting');
-            $table->string('maturity');
-            $table->string('yield_per_hectare');
+            $table->string('time_of_planting')->nullable();
+            $table->string('maturity')->nullable();
             $table->timestamps();
         });
 
@@ -39,6 +38,21 @@ return new class extends Migration
             $table->date('recommendation_date');
             $table->timestamps();
         });
+
+        Schema::create('crop_pesticide', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('pesticide_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+        });
+
+        Schema::create('crop_fertilizer', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('fertilizer_id')->constrained()->onDelete('cascade');
+            $table->timestamps();
+        });
+
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\management\CropRequest;
 use App\Models\Category;
 use App\Models\Crop;
 use Illuminate\Http\Request;
@@ -50,25 +51,16 @@ class CropController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(CropRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'crop_season' => 'required|string|max:255',
-            'soil_type' => 'nullable|string|max:255',
-            'time_of_planting' => 'required|string|max:255',
-            'maturity' => 'required|string|max:255',
-            'yield_per_hectare' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+        $validated = $request->validated();
 
-        $crop = Crop::create([
+        Crop::create([
             'name' => $validated['name'],
             'crop_season' => $validated['crop_season'],
             'soil_type' => $validated['soil_type'] ?? null,
-            'time_of_planting' => $validated['time_of_planting'],
-            'maturity' => $validated['maturity'],
-            'yield_per_hectare' => $validated['yield_per_hectare'],
+            'time_of_planting' => $validated['time_of_planting'] ?? null,
+            'maturity' => $validated['maturity'] ?? null,
             'category_id' => $validated['category_id'],
         ]);
 
@@ -102,25 +94,16 @@ class CropController extends Controller
         ]);
     }
 
-    public function update(Request $request, Crop $crop)
+    public function update(CropRequest $request, Crop $crop)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'crop_season' => 'required|string|max:255',
-            'soil_type' => 'nullable|string|max:255',
-            'time_of_planting' => 'required|string|max:255',
-            'maturity' => 'required|string|max:255',
-            'yield_per_hectare' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+        $validated = $request->validated();
 
         $crop->update([
             'name' => $validated['name'],
             'crop_season' => $validated['crop_season'],
             'soil_type' => $validated['soil_type'] ?? null,
-            'time_of_planting' => $validated['time_of_planting'],
-            'maturity' => $validated['maturity'],
-            'yield_per_hectare' => $validated['yield_per_hectare'],
+            'time_of_planting' => $validated['time_of_planting'] ?? null,
+            'maturity' => $validated['maturity'] ?? null,
             'category_id' => $validated['category_id'],
         ]);
 

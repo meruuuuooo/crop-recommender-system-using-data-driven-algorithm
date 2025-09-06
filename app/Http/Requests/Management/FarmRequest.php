@@ -22,9 +22,9 @@ class FarmRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:30'],
             'total_area' => ['required', 'numeric'],
-            'prev_crops' => ['nullable', 'string', 'max:255'],
+            'prev_crops' => ['nullable', 'string', 'max:30'],
             'farmer_id' => ['required', 'exists:farmers,id'],
             'province_id' => ['required', 'exists:provinces,id'],
             'municipality_id' => ['required', 'exists:municipalities,id'],

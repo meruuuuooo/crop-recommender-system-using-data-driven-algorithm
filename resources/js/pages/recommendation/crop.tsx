@@ -4,9 +4,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, Farmer } from '@/types';
+import { type BreadcrumbItem, Farmer, Recommendation } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import { Eye } from 'lucide-react';
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Recommendation Crop',
@@ -14,7 +17,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Crop({ farmers }: { farmers: Farmer[] }) {
+export default function Crop({ farmers, recent_recommendations }: { farmers: Farmer[]; recent_recommendations: Recommendation[] }) {
     const { data, setData, post, processing, errors } = useForm({
         soilType: '',
         nitrogen_level: '',
@@ -27,15 +30,26 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
         farmer_id: '',
     });
 
+    console.log(recent_recommendations)
 
     const handleGenerateRecommendation = () => {
-
         post('/recommendation/crop', {
             onSuccess: () => {
-                // Optionally reset the form or show a success message
+                // The controller redirects to the report page automatically
+                console.log('Recommendation generated successfully');
+            },
+            onError: (errors) => {
+                console.error('Recommendation generation failed:', errors);
+
+                // Display user-friendly error messages
+                const errorMessages = Object.values(errors).flat();
+                if (errorMessages.length > 0) {
+                    alert(`Failed to generate recommendation:\n${errorMessages.join('\n')}`);
+                } else {
+                    alert('Failed to generate recommendation. Please check your inputs and try again.');
+                }
             },
         });
-
     };
 
     const handleFetchClimate = () => {
@@ -119,40 +133,6 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
         }
     };
 
-    // Dummy data for Recommendation Results
-    const recommendationResults = [
-        {
-            crop: 'Rice',
-            confidence: 0.92,
-            date: '2025-08-27',
-            action: 'Fertilizer',
-        },
-        {
-            crop: 'Corn',
-            confidence: 0.85,
-            date: '2025-08-27',
-            action: 'Fertilizer',
-        },
-    ];
-
-    // Dummy data for Recent Recommendations
-    const recentRecommendations = [
-        {
-            date: '2025-08-26',
-            crop: 'Wheat',
-            farmer: 'Juan Dela Cruz',
-            score: 0.88,
-            action: 'Fertilizer',
-        },
-        {
-            date: '2025-08-25',
-            crop: 'Soybean',
-            farmer: 'Maria Santos',
-            score: 0.81,
-            action: 'Fertilizer',
-        },
-    ];
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Crop Recommendation" />
@@ -192,10 +172,14 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                         aria-describedby={errors.farmer_id ? 'farmer-error' : 'farmer-help'}
                                         aria-invalid={errors.farmer_id ? 'true' : 'false'}
                                     />
+                                    {errors.farmer_id && (
+                                        <div id="farmer-error" className="text-xs text-red-600">
+                                            {errors.farmer_id}
+                                        </div>
+                                    )}
                                     <div id="farmer-help" className="text-xs text-gray-500">
                                         Choose the farmer who will manage this farm
                                     </div>
-                                    {/* <InputError message={errors.farmer_id} id="farmer-error" /> */}
                                 </div>
                             </div>
                         </CardHeader>
@@ -227,11 +211,12 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                 <SelectValue placeholder="Select Soil Type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="sandy">Sandy</SelectItem>
-                                                <SelectItem value="clay">Clay</SelectItem>
-                                                <SelectItem value="loamy">Loamy</SelectItem>
-                                                <SelectItem value="peaty">Peaty</SelectItem>
-                                                <SelectItem value="silty">Silty</SelectItem>
+                                                <SelectItem value="sandy">Sand</SelectItem>
+                                                <SelectItem value="clay">Sandy Loam</SelectItem>
+                                                <SelectItem value="loamy">Loam</SelectItem>
+                                                <SelectItem value="peaty">Silt Loam</SelectItem>
+                                                <SelectItem value="silty">Clay Loam</SelectItem>
+                                                <SelectItem value="silty">Clay</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <div id="soil-type-help" className="text-xs text-gray-500">
@@ -401,7 +386,9 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                                 aria-describedby="ph-help"
                                                 aria-invalid={!data.ph_level ? 'true' : 'false'}
                                             />
-                                            <span className="w-12 text-center text-lg font-bold text-gray-900">{Number(data.ph_level).toFixed(1)}</span>
+                                            <span className="w-12 text-center text-lg font-bold text-gray-900">
+                                                {Number(data.ph_level).toFixed(1)}
+                                            </span>
                                         </div>
                                         <div id="ph-help" className="text-xs text-gray-500">
                                             Soil acidity/alkalinity level (0-14 scale)
@@ -566,9 +553,12 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                             <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
                         </CardHeader>
                         <CardContent>
-                            {recommendationResults.length === 0 ? (
+                            {recent_recommendations.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
-                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                    <div
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                                        aria-hidden="true"
+                                    >
                                         <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
@@ -593,13 +583,29 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {recommendationResults.map((item, idx) => (
+                                            {recent_recommendations.map((item, idx) => (
                                                 <tr key={idx} className="border-b last:border-0">
-                                                    <td className="px-4 py-2">{item.crop}</td>
-                                                    <td className="px-4 py-2">{(item.confidence * 100).toFixed(1)}%</td>
-                                                    <td className="px-4 py-2">{item.date}</td>
+                                                    <td className="px-4 py-2">{item.crop?.name}</td>
+                                                    <td className="px-4 py-2">{(item.confidence_score * 100).toFixed(1)}%</td>
+                                                    <td className="px-4 py-2">{item.recommendation_date}</td>
                                                     <td className="px-4 py-2">
-                                                        <Button size="sm" variant="outline">{item.action}</Button>
+                                                        <div className="flex items-center gap-2">
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                        // aria-label={`View details for ${getFullName(farmer)}`}
+                                                                    >
+                                                                        <Eye className="h-4 w-4 text-[#619154]" />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>View</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -618,9 +624,12 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                             <p className="text-sm text-gray-600">Recent personalized crop recommendations will appear here.</p>
                         </CardHeader>
                         <CardContent>
-                            {recentRecommendations.length === 0 ? (
+                            {recent_recommendations.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
-                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                    <div
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                                        aria-hidden="true"
+                                    >
                                         <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
@@ -646,14 +655,30 @@ export default function Crop({ farmers }: { farmers: Farmer[] }) {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {recentRecommendations.map((item, idx) => (
+                                            {recent_recommendations.map((item, idx) => (
                                                 <tr key={idx} className="border-b last:border-0">
-                                                    <td className="px-4 py-2">{item.date}</td>
-                                                    <td className="px-4 py-2">{item.crop}</td>
-                                                    <td className="px-4 py-2">{item.farmer}</td>
-                                                    <td className="px-4 py-2">{(item.score * 100).toFixed(1)}%</td>
+                                                    <td className="px-4 py-2">{item.recommendation_date}</td>
+                                                    <td className="px-4 py-2">{item.crop?.name}</td>
+                                                    <td className="px-4 py-2">{item.farmer?.lastname}</td>
+                                                    <td className="px-4 py-2">{(item.confidence_score * 100).toFixed(1)}%</td>
                                                     <td className="px-4 py-2">
-                                                        <Button size="sm" variant="outline">{item.action}</Button>
+                                                        <div className="flex items-center gap-2">
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                        // aria-label={`View details for ${getFullName(farmer)}`}
+                                                                    >
+                                                                        <Eye className="h-4 w-4 text-[#619154]" />
+                                                                    </Button>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>View</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
