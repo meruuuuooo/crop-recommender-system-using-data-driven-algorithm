@@ -31,4 +31,13 @@ class Recommendation extends Model
     {
         return $this->belongsTo(Crop::class);
     }
+
+    public function recentRecommendations()
+    {
+        return Recommendation::with('crop', 'farmer', 'farm')
+            ->orderBy('created_at', 'desc')
+            ->limit(12)
+            ->get();
+    }
+
 }

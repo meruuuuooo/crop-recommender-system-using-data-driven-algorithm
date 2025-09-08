@@ -49,7 +49,7 @@ export default function CropTable({ crops, filters, onEdit, onView }: CropTableP
                     replace: true,
                 },
             );
-        }, 300);
+        }, 600);
 
         return () => clearTimeout(timeoutId);
         // eslint-disable-next-line react-hooks/exhaustive-deps

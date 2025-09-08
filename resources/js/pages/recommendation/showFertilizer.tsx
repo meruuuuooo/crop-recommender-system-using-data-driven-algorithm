@@ -1,14 +1,14 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import type { Fertilizer } from '@/types/fertilizer';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 
 import {
-    ArrowLeft,
+    // ArrowLeft,
     Building,
     Calendar,
     FileText,
@@ -19,7 +19,7 @@ import {
     Info,
     Timer,
     Scale,
-    FileDown,
+    // FileDown,
     Package,
     Beaker,
     Leaf
@@ -81,61 +81,61 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
         return expiry < today;
     };
 
-    const handleExportPDF = () => {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>${fertilizer.product_name} - Fertilizer Details</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; }
-                            .header { border-bottom: 2px solid #619154; padding-bottom: 10px; margin-bottom: 20px; }
-                            .section { margin-bottom: 20px; }
-                            .label { font-weight: bold; }
-                            .badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-                            .organic { background-color: #f0fdf4; color: #166534; }
-                            .inorganic { background-color: #eff6ff; color: #1d4ed8; }
-                            .bio { background-color: #faf5ff; color: #7c3aed; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>${fertilizer.product_name}</h1>
-                            <p><strong>Company:</strong> ${fertilizer.company}</p>
-                            <p><strong>Registration Number:</strong> ${fertilizer.registration_number}</p>
-                            <span class="badge ${fertilizer.type_of_product?.toLowerCase()}">${fertilizer.type_of_product}</span>
-                        </div>
+    // const handleExportPDF = () => {
+    //     const printWindow = window.open('', '_blank');
+    //     if (printWindow) {
+    //         printWindow.document.write(`
+    //             <html>
+    //                 <head>
+    //                     <title>${fertilizer.product_name} - Fertilizer Details</title>
+    //                     <style>
+    //                         body { font-family: Arial, sans-serif; margin: 20px; }
+    //                         .header { border-bottom: 2px solid #619154; padding-bottom: 10px; margin-bottom: 20px; }
+    //                         .section { margin-bottom: 20px; }
+    //                         .label { font-weight: bold; }
+    //                         .badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    //                         .organic { background-color: #f0fdf4; color: #166534; }
+    //                         .inorganic { background-color: #eff6ff; color: #1d4ed8; }
+    //                         .bio { background-color: #faf5ff; color: #7c3aed; }
+    //                     </style>
+    //                 </head>
+    //                 <body>
+    //                     <div class="header">
+    //                         <h1>${fertilizer.product_name}</h1>
+    //                         <p><strong>Company:</strong> ${fertilizer.company}</p>
+    //                         <p><strong>Registration Number:</strong> ${fertilizer.registration_number}</p>
+    //                         <span class="badge ${fertilizer.type_of_product?.toLowerCase()}">${fertilizer.type_of_product}</span>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Product Information</h2>
-                            <p><strong>Type:</strong> ${fertilizer.type_of_product}</p>
-                            <p><strong>Guaranteed Analysis:</strong> ${fertilizer.guaranteed_analysis || 'Not specified'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Product Information</h2>
+    //                         <p><strong>Type:</strong> ${fertilizer.type_of_product}</p>
+    //                         <p><strong>Guaranteed Analysis:</strong> ${fertilizer.guaranteed_analysis || 'Not specified'}</p>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Target Crops</h2>
-                            <p>${fertilizer.target_crops || 'Not specified'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Target Crops</h2>
+    //                         <p>${fertilizer.target_crops || 'Not specified'}</p>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Registration Information</h2>
-                            <p><strong>Expiry Date:</strong> ${fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</p>
-                        </div>
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        }
-    };
+    //                     <div class="section">
+    //                         <h2>Registration Information</h2>
+    //                         <p><strong>Expiry Date:</strong> ${fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</p>
+    //                     </div>
+    //                 </body>
+    //             </html>
+    //         `);
+    //         printWindow.document.close();
+    //         printWindow.print();
+    //     }
+    // };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${fertilizer.product_name} - Fertilizer Details`} />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
                 <div className="flex flex-col gap-6">
                     {/* Header */}
-                    <div className="flex items-center justify-between">
+                    {/* <div className="flex items-center justify-between">
                         <Link
                             href={route('recommendation.fertilizer')}
                             className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#619154] transition-colors"
@@ -155,7 +155,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                 Export PDF
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Main Content */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

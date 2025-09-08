@@ -28,10 +28,10 @@ export default function CreateCropForm({ categories }: CreateCropProps) {
 
     const soilTypeOptions = [
         { value: 'sand', label: 'Sand' },
-        { value: 'sandy_loam', label: 'Sandy Loam' },
+        { value: 'sandy loam', label: 'Sandy Loam' },
         { value: 'loam', label: 'Loam' },
-        { value: 'silt_loam', label: 'Silt Loam' },
-        { value: 'clay_loam', label: 'Clay Loam' },
+        { value: 'silt loam', label: 'Silt Loam' },
+        { value: 'clay loam', label: 'Clay Loam' },
         { value: 'clay', label: 'Clay' },
     ];
 

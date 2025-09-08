@@ -17,7 +17,6 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
         category_id: crop?.category_id?.toString() || crop?.category?.id?.toString() || '',
     });
 
-
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
         put(route('management.crop.update', crop.id), {
@@ -45,6 +44,15 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
             },
         });
     };
+
+    const soilTypeOptions = [
+        { value: 'sand', label: 'Sand' },
+        { value: 'sandy loam', label: 'Sandy Loam' },
+        { value: 'loam', label: 'Loam' },
+        { value: 'silt loam', label: 'Silt Loam' },
+        { value: 'clay loam', label: 'Clay Loam' },
+        { value: 'clay', label: 'Clay' },
+    ];
 
     return (
         <div className="w-full sm:p-4 lg:p-6" role="main">
@@ -80,25 +88,22 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                             <InputError message={errors.name} id="crop-name-error" />
                         </div>
 
-
-
                         <div className="space-y-2">
                             <Label htmlFor="soil_type" className="text-sm font-medium text-gray-700">
                                 Soil Type <span className="text-xs text-gray-500">(Optional)</span>
                             </Label>
-                            <Input
-                                id="soil_type"
-                                name="soil_type"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                            <SearchableSelect
+                                options={soilTypeOptions}
                                 value={data.soil_type}
-                                onChange={(e) => setData('soil_type', e.target.value)}
-                                autoComplete="off"
-                                placeholder="Enter preferred soil type (e.g., Clay, Loam, Sandy)"
+                                onValueChange={(value) => setData('soil_type', value)}
+                                placeholder="Select Soil Type"
+                                searchPlaceholder="Search soil types..."
+                                clearable
                                 aria-describedby={errors.soil_type ? 'soil-type-error' : 'soil-type-help'}
                                 aria-invalid={errors.soil_type ? 'true' : 'false'}
                             />
                             <div id="soil-type-help" className="text-xs text-gray-500">
-                                Enter the preferred soil type for this crop
+                                Choose the preferred soil type for this crop
                             </div>
                             <InputError message={errors.soil_type} id="soil-type-error" />
                         </div>
@@ -152,7 +157,6 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                             </div>
                             <InputError message={errors.maturity} id="maturity-error" />
                         </div>
-
                     </div>
                 </div>
 

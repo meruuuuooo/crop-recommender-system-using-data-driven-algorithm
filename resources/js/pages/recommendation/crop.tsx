@@ -6,9 +6,10 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, Farmer, Recommendation } from '@/types';
+import { type BreadcrumbItem, Farmer, Recommendation, RecommendationResult } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,7 +18,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Crop({ farmers, recent_recommendations }: { farmers: Farmer[]; recent_recommendations: Recommendation[] }) {
+export default function Crop({ farmers, recent_recommendations, recommendationResult }: { farmers: Farmer[]; recent_recommendations: Recommendation[]; recommendationResult: RecommendationResult[]; }) {
     const { data, setData, post, processing, errors } = useForm({
         soilType: '',
         nitrogen_level: '',
@@ -28,15 +29,34 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
         rainfall: '',
         humidity: '',
         farmer_id: '',
+        farm_id: '',
     });
 
-    console.log(recent_recommendations)
+
+    // Get farms for the selected farmer
+    const selectedFarmer = farmers.find(farmer => farmer.id === Number(data.farmer_id));
+    const availableFarms = selectedFarmer?.farms || [];
+
+    // Reset farm_id when farmer changes
+    const handleFarmerChange = (farmerId: string) => {
+        setData(prevData => ({
+            ...prevData,
+            farmer_id: farmerId,
+            farm_id: '', // Reset farm selection when farmer changes
+        }));
+    };
 
     const handleGenerateRecommendation = () => {
         post('/recommendation/crop', {
+            preserveScroll: true,
+            preserveState: true,
             onSuccess: () => {
-                // The controller redirects to the report page automatically
-                console.log('Recommendation generated successfully');
+                Swal.fire({
+                    title: 'Recommendation Generated',
+                    text: 'The crop recommendation has been successfully generated.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
             },
             onError: (errors) => {
                 console.error('Recommendation generation failed:', errors);
@@ -44,13 +64,24 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                 // Display user-friendly error messages
                 const errorMessages = Object.values(errors).flat();
                 if (errorMessages.length > 0) {
-                    alert(`Failed to generate recommendation:\n${errorMessages.join('\n')}`);
+                    Swal.fire({
+                        title: 'Error',
+                        text: `Failed to generate recommendation:\n${errorMessages.join('\n')}`,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 } else {
-                    alert('Failed to generate recommendation. Please check your inputs and try again.');
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to generate recommendation. Please check your inputs and try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 }
             },
-        });
+        })
     };
+
 
     const handleFetchClimate = () => {
         // Use setData to update the form state
@@ -64,7 +95,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
 
     const getNitrogenRange = (level: string) => {
         switch (level) {
-            case 'very_low':
+            case 'very low':
                 return '<0.05%';
             case 'low':
                 return '0.05-0.15%';
@@ -72,7 +103,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                 return '>0.15-0.2%';
             case 'high':
                 return '>0.2-0.3%';
-            case 'very_high':
+            case 'very high':
                 return '>0.3%';
             default:
                 return 'Total Nitrogen (%)';
@@ -81,7 +112,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
 
     const getPotassiumRange = (level: string) => {
         switch (level) {
-            case 'very_low':
+            case 'very low':
                 return '<0.3 cmol/kg';
             case 'low':
                 return '0.3-1.0 cmol/kg';
@@ -89,7 +120,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                 return '1.0-3.0 cmol/kg';
             case 'high':
                 return '3.0-8.0 cmol/kg';
-            case 'very_high':
+            case 'very high':
                 return '>8.0 cmol/kg';
             default:
                 return 'Exchangeable K (cmol/kg)';
@@ -102,7 +133,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
 
         if (isBrayMethod) {
             switch (level) {
-                case 'very_low':
+                case 'very low':
                     return '<3 mg/kg (Bray)';
                 case 'low':
                     return '3-10 mg/kg (Bray)';
@@ -110,14 +141,14 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                     return '>10-20 mg/kg (Bray)';
                 case 'high':
                     return '>20-30 mg/kg (Bray)';
-                case 'very_high':
+                case 'very high':
                     return '>30 mg/kg (Bray)';
                 default:
                     return 'Available P (Bray)';
             }
         } else {
             switch (level) {
-                case 'very_low':
+                case 'very low':
                     return '<3 mg/kg (Olsen)';
                 case 'low':
                     return '0-7 mg/kg (Olsen)';
@@ -125,7 +156,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                     return '>7-25 mg/kg (Olsen)';
                 case 'high':
                     return '>25-33 mg/kg (Olsen)';
-                case 'very_high':
+                case 'very high':
                     return '>33 mg/kg (Olsen)';
                 default:
                     return 'Available P (Olsen)';
@@ -149,7 +180,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                 <div>
                                     <CardTitle className="text-xl font-bold text-gray-900 sm:text-2xl">Crop Recommendation System</CardTitle>
                                     <p className="mt-2 text-sm text-gray-600 sm:text-base">
-                                        Get intelligent crop recommendations based on soil factors and environmental conditions
+                                        Provide soil test and climate data to get tailored crop recommendations.
                                     </p>
                                 </div>
                                 <div className="space-y-2">
@@ -165,7 +196,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                             label: `${farmer.firstname} ${farmer.lastname}`,
                                         }))}
                                         value={data.farmer_id}
-                                        onValueChange={(value) => setData('farmer_id', value)}
+                                        onValueChange={handleFarmerChange}
                                         placeholder="Select Farmer"
                                         searchPlaceholder="Search farmers..."
                                         clearable
@@ -179,6 +210,42 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                     )}
                                     <div id="farmer-help" className="text-xs text-gray-500">
                                         Choose the farmer who will manage this farm
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="farm" className="text-sm font-medium text-gray-700">
+                                        Select Farm{' '}
+                                        <span className="text-red-500" aria-label="required">
+                                            *
+                                        </span>
+                                    </Label>
+                                    <SearchableSelect
+                                        options={availableFarms.map((farm) => ({
+                                            value: String(farm.id),
+                                            label: `${farm.name} (${farm.total_area} ha)`,
+                                        }))}
+                                        value={data.farm_id}
+                                        onValueChange={(value) => setData('farm_id', value)}
+                                        placeholder={data.farmer_id ? "Select Farm" : "Select a farmer first"}
+                                        searchPlaceholder="Search farms..."
+                                        disabled={!data.farmer_id || availableFarms.length === 0}
+                                        clearable
+                                        aria-describedby={errors.farm_id ? 'farm-error' : 'farm-help'}
+                                        aria-invalid={errors.farm_id ? 'true' : 'false'}
+                                    />
+                                    {errors.farm_id && (
+                                        <div id="farm-error" className="text-xs text-red-600">
+                                            {errors.farm_id}
+                                        </div>
+                                    )}
+                                    <div id="farm-help" className="text-xs text-gray-500">
+                                        {data.farmer_id ?
+                                            (availableFarms.length === 0 ?
+                                                'This farmer has no farms registered' :
+                                                'Choose the farm for this recommendation'
+                                            ) :
+                                            'Select a farmer first to see available farms'
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -211,12 +278,17 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                 <SelectValue placeholder="Select Soil Type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="sandy">Sand</SelectItem>
-                                                <SelectItem value="clay">Sandy Loam</SelectItem>
-                                                <SelectItem value="loamy">Loam</SelectItem>
-                                                <SelectItem value="peaty">Silt Loam</SelectItem>
-                                                <SelectItem value="silty">Clay Loam</SelectItem>
-                                                <SelectItem value="silty">Clay</SelectItem>
+                                                {/* <SelectItem value="sandy">Sand</SelectItem>
+                                                <SelectItem value="sandy_loam">Sandy Loam</SelectItem>
+                                                <SelectItem value="loam">Loam</SelectItem>
+                                                <SelectItem value="silt_loam">Silt Loam</SelectItem>
+                                                <SelectItem value="clay_loam">Clay Loam</SelectItem>
+                                                <SelectItem value="clay">Clay</SelectItem> */}
+                                                <SelectItem value="clay">Clay</SelectItem>
+                                                <SelectItem value="loamy">Loamy</SelectItem>
+                                                <SelectItem value="peaty">Peaty</SelectItem>
+                                                <SelectItem value="saline">Saline</SelectItem>
+                                                <SelectItem value="sandy">Sandy</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <div id="soil-type-help" className="text-xs text-gray-500">
@@ -241,7 +313,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="very_low">
+                                                        <SelectItem value="very low">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-red-600"></div>
                                                                 Very Low
@@ -265,7 +337,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                                 High
                                                             </div>
                                                         </SelectItem>
-                                                        <SelectItem value="very_high">
+                                                        <SelectItem value="very high">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-green-900"></div>
                                                                 Very High
@@ -284,7 +356,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="very_low">
+                                                        <SelectItem value="very low">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-red-600"></div>
                                                                 Very Low
@@ -308,7 +380,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                                 High
                                                             </div>
                                                         </SelectItem>
-                                                        <SelectItem value="very_high">
+                                                        <SelectItem value="very high">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-yellow-400"></div>
                                                                 Very High
@@ -327,7 +399,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="very_low">
+                                                        <SelectItem value="very low">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-blue-300"></div>
                                                                 Very Low
@@ -351,7 +423,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                                 High
                                                             </div>
                                                         </SelectItem>
-                                                        <SelectItem value="very_high">
+                                                        <SelectItem value="very high">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-indigo-900"></div>
                                                                 Very High
@@ -420,7 +492,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                     </Button>
                                 </div>
                                 <div id="fetch-climate-help" className="text-xs text-gray-500">
-                                    Automatically fetch current climate data for the selected location
+                                    Automatically fetch current climate data for the selected farmer
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -514,6 +586,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                             onClick={handleGenerateRecommendation}
                             disabled={
                                 !data.farmer_id ||
+                                !data.farm_id ||
                                 !data.soilType ||
                                 !data.nitrogen_level ||
                                 !data.potassium_level ||
@@ -542,7 +615,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                         </Button>
                     </div>
                     <div id="generate-help" className="text-center text-xs text-gray-500">
-                        Complete all required fields to generate crop recommendations
+                        Complete all required fields including farmer and farm selection to generate crop recommendations
                     </div>
 
                     <Card className="border-[#D6E3D4]" role="region" aria-labelledby="results-heading">
@@ -553,7 +626,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                             <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
                         </CardHeader>
                         <CardContent>
-                            {recent_recommendations.length === 0 ? (
+                            {recommendationResult.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
                                     <div
                                         className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
@@ -576,18 +649,22 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                     <table className="min-w-full text-left text-sm">
                                         <thead>
                                             <tr className="bg-gray-50">
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Rank</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Crop Name</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Confidence Score</th>
-                                                <th className="px-4 py-2 font-semibold text-gray-700">Recommendation Date</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {recent_recommendations.map((item, idx) => (
+                                            {recommendationResult.map((item, idx) => (
                                                 <tr key={idx} className="border-b last:border-0">
-                                                    <td className="px-4 py-2">{item.crop?.name}</td>
-                                                    <td className="px-4 py-2">{(item.confidence_score * 100).toFixed(1)}%</td>
-                                                    <td className="px-4 py-2">{item.recommendation_date}</td>
+                                                    <td className="px-4 py-2">#{idx + 1}</td>
+                                                    <td className="px-4 py-2 font-medium">{item.crop_name}</td>
+                                                    <td className="px-4 py-2">
+                                                        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                                            {item.confidence_score}%
+                                                        </span>
+                                                    </td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex items-center gap-2">
                                                             <Tooltip>
@@ -596,13 +673,13 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                                         size="sm"
                                                                         variant="outline"
                                                                         className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                        // aria-label={`View details for ${getFullName(farmer)}`}
+                                                                        aria-label={`View details for ${item.crop_name}`}
                                                                     >
                                                                         <Eye className="h-4 w-4 text-[#619154]" />
                                                                     </Button>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent>
-                                                                    <p>View</p>
+                                                                    <p>View {item.crop_name} details</p>
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </div>
@@ -660,7 +737,7 @@ export default function Crop({ farmers, recent_recommendations }: { farmers: Far
                                                     <td className="px-4 py-2">{item.recommendation_date}</td>
                                                     <td className="px-4 py-2">{item.crop?.name}</td>
                                                     <td className="px-4 py-2">{item.farmer?.lastname}</td>
-                                                    <td className="px-4 py-2">{(item.confidence_score * 100).toFixed(1)}%</td>
+                                                    <td className="px-4 py-2">{item.confidence_score} %</td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex items-center gap-2">
                                                             <Tooltip>

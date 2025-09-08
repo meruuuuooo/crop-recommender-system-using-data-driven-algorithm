@@ -133,6 +133,11 @@ export interface Farm {
     [key: string]: unknown; // This allows for additional properties and routing...
 }
 
+export interface RecommendationResult {
+    crop_name: string;
+    confidence_score: number;
+}
+
 export interface Recommendation {
     id: number;
     farmer_id: number;

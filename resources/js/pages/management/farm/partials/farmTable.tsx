@@ -169,7 +169,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                             </div>
                         </div>
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                            <Link href={route('management.farmer.create')}>
+                            <Link href={route('management.farm.create')}>
                                 <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
                                     <Plus className="mr-2 h-4 w-4" />
                                     Add Farm

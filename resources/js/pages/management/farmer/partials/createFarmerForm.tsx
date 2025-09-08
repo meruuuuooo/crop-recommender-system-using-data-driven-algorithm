@@ -61,7 +61,7 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                     <h3 id="personal-info-heading" className="mb-4 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
                         Personal Information
                     </h3>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
                         <div className="space-y-2">
                             <Label htmlFor="firstname" className="text-sm font-medium text-gray-700">
                                 First Name{' '}
@@ -158,7 +158,7 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                             <InputError message={errors.contact_number} id="contact-number-error" />
                         </div>
 
-                        <div className="space-y-2 lg:col-span-1">
+                        <div className="space-y-2 lg:col-span-2">
                             <Label htmlFor="farmingExperience" className="text-sm font-medium text-gray-700">
                                 Farming Experience (Years){' '}
                                 <span className="text-red-500" aria-label="required">

@@ -19,7 +19,6 @@ class CropController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('crop_season', 'like', "%{$search}%")
                         ->orWhere('soil_type', 'like', "%{$search}%")
                         ->orWhere('time_of_planting', 'like', "%{$search}%")
                         ->orWhere('maturity', 'like', "%{$search}%")
@@ -75,8 +74,6 @@ class CropController extends Controller
     // public function cropCalendar()
     // {
 
-
-
     //     return Inertia::render('cropCalendar', [
     //         'crops' => Crop::all(),
     //     ]);
@@ -92,16 +89,22 @@ class CropController extends Controller
         ]);
     }
 
-    public function update(CropRequest $request, Crop $crop)
+    public function update(Request $request, Crop $crop)
     {
-        $validated = $request->validated();
+        $validate = $request->validate([
+            'name' => ['required', 'string', 'max:30'],
+            'category_id' => ['required'],
+            'soil_type' => ['required', 'string', 'in:sand,sandy loam,loam,silt loam,clay loam,clay'],
+            'time_of_planting' => ['nullable', 'string', 'max:30'],
+            'maturity' => ['nullable', 'string', 'max:30'],
+        ]);
 
         $crop->update([
-            'name' => $validated['name'],
-            'soil_type' => $validated['soil_type'] ?? null,
-            'time_of_planting' => $validated['time_of_planting'] ?? null,
-            'maturity' => $validated['maturity'] ?? null,
-            'category_id' => $validated['category_id'],
+            'name' => $validate['name'],
+            'soil_type' => $validate['soil_type'] ?? null,
+            'time_of_planting' => $validate['time_of_planting'] ?? null,
+            'maturity' => $validate['maturity'] ?? null,
+            'category_id' => $validate['category_id'],
         ]);
 
         return redirect()->route('management.crop.index')->with('success', 'Crop updated successfully.');

@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\CropController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\RegisteredFarmerController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,9 +15,10 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('registration', [RegisteredFarmerController::class, 'registration'])->name('registration');
+    Route::post('registration', [RegisteredFarmerController::class, 'store'])->name('registration.store');
 
     // Farmer Management
     Route::prefix('management/farmer')->name('management.farmer.')->group(function () {
@@ -27,7 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/{farmer}', [FarmerController::class, 'update'])->name('update');
         // Route::delete('/{farmer}', [FarmerController::class, 'destroy'])->name('destroy');
 
-        //show farms owned by farmer
+        // show farms owned by farmer
         // Route::get('/farm/show/{farmer}', [FarmerController::class, 'showFarms'])->name('farm.show');
     });
 
@@ -54,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('recommendation')->name('recommendation.')->group(function () {
         Route::get('/crop', [RecommendationController::class, 'crop'])->name('crop');
+        Route::post('/crop', [RecommendationController::class, 'getCropRecommendation'])->name('getCropRecommendation');
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
         Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');

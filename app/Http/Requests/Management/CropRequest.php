@@ -22,9 +22,9 @@ class CropRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:30', 'unique:crops,name,' . $this->route('crop')],
-            'category_id' => ['required', 'exists:categories,id'],
-            'soil_type' => ['required', 'string', 'in:sand,Sandy loam,loam,Silt Loam,Clay Loam, Clay'],
+            'name' => ['required', 'string', 'max:30', 'unique:crops,name,'],
+            'category_id' => ['required'],
+            'soil_type' => ['required', 'string', 'in:sand,sandy loam,loam,silt loam,clay loam,clay'],
             'time_of_planting' => ['nullable', 'string', 'max:30'],
             'maturity' => ['nullable', 'string', 'max:30'],
         ];

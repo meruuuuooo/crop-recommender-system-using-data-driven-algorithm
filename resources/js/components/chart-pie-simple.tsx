@@ -1,7 +1,7 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Pie, PieChart } from "recharts"
+import { Pie, PieChart, Cell } from "recharts"
 
 import {
   Card,
@@ -18,48 +18,41 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-export const description = "A simple pie chart"
+interface CropRecommendationData {
+    crop: string
+    recommendations: number
+}
 
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
-  { browser: "other", visitors: 90, fill: "var(--color-other)" },
-]
+interface TopCropsProps {
+    data: CropRecommendationData[]
+}
 
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "var(--chart-1)",
-  },
-  safari: {
-    label: "Safari",
-    color: "var(--chart-2)",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "var(--chart-3)",
-  },
-  edge: {
-    label: "Edge",
-    color: "var(--chart-4)",
-  },
-  other: {
-    label: "Other",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig
+export const description = "Top 5 crops by recommendation count"
 
-export default function ChartPieSimple() {
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1', '#d084d0', '#87ceeb', '#dda0dd', '#98fb98', '#f0e68c'];
+
+export default function ChartPieSimple({data}: TopCropsProps) {
+
+    const sortedData = [...data].sort((a, b) => b.recommendations - a.recommendations);
+
+    const chartData = sortedData.map((item, index) => ({
+        crop: item.crop,
+        recommendations: item.recommendations,
+        fill: COLORS[index % COLORS.length],
+    }))
+
+  const chartConfig = {
+    recommendations: {
+      label: "Recommendations",
+    },
+  } satisfies ChartConfig
+
+
   return (
     <Card className="rounded-xl">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Top Crops by Recommendations</CardTitle>
+        <CardDescription>Distribution of crop recommendations</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -71,7 +64,16 @@ export default function ChartPieSimple() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Pie data={chartData} dataKey="visitors" nameKey="browser" />
+            <Pie
+              data={chartData}
+              dataKey="recommendations"
+              nameKey="crop"
+              label={({ percent }) => ` ${(percent * 100).toFixed(0)}%`}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Pie>
           </PieChart>
         </ChartContainer>
       </CardContent>

@@ -42,7 +42,6 @@ return new class extends Migration
             $table->float('temperature');
             $table->float('rainfall');
             $table->float('humidity');
-            $table->string('season');
             $table->date('climate_record_date');
             $table->timestamps();
         });
