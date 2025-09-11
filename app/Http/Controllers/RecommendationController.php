@@ -43,16 +43,12 @@ class RecommendationController extends Controller
             'temperature' => 'required|numeric',
             'humidity' => 'required|numeric',
         ]);
-
-
-        // Convert NPK values to kg/ha
         $npkInKgHa = [
             'nitrogen' => $this->convertNitrogenToKgHa($validated['nitrogen_level']),
             'phosphorus' => $this->convertPhosphorusToKgHa($validated['phosphorus_level'], $validated['ph_level']),
             'potassium' => $this->convertPotassiumToKgHa($validated['potassium_level']),
         ];
 
-        // Prepare data for ML model API
         $apiData = [
             'soil_type' => $validated['soilType'],
             'soil_ph' => (float) $validated['ph_level'],
@@ -128,9 +124,6 @@ class RecommendationController extends Controller
                     }
                 }
             }
-
-
-
             return Inertia::render('recommendation/crop', [
                 'farmers' => Farmer::with('farms')->get(),
                 'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),

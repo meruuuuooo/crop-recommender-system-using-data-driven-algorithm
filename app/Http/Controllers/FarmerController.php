@@ -82,20 +82,14 @@ class FarmerController extends Controller
      */
     public function store(FarmerRequest $request): RedirectResponse
     {
-        // To view all request data
-        // dd($request->all());
-
         $request = $request->validated();
-
         $location = Location::create([
             'province_id' => $request['province_id'],
             'municipality_id' => $request['municipality_id'],
             'barangay_id' => $request['barangay_id'],
             'street' => $request['street'],
         ]);
-
         $user_id = Auth::user()->id;
-
         Farmer::create([
             'firstname' => $request['firstname'],
             'middlename' => $request['middlename'],
@@ -106,7 +100,6 @@ class FarmerController extends Controller
             'location_id' => $location->id,
             'user_id' => $user_id,
         ]);
-
         return redirect()->route('management.farmer.index')->with('success', 'Farmer created successfully.');
     }
 
@@ -193,16 +186,12 @@ class FarmerController extends Controller
     public function update(FarmerRequest $request, Farmer $farmer): RedirectResponse
     {
         $validated = $request->validated();
-
-        // Create a new location for this farmer
         $location = Location::create([
             'province_id' => $validated['province_id'],
             'municipality_id' => $validated['municipality_id'],
             'barangay_id' => $validated['barangay_id'],
             'street' => $validated['street'],
         ]);
-
-        // Update farmer
         $farmer->update([
             'firstname' => $validated['firstname'],
             'middlename' => $validated['middlename'],
@@ -211,8 +200,6 @@ class FarmerController extends Controller
             'farming_experience' => $validated['farming_experience'],
             'location_id' => $location->id,
         ]);
-
-
         return redirect()->route('management.farmer.index')->with('success', 'Farmer updated successfully.');
     }
 
