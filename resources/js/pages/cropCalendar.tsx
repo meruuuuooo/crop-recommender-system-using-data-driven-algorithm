@@ -212,7 +212,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
 
                 {/* Calendar Summary Info */}
                 <div className="mt-6 rounded-lg border border-[#D6E3D4] bg-gradient-to-r from-[#F8FAF8] to-white p-4">
-                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
                         <div>
                             <span className="font-medium text-[#619154]">Planting Time:</span>
                             <div className="mt-1 text-gray-700">{crop.time_of_planting || 'Not specified'}</div>
@@ -220,6 +220,10 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                         <div>
                             <span className="font-medium text-[#619154]">Maturity Period:</span>
                             <div className="mt-1 text-gray-700">{crop.maturity || 'Not specified'}</div>
+                        </div>
+                        <div>
+                            <span className="font-medium text-[#619154]">Soil Type:</span>
+                            <div className="mt-1 text-gray-700">{crop.soil_type || 'Not specified'}</div>
                         </div>
                     </div>
                     {hasPlantingData && (
@@ -235,7 +239,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
     )
 }
 
-export default function CroppingCalendar({ crops, categories }: CroppingCalendarProps) {
+export default function CropCalendar({ crops, categories }: CroppingCalendarProps) {
     const [selectedCategoryId, setSelectedCategoryId] = useState('all');
     const [selectedCropId, setSelectedCropId] = useState('all');
 

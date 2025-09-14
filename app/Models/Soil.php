@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Soil extends Model
 {
-
     use HasFactory;
+
     protected $fillable = [
         'farm_id',
         'soil_type',
@@ -19,8 +19,19 @@ class Soil extends Model
         'phosphorus',
         'potassium',
         'pH',
-        'test_date'
+        'test_date',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'test_date' => 'datetime',
+            'pH' => 'float',
+            'nitrogen' => 'float',
+            'phosphorus' => 'float',
+            'potassium' => 'float',
+        ];
+    }
 
     public function farm()
     {

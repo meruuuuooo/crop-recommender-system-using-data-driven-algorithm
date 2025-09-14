@@ -3,30 +3,82 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Climate;
+use App\Models\Crop;
 use App\Models\Farmer;
 use App\Models\Fertilizer;
 use App\Models\Pesticide;
-use App\Models\Soil;
-use App\Models\Climate;
-use App\Models\Crop;
 use App\Models\Recommendation;
+use App\Models\Soil;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RecommendationController extends Controller
 {
     public function crop(Request $request)
     {
-        $farmers = Farmer::with('farms')->get();
+        $farmers = Farmer::with('farms')->orderByDesc('id')->get();
 
         $recent_recommendations = Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get();
-
 
         return Inertia::render('recommendation/crop', [
             'farmers' => $farmers,
             'recent_recommendations' => $recent_recommendations,
             'recommendationResult' => [],
+        ]);
+    }
+
+    public function downloadRecommendationPdf($farmer)
+    {
+        try {
+            // Get the latest recommendation for the farmer with highest confidence score
+            $recommendation = Recommendation::where('farmer_id', $farmer)
+                ->with([
+                    'farmer.location.province',
+                    'farmer.location.municipality',
+                    'farmer.location.barangay',
+                    'crop.category',
+                    'farm.location.province',
+                    'farm.location.municipality',
+                    'farm.location.barangay',
+                    'farm.soils',
+                    'farm.climates'
+                ])
+                ->latest()
+                ->orderByDesc('confidence_score')
+                ->first();
+
+            if (!$recommendation) {
+                return back()->withErrors(['pdf_error' => 'No recommendations found for the selected farmer.']);
+            }
+
+            $farmerName = trim($recommendation->farmer->firstname . ' ' . ($recommendation->farmer->middlename ?? '') . ' ' . $recommendation->farmer->lastname);
+
+            $pdf = Pdf::loadView('pdf.recommendation', [
+                'recommendation' => $recommendation,
+            ])->setPaper('a4', 'portrait');
+
+            $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
+
+            return $pdf->download($fileName);
+
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: ' . $e->getMessage());
+
+            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
+        }
+    }
+
+    public function showCropRecommendation(Recommendation $recommendation)
+    {
+
+        $showRecommendation = Recommendation::with('farmer', 'crop', 'farm')->findOrFail($recommendation->id);
+
+        return Inertia::render('recommendation/showCropRecommendation', [
+            'recommendation' => $showRecommendation,
         ]);
     }
 
@@ -59,33 +111,32 @@ class RecommendationController extends Controller
             'potassium' => $npkInKgHa['potassium']['max'] ?? 0,
         ];
 
-        // Call the Python ML model API
-        $response = Http::post('http://localhost:5000/predict', $apiData);
+        // Call the Python ML model API with timeout and error handling
+        try {
+            $response = Http::timeout(30)->post('http://localhost:5000/predict', $apiData);
 
-        if ($response->successful()) {
-            $predictions = $response->json();
+            if ($response->successful()) {
+                $predictions = $response->json();
 
-            // Validate farmer and farm data for saving
-            $saveRecommendation = $request->validate([
-                'farmer_id' => 'required|exists:farmers,id',
-                'farm_id' => 'required|exists:farms,id',
-            ]);
+                // Validate farmer and farm data for saving
+                $saveRecommendation = $request->validate([
+                    'farmer_id' => 'required|exists:farmers,id',
+                    'farm_id' => 'required|exists:farms,id',
+                ]);
 
-            // Check if the API response is successful and has recommendations
-            if ($predictions['status'] === 'success' && isset($predictions['top_3_recommendations'])) {
-                $recommendedCrops = [];
+                // Check if the API response is successful and has recommendations
+                if ($predictions['status'] === 'success' && isset($predictions['recommended_crop'])) {
+                    $recommendedCrops = [];
 
-                // Process each recommendation from the top 3
-                foreach ($predictions['top_3_recommendations'] as $recommendation) {
-                    $cropName = $recommendation['crop'];
-                    $confidenceScore = (float) str_replace('%', '', $recommendation['confidence_score']);
+                    // Process the single recommendation
+                    $cropName = $predictions['recommended_crop'];
+                    $confidenceScore = (float) str_replace('%', '', $predictions['confidence_score']);
 
                     // Find the crop in the database
                     $crop = Crop::where('name', $cropName)->first();
 
                     if ($crop) {
-
-                        // soil
+                        // Create soil record
                         Soil::create([
                             'soil_type' => $validated['soilType'],
                             'pH' => $validated['ph_level'],
@@ -99,6 +150,7 @@ class RecommendationController extends Controller
                             'test_date' => now(),
                         ]);
 
+                        // Create climate record
                         Climate::create([
                             'farm_id' => $saveRecommendation['farm_id'],
                             'temperature' => $validated['temperature'],
@@ -112,26 +164,66 @@ class RecommendationController extends Controller
                             'farmer_id' => $saveRecommendation['farmer_id'],
                             'farm_id' => $saveRecommendation['farm_id'],
                             'crop_id' => $crop->id,
-                            'confidence_score' => $confidenceScore,
+                            'confidence_score' => $confidenceScore / 100, // Convert percentage to decimal
                             'recommendation_date' => now(),
                         ]);
 
                         // Add to the array for frontend display
                         $recommendedCrops[] = [
+                            'farmer_id' => $saveRecommendation['farmer_id'],
                             'crop_name' => $crop->name,
                             'confidence_score' => $confidenceScore,
                         ];
                     }
                 }
+
+                return Inertia::render('recommendation/crop', [
+                    'farmers' => Farmer::with('farms')->get(),
+                    'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
+                    'recommendationResult' => $recommendedCrops ?? [],
+                    'apiResponse' => $predictions,
+                ]);
+            } else {
+                // Handle HTTP error responses
+                $statusCode = $response->status();
+                $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
+
+                if ($response->body()) {
+                    $errorMessage .= ' Response: ' . $response->body();
+                }
+
+                return back()->withErrors(['api_error' => $errorMessage]);
             }
-            return Inertia::render('recommendation/crop', [
-                'farmers' => Farmer::with('farms')->get(),
-                'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
-                'recommendationResult' => $recommendedCrops ?? [],
-                'apiResponse' => $predictions,
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Handle connection errors (cURL error 7, network issues, etc.)
+            $errorMessage = $e->getMessage();
+
+            if (
+                str_contains($errorMessage, 'cURL error 7') ||
+                str_contains($errorMessage, 'Failed to connect') ||
+                str_contains($errorMessage, 'Connection refused') ||
+                str_contains($errorMessage, 'Couldn\'t connect to server')
+            ) {
+
+                return back()->withErrors([
+                    'api_error' => 'The crop recommendation service is currently unavailable. The Model recommendation service may not be running or there may be network connectivity issues.',
+                ]);
+            }
+
+            // Generic connection error
+            return back()->withErrors([
+                'api_error' => 'Unable to connect to the recommendation service: ' . $errorMessage,
             ]);
-        } else {
-            return back()->withErrors(['api_error' => 'Failed to get recommendations from the model.']);
+        } catch (\Illuminate\Http\Client\RequestException $e) {
+            // Handle other HTTP client errors
+            return back()->withErrors([
+                'api_error' => 'Request failed: ' . $e->getMessage(),
+            ]);
+        } catch (\Exception $e) {
+            // Handle any other unexpected errors
+            return back()->withErrors([
+                'api_error' => 'An unexpected error occurred while generating recommendations: ' . $e->getMessage(),
+            ]);
         }
     }
 
@@ -152,41 +244,41 @@ class RecommendationController extends Controller
                 return [
                     'min' => 0,
                     'max' => round(0.049 * $conversionFactor, 1),
-                    'range' => '0-' . round(0.049 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => '0-' . round(0.049 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'low':
                 // 0.05-0.15%
                 return [
                     'min' => round(0.05 * $conversionFactor, 1),
                     'max' => round(0.15 * $conversionFactor, 1),
-                    'range' => round(0.05 * $conversionFactor, 1) . '-' . round(0.15 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => round(0.05 * $conversionFactor, 1) . '-' . round(0.15 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'medium':
                 // >0.15-0.2%
                 return [
                     'min' => round(0.15 * $conversionFactor, 1),
                     'max' => round(0.2 * $conversionFactor, 1),
-                    'range' => round(0.15 * $conversionFactor, 1) . '-' . round(0.2 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => round(0.15 * $conversionFactor, 1) . '-' . round(0.2 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'high':
                 // >0.2-0.3%
                 return [
                     'min' => round(0.2 * $conversionFactor, 1),
                     'max' => round(0.3 * $conversionFactor, 1),
-                    'range' => round(0.2 * $conversionFactor, 1) . '-' . round(0.3 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => round(0.2 * $conversionFactor, 1) . '-' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'very high':
                 // >0.3%
                 return [
                     'min' => round(0.3 * $conversionFactor, 1),
                     'max' => null,
-                    'range' => '>' . round(0.3 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => '>' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
                 ];
             default:
                 return [
                     'min' => 0,
                     'max' => 0,
-                    'range' => 'Unknown'
+                    'range' => 'Unknown',
                 ];
         }
     }
@@ -211,42 +303,42 @@ class RecommendationController extends Controller
                         'min' => 0,
                         'max' => round(3 * $conversionFactor, 2),
                         'range' => '0-' . round(3 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray'
+                        'method' => 'Bray',
                     ];
                 case 'low':
                     return [
                         'min' => round(3 * $conversionFactor, 2),
                         'max' => round(10 * $conversionFactor, 2),
                         'range' => round(3 * $conversionFactor, 2) . '-' . round(10 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray'
+                        'method' => 'Bray',
                     ];
                 case 'medium':
                     return [
                         'min' => round(10 * $conversionFactor, 2),
                         'max' => round(20 * $conversionFactor, 2),
                         'range' => round(10 * $conversionFactor, 2) . '-' . round(20 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray'
+                        'method' => 'Bray',
                     ];
                 case 'high':
                     return [
                         'min' => round(20 * $conversionFactor, 2),
                         'max' => round(30 * $conversionFactor, 2),
                         'range' => round(20 * $conversionFactor, 2) . '-' . round(30 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray'
+                        'method' => 'Bray',
                     ];
                 case 'very high':
                     return [
                         'min' => round(30 * $conversionFactor, 2),
                         'max' => null,
                         'range' => '>' . round(30 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray'
+                        'method' => 'Bray',
                     ];
                 default:
                     return [
                         'min' => 0,
                         'max' => 0,
                         'range' => 'Unknown',
-                        'method' => 'Bray'
+                        'method' => 'Bray',
                     ];
             }
         } else {
@@ -257,42 +349,42 @@ class RecommendationController extends Controller
                         'min' => 0,
                         'max' => round(3 * $conversionFactor, 2),
                         'range' => '0-' . round(3 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen'
+                        'method' => 'Olsen',
                     ];
                 case 'low':
                     return [
                         'min' => 0,
                         'max' => round(7 * $conversionFactor, 2),
                         'range' => '0-' . round(7 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen'
+                        'method' => 'Olsen',
                     ];
                 case 'medium':
                     return [
                         'min' => round(7 * $conversionFactor, 2),
                         'max' => round(25 * $conversionFactor, 2),
                         'range' => round(7 * $conversionFactor, 2) . '-' . round(25 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen'
+                        'method' => 'Olsen',
                     ];
                 case 'high':
                     return [
                         'min' => round(25 * $conversionFactor, 2),
                         'max' => round(33 * $conversionFactor, 2),
                         'range' => round(25 * $conversionFactor, 2) . '-' . round(33 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen'
+                        'method' => 'Olsen',
                     ];
                 case 'very high':
                     return [
                         'min' => round(33 * $conversionFactor, 2),
                         'max' => null,
                         'range' => '>' . round(33 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen'
+                        'method' => 'Olsen',
                     ];
                 default:
                     return [
                         'min' => 0,
                         'max' => 0,
                         'range' => 'Unknown',
-                        'method' => 'Olsen'
+                        'method' => 'Olsen',
                     ];
             }
         }
@@ -316,41 +408,41 @@ class RecommendationController extends Controller
                 return [
                     'min' => 0,
                     'max' => round(0.3 * $conversionFactor, 1),
-                    'range' => '0-' . round(0.3 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => '0-' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'low':
                 // 0.3-1.0 cmol/kg
                 return [
                     'min' => round(0.3 * $conversionFactor, 1),
                     'max' => round(1.0 * $conversionFactor, 1),
-                    'range' => round(0.3 * $conversionFactor, 1) . '-' . round(1.0 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => round(0.3 * $conversionFactor, 1) . '-' . round(1.0 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'medium':
                 // 1.0-3.0 cmol/kg
                 return [
                     'min' => round(1.0 * $conversionFactor, 1),
                     'max' => round(3.0 * $conversionFactor, 1),
-                    'range' => round(1.0 * $conversionFactor, 1) . '-' . round(3.0 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => round(1.0 * $conversionFactor, 1) . '-' . round(3.0 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'high':
                 // 3.0-8.0 cmol/kg
                 return [
                     'min' => round(3.0 * $conversionFactor, 1),
                     'max' => round(8.0 * $conversionFactor, 1),
-                    'range' => round(3.0 * $conversionFactor, 1) . '-' . round(8.0 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => round(3.0 * $conversionFactor, 1) . '-' . round(8.0 * $conversionFactor, 1) . ' kg/ha',
                 ];
             case 'very high':
                 // >8.0 cmol/kg
                 return [
                     'min' => round(8.0 * $conversionFactor, 1),
                     'max' => null,
-                    'range' => '>' . round(8.0 * $conversionFactor, 1) . ' kg/ha'
+                    'range' => '>' . round(8.0 * $conversionFactor, 1) . ' kg/ha',
                 ];
             default:
                 return [
                     'min' => 0,
                     'max' => 0,
-                    'range' => 'Unknown'
+                    'range' => 'Unknown',
                 ];
         }
     }

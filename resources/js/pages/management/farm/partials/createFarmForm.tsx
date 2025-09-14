@@ -261,7 +261,17 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                     <div className="flex gap-3">
                         <Button
                             type="submit"
-                            disabled={processing}
+                            disabled={
+                                processing ||
+                                !data.name ||
+                                !data.total_area ||
+                                Number(data.total_area) < 0.01 ||
+                                Number(data.total_area) > 1000 ||
+                                !data.farmer_id ||
+                                !data.province_id ||
+                                !data.municipality_id ||
+                                !data.barangay_id
+                            }
                             className="w-full sm:w-auto min-w-[120px] bg-[#619154] text-white hover:bg-[#4F7A43] disabled:opacity-50 transition-colors duration-200 px-8 py-2"
                             aria-describedby="submit-help"
                         >

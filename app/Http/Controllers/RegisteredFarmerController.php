@@ -30,9 +30,7 @@ class RegisteredFarmerController extends Controller
 
     public function store(FarmerFarmRequest $request)
     {
-
         $validated = $request->validated();
-
         try {
             DB::beginTransaction();
 
@@ -75,7 +73,7 @@ class RegisteredFarmerController extends Controller
 
             DB::commit();
 
-            return redirect()->route('registration')->with('success', 'Farmer and farm registered successfully!');
+            return redirect()->route('recommendation.crop')->with('success', 'Farmer and farm registered successfully!');
 
         } catch (\Exception $e) {
             DB::rollBack();

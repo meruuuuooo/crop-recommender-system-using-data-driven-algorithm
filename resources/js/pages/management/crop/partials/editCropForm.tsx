@@ -164,10 +164,13 @@ export default function EditCropForm({ crop, categories }: EditCropProps) {
                 <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6" role="region" aria-labelledby="category-assignment-heading">
                     <h3 id="category-assignment-heading" className="mb-4 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
                         Category Assignment
+                        <span className="text-red-500" aria-label="required">
+                                    *
+                        </span>
                     </h3>
                     <div className="space-y-2">
                         <Label htmlFor="category" className="text-sm font-medium text-gray-700">
-                            Crop Category <span className="text-xs text-gray-500">(Optional)</span>
+                            Crop Category
                         </Label>
                         <SearchableSelect
                             options={(categories || []).map((category) => ({

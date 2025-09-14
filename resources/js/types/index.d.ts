@@ -134,6 +134,7 @@ export interface Farm {
 }
 
 export interface RecommendationResult {
+    farmer_id: number;
     crop_name: string;
     confidence_score: number;
 }

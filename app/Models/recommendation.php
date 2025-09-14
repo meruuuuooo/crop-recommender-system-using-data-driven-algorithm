@@ -17,6 +17,14 @@ class Recommendation extends Model
         'recommendation_date'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'recommendation_date' => 'datetime',
+            'confidence_score' => 'float',
+        ];
+    }
+
     public function farmer()
     {
         return $this->belongsTo(Farmer::class);

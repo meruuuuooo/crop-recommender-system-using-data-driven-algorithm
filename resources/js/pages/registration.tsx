@@ -54,6 +54,9 @@ export default function Registration({ provinces, municipalities, barangays }: R
     const farmFilteredBarangays = barangays.filter((barangay) => String(barangay.municipality_id) === data.farm.municipality_id);
 
     const submit: FormEventHandler = (e) => {
+
+        console.log('Submitting form with data:', data);
+
         e.preventDefault();
         post(route('registration.store'), {
             preserveScroll: true,
@@ -89,9 +92,7 @@ export default function Registration({ provinces, municipalities, barangays }: R
                     <div className="p-8">
                         <div className="mb-6">
                             <h1 className="text-2xl font-bold text-gray-900">Farmer Registration</h1>
-                            <p className="mt-2 text-gray-600">
-                                Register a new farmer and their farm
-                            </p>
+                            <p className="mt-2 text-gray-600">Register a new farmer and their farm</p>
                         </div>
                         <div className="w-full" role="main">
                             <form onSubmit={submit} className="space-y-6" noValidate aria-label="Combined farmer and farm registration form">
@@ -146,6 +147,7 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                     required
                                                     placeholder="Enter last name"
                                                 />
+
                                                 <InputError message={errors['farmer.lastname']} />
                                             </div>
                                         </div>
@@ -168,6 +170,9 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                     placeholder="e.g., +63 912 345 6789"
                                                     type="tel"
                                                 />
+                                                <div id="contact-help" className="text-xs text-gray-500">
+                                                    Enter the farmer's contact number
+                                                </div>
                                                 <InputError message={errors['farmer.contact_number']} />
                                             </div>
 
@@ -186,6 +191,9 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                     min="0"
                                                     max="80"
                                                 />
+                                                <div id="experience-help" className="text-xs text-gray-500">
+                                                    Choose the number of years the farmer has been farming
+                                                </div>
                                                 <InputError message={errors['farmer.farming_experience']} />
                                             </div>
                                         </div>
@@ -223,6 +231,9 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
+                                                    <div id="province-help" className="text-xs text-gray-500">
+                                                        Choose the province where the farm is located
+                                                    </div>
                                                     <InputError message={errors['farmer.province_id']} />
                                                 </div>
 
@@ -257,6 +268,11 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
+                                                    <div id="municipality-help" className="text-xs text-gray-500">
+                                                        {!data.farmer.province_id
+                                                            ? 'Province must be selected first'
+                                                            : 'Choose the municipality within the selected province'}
+                                                    </div>
                                                     <InputError message={errors['farmer.municipality_id']} />
                                                 </div>
 
@@ -285,6 +301,11 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
+                                                    <div id="barangay-help" className="text-xs text-gray-500">
+                                                        {!data.farmer.municipality_id
+                                                            ? 'Municipality must be selected first'
+                                                            : 'Choose the barangay within the selected municipality'}
+                                                    </div>
                                                     <InputError message={errors['farmer.barangay_id']} />
                                                 </div>
                                             </div>
@@ -329,6 +350,8 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                     required
                                                     placeholder="Enter farm name"
                                                 />
+
+
                                                 <InputError message={errors['farm.name']} />
                                             </div>
 
@@ -341,13 +364,16 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                     className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
                                                     value={data.farm.total_area}
                                                     onChange={(e) => setData('farm', { ...data.farm, total_area: e.target.value })}
-                                                    required
                                                     placeholder="0.00"
                                                     type="number"
+                                                    required
                                                     step="0.01"
                                                     min="0.01"
                                                     max="1000"
                                                 />
+                                                <div id="area-help" className="text-xs text-gray-500">
+                                                    Enter the total area of the farm in hectares
+                                                </div>
                                                 <InputError message={errors['farm.total_area']} />
                                             </div>
 
@@ -362,6 +388,10 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                     onChange={(e) => setData('farm', { ...data.farm, prev_crops: e.target.value })}
                                                     placeholder="e.g., Rice, Corn, Vegetables"
                                                 />
+
+                                                <div id="prev-crops-help" className="text-xs text-gray-500">
+                                                    Enter the previous crops grown on the farm
+                                                </div>
                                                 <InputError message={errors['farm.prev_crops']} />
                                             </div>
                                         </div>
@@ -398,6 +428,10 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
+
+                                                <div id="province-help" className="text-xs text-gray-500">
+                                                    Choose the province where the farm is located
+                                                </div>
                                                 <InputError message={errors['farm.province_id']} />
                                             </div>
 
@@ -430,6 +464,13 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
+
+                                                <div id="municipality-help" className="text-xs text-gray-500">
+                                                    {!data.farm.province_id
+                                                        ? 'Province must be selected first'
+                                                        : 'Choose the municipality within the selected province'}
+                                                </div>
+
                                                 <InputError message={errors['farm.municipality_id']} />
                                             </div>
 
@@ -456,26 +497,12 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
+                                                <div id="barangay-help" className="text-xs text-gray-500">
+                                                    {!data.farm.municipality_id
+                                                        ? 'Municipality must be selected first'
+                                                        : 'Choose the barangay within the selected municipality'}
+                                                </div>
                                                 <InputError message={errors['farm.barangay_id']} />
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 rounded-md bg-blue-50 p-4">
-                                            <div className="flex">
-                                                <div className="flex-shrink-0">
-                                                    <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-                                                </div>
-                                                <div className="ml-3 flex-1 md:flex md:justify-between">
-                                                    <p className="text-sm text-blue-700">
-                                                        <strong>Tip:</strong> The farm location can be different from the farmer's address if needed.
-                                                    </p>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -485,7 +512,10 @@ export default function Registration({ provinces, municipalities, barangays }: R
                                 <div className="flex flex-col items-center justify-end gap-4 pt-6 sm:flex-row">
                                     <Button
                                         type="submit"
-                                        disabled={processing}
+                                        disabled={
+                                            processing
+
+                                        }
                                         className="w-full min-w-[200px] bg-[#619154] px-8 py-3 text-white transition-colors duration-200 hover:bg-[#4F7A43] disabled:opacity-50 sm:w-auto"
                                     >
                                         {processing ? (

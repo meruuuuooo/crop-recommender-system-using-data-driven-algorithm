@@ -24,7 +24,7 @@ class CropRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:30', 'unique:crops,name,'],
             'category_id' => ['required'],
-            'soil_type' => ['required', 'string', 'in:sand,sandy loam,loam,silt loam,clay loam,clay'],
+            'soil_type' => ['nullable', 'string', 'in:sand,sandy loam,loam,silt loam,clay loam,clay'],
             'time_of_planting' => ['nullable', 'string', 'max:30'],
             'maturity' => ['nullable', 'string', 'max:30'],
         ];

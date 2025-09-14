@@ -17,6 +17,16 @@ class Climate extends Model
         'climate_record_date',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'climate_record_date' => 'datetime',
+            'temperature' => 'float',
+            'rainfall' => 'float',
+            'humidity' => 'float',
+        ];
+    }
+
     public function farm()
     {
         return $this->belongsTo(Farm::class);

@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Location extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'province_id',
         'municipality_id',
         'barangay_id',
-        'street'
+        'street',
     ];
 
     public function province()

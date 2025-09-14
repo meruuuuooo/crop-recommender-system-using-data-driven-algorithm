@@ -17,9 +17,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function View({ farm }: viewFarmProps) {
-
-    console.log('Farm Data:', farm);
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Show Farm" />

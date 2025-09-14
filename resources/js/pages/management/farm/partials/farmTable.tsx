@@ -96,15 +96,6 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
         setPerPage(filters.per_page || 10);
     }, [filters.search, filters.per_page]);
 
-    const timeStampToDate = (timestamp: string) => {
-        const date = new Date(timestamp);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
     const truncateText = (text: string, maxLength: number = 50) => {
         if (!text) return 'N/A';
         return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
@@ -199,7 +190,6 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                         <TableHead className="w-[120px] font-semibold text-white">Area (ha)</TableHead>
                                         <TableHead className="w-[180px] font-semibold text-white">Previous Crops</TableHead>
                                         <TableHead className="w-[250px] font-semibold text-white">Location</TableHead>
-                                        <TableHead className="w-[120px] font-semibold text-white">Created</TableHead>
                                         <TableHead className="w-[80px] font-semibold text-white">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -254,9 +244,6 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                                         <p className="max-w-xs">{getFarmAddress(farm)}</p>
                                                     </TooltipContent>
                                                 </Tooltip>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="text-xs text-gray-700">{timeStampToDate(farm.created_at)}</div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">

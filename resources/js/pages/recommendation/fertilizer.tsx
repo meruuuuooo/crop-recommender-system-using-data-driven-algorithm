@@ -57,31 +57,43 @@ export default function Fertilizer({ fertilizers, filters }: FertilizerPageProps
     // );
 
     const handleView = (fertilizer: Fertilizer) => {
-        router.get(route('recommendation.showFertilizer', fertilizer.id), {}, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('recommendation.showFertilizer', fertilizer.id),
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     const handlePageChange = (page: number) => {
-        router.get(route('recommendation.fertilizer'), {
-            ...filters,
-            page,
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('recommendation.fertilizer'),
+            {
+                ...filters,
+                page,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     const handleSearch = (search: string) => {
-        router.get(route('recommendation.fertilizer'), {
-            ...filters,
-            search,
-            page: 1,
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('recommendation.fertilizer'),
+            {
+                ...filters,
+                search,
+                page: 1,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     return (
@@ -115,20 +127,20 @@ export default function Fertilizer({ fertilizers, filters }: FertilizerPageProps
                     </Tabs> */}
 
                     <FertilizerTable
-                                fertilizers={fertilizerData}
-                                onView={handleView}
-                                onSearch={handleSearch}
-                                searchValue={filters?.search || ''}
-                                pagination={{
-                                    currentPage,
-                                    totalPages,
-                                    total: fertilizers?.total || 0,
-                                    perPage: fertilizers?.per_page || 10,
-                                    from: fertilizers?.from || 0,
-                                    to: fertilizers?.to || 0,
-                                }}
-                                onPageChange={handlePageChange}
-                            />
+                        fertilizers={fertilizerData}
+                        onView={handleView}
+                        onSearch={handleSearch}
+                        searchValue={filters?.search || ''}
+                        pagination={{
+                            currentPage,
+                            totalPages,
+                            total: fertilizers?.total || 0,
+                            perPage: fertilizers?.per_page || 10,
+                            from: fertilizers?.from || 0,
+                            to: fertilizers?.to || 0,
+                        }}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
             </div>
         </AppLayout>

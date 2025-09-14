@@ -10,6 +10,8 @@ import { type BreadcrumbItem, Farmer, Recommendation, RecommendationResult } fro
 import { Head, useForm } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { route } from 'ziggy-js';
+import { router } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -18,7 +20,15 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Crop({ farmers, recent_recommendations, recommendationResult }: { farmers: Farmer[]; recent_recommendations: Recommendation[]; recommendationResult: RecommendationResult[]; }) {
+export default function Crop({
+    farmers,
+    recent_recommendations,
+    recommendationResult,
+}: {
+    farmers: Farmer[];
+    recent_recommendations: Recommendation[];
+    recommendationResult: RecommendationResult[];
+}) {
     const { data, setData, post, processing, errors } = useForm({
         soilType: '',
         nitrogen_level: '',
@@ -32,18 +42,42 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
         farm_id: '',
     });
 
-
     // Get farms for the selected farmer
-    const selectedFarmer = farmers.find(farmer => farmer.id === Number(data.farmer_id));
+    const selectedFarmer = farmers.find((farmer) => farmer.id === Number(data.farmer_id));
     const availableFarms = selectedFarmer?.farms || [];
 
     // Reset farm_id when farmer changes
     const handleFarmerChange = (farmerId: string) => {
-        setData(prevData => ({
+        setData((prevData) => ({
             ...prevData,
             farmer_id: farmerId,
             farm_id: '', // Reset farm selection when farmer changes
         }));
+    };
+
+    const handleViewRecommendation = (recommendationId: number) => {
+        console.log('Viewing recommendation ID:', recommendationId);
+
+        router.get(route('recommendation.showCropRecommendation', { recommendation: recommendationId }));
+    };
+
+    const handleDownloadPdf = (farmerId: number) => {
+        console.log('Farmer ID for PDF download:', farmerId);
+
+        Swal.fire({
+            title: 'Download PDF',
+            text: 'Are you sure you want to download the recommendation PDF?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Download',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log('Downloading PDF for farmer ID:', farmerId);
+                // Use direct window.location to trigger file download
+                window.location.href = route('recommendation.downloadRecommendationPdf', { farmer: farmerId });
+            }
+        });
     };
 
     const handleGenerateRecommendation = () => {
@@ -55,7 +89,7 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                     title: 'Recommendation Generated',
                     text: 'The crop recommendation has been successfully generated.',
                     icon: 'success',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
                 });
             },
             onError: (errors) => {
@@ -68,20 +102,19 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                         title: 'Error',
                         text: `Failed to generate recommendation:\n${errorMessages.join('\n')}`,
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
                     });
                 } else {
                     Swal.fire({
                         title: 'Error',
                         text: 'Failed to generate recommendation. Please check your inputs and try again.',
                         icon: 'error',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
                     });
                 }
             },
-        })
+        });
     };
-
 
     const handleFetchClimate = () => {
         // Use setData to update the form state
@@ -226,7 +259,7 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                                         }))}
                                         value={data.farm_id}
                                         onValueChange={(value) => setData('farm_id', value)}
-                                        placeholder={data.farmer_id ? "Select Farm" : "Select a farmer first"}
+                                        placeholder={data.farmer_id ? 'Select Farm' : 'Select a farmer first'}
                                         searchPlaceholder="Search farms..."
                                         disabled={!data.farmer_id || availableFarms.length === 0}
                                         clearable
@@ -239,13 +272,11 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                                         </div>
                                     )}
                                     <div id="farm-help" className="text-xs text-gray-500">
-                                        {data.farmer_id ?
-                                            (availableFarms.length === 0 ?
-                                                'This farmer has no farms registered' :
-                                                'Choose the farm for this recommendation'
-                                            ) :
-                                            'Select a farmer first to see available farms'
-                                        }
+                                        {data.farmer_id
+                                            ? availableFarms.length === 0
+                                                ? 'This farmer has no farms registered'
+                                                : 'Choose the farm for this recommendation'
+                                            : 'Select a farmer first to see available farms'}
                                     </div>
                                 </div>
                             </div>
@@ -585,6 +616,7 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                         <Button
                             onClick={handleGenerateRecommendation}
                             disabled={
+                                processing ||
                                 !data.farmer_id ||
                                 !data.farm_id ||
                                 !data.soilType ||
@@ -594,8 +626,7 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                                 !data.ph_level ||
                                 !data.temperature ||
                                 !data.rainfall ||
-                                !data.humidity ||
-                                processing
+                                !data.humidity
                             }
                             className="bg-green-500 px-8 py-3 text-lg font-medium text-white transition-all hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
                             type="button"
@@ -620,10 +651,22 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
 
                     <Card className="border-[#D6E3D4]" role="region" aria-labelledby="results-heading">
                         <CardHeader>
-                            <CardTitle id="results-heading" className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
-                                Recommendation Results
-                            </CardTitle>
-                            <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
+                            <CardHeader>
+                                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                                    <CardTitle id="results-heading" className="text-lg font-semibold text-gray-900">
+                                        Recommendation Results
+                                    </CardTitle>
+                                    <Button
+                                        onClick={() => handleDownloadPdf(recommendationResult[0]?.farmer_id)}
+                                        disabled={recommendationResult.length === 0}
+                                        className="bg-green-600 px-2 py-3 text-sm font-medium text-white hover:bg-green-600 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                        type="button"
+                                    >
+                                        Download PDF
+                                    </Button>
+                                </div>
+                                <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
+                            </CardHeader>
                         </CardHeader>
                         <CardContent>
                             {recommendationResult.length === 0 ? (
@@ -652,7 +695,6 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Rank</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Crop Name</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Confidence Score</th>
-                                                <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -664,25 +706,6 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                                                         <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                                             {item.confidence_score}%
                                                         </span>
-                                                    </td>
-                                                    <td className="px-4 py-2">
-                                                        <div className="flex items-center gap-2">
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Button
-                                                                        size="sm"
-                                                                        variant="outline"
-                                                                        className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                        aria-label={`View details for ${item.crop_name}`}
-                                                                    >
-                                                                        <Eye className="h-4 w-4 text-[#619154]" />
-                                                                    </Button>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p>View {item.crop_name} details</p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -724,29 +747,35 @@ export default function Crop({ farmers, recent_recommendations, recommendationRe
                                     <table className="min-w-full text-left text-sm">
                                         <thead>
                                             <tr className="bg-gray-50">
-                                                <th className="px-4 py-2 font-semibold text-gray-700">Date</th>
-                                                <th className="px-4 py-2 font-semibold text-gray-700">Crop</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Farmer</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Crop</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Score</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Time</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Date</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {recent_recommendations.map((item, idx) => (
                                                 <tr key={idx} className="border-b last:border-0">
-                                                    <td className="px-4 py-2">{item.recommendation_date}</td>
-                                                    <td className="px-4 py-2">{item.crop?.name}</td>
                                                     <td className="px-4 py-2">{item.farmer?.lastname}</td>
+                                                    <td className="px-4 py-2">{item.crop?.name}</td>
                                                     <td className="px-4 py-2">{item.confidence_score} %</td>
+                                                    <td className="px-4 py-2">{
+                                                        new Date(item.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })
+                                                        }</td>
+                                                    <td className="px-4 py-2">{
+                                                        new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+                                                        }</td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex items-center gap-2">
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
                                                                     <Button
+                                                                        onClick={() => handleViewRecommendation(item.id)}
                                                                         size="sm"
                                                                         variant="outline"
                                                                         className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                        // aria-label={`View details for ${getFullName(farmer)}`}
                                                                     >
                                                                         <Eye className="h-4 w-4 text-[#619154]" />
                                                                     </Button>

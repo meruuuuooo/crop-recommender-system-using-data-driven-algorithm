@@ -332,7 +332,19 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                     <div className="flex gap-3">
                         <Button
                             type="submit"
-                            disabled={processing}
+                            disabled={
+                                processing ||
+                                !data.firstname ||
+                                !data.lastname ||
+                                !data.contact_number ||
+                                !data.farming_experience ||
+                                Number(data.farming_experience) < 0 ||
+                                Number(data.farming_experience) > 80 ||
+                                !data.province_id ||
+                                !data.municipality_id ||
+                                !data.barangay_id ||
+                                !data.street
+                            }
                             className="w-full min-w-[120px] bg-[#619154] px-8 py-2 text-white transition-colors duration-200 hover:bg-[#4F7A43] disabled:opacity-50 sm:w-auto"
                             aria-describedby="submit-help"
                         >

@@ -46,18 +46,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Crop Management
 
-    Route::prefix('management/crop')->name('management.crop.')->group(function () {
-        Route::get('/', [CropController::class, 'index'])->name('index');
-        Route::get('/create', [CropController::class, 'create'])->name('create');
-        Route::post('/', [CropController::class, 'store'])->name('store');
-        Route::get('/show/{crop}', [CropController::class, 'show'])->name('show');
-        Route::get('/edit/{crop}', [CropController::class, 'edit'])->name('edit');
-        Route::put('/{crop}', [CropController::class, 'update'])->name('update');
-    });
+    // Route::prefix('management/crop')->name('management.crop.')->group(function () {
+    //     Route::get('/', [CropController::class, 'index'])->name('index');
+    //     Route::get('/create', [CropController::class, 'create'])->name('create');
+    //     Route::post('/', [CropController::class, 'store'])->name('store');
+    //     Route::get('/show/{crop}', [CropController::class, 'show'])->name('show');
+    //     Route::get('/edit/{crop}', [CropController::class, 'edit'])->name('edit');
+    //     Route::put('/{crop}', [CropController::class, 'update'])->name('update');
+    // });
 
     Route::prefix('recommendation')->name('recommendation.')->group(function () {
         Route::get('/crop', [RecommendationController::class, 'crop'])->name('crop');
         Route::post('/crop', [RecommendationController::class, 'getCropRecommendation'])->name('getCropRecommendation');
+        Route::get('/crop/download/{farmer}', [RecommendationController::class, 'downloadRecommendationPdf'])->name('downloadRecommendationPdf');
+        Route::get('/crop/show/{recommendation}', [RecommendationController::class, 'showCropRecommendation'])->name('showCropRecommendation');
+
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
         Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');
@@ -69,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::get('/crop/calendar', function () {
-        return Inertia::render('croppingCalendar', [
+        return Inertia::render('cropCalendar', [
             'crops' => \App\Models\Crop::with('category')->get(),
             'categories' => \App\Models\Category::has('crops')->orderBy('name')->get(),
         ]);

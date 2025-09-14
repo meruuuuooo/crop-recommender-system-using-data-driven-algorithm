@@ -1,0 +1,9 @@
+Report 1: Tracks soil test results and their history for each farm, including farm owner’s name and test dates.
+Report 2: Shows crop recommendations tailored to specific climate conditions.
+Report 3: This report lists crops with the highest recommendation confidence scores.
+Report 4: Shows all farms owned by a specific farmer, including location and size details.
+Report 5: Lists crop recommendations for farms in a specific location.
+Report 6: Details crop recommendations tailored to soil and climate conditions on farms, including test results and environmental factors.
+Report 7: Most Recommended Crops for Specific Locations Based on confidence Scores and Environmental Data.
+
+
