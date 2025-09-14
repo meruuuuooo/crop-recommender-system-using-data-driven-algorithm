@@ -5,22 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class cropFertilizer extends Model
+class CropFertilizer extends Model
 {
-    use HasFactory;
 
+    use HasFactory;
     protected $fillable = [
-        'crop_id',
-        'fertilizer_id',
+        'crop_name',
+        'variety_and_condition',
+        'nutrient',
+        'soil_level',
+        'recommendation_amount',
+        'unit',
     ];
 
-    public function crop()
-    {
-        return $this->belongsTo(Crop::class);
-    }
 
-    public function fertilizer()
-    {
-        return $this->belongsTo(Fertilizer::class);
-    }
+
+
 }

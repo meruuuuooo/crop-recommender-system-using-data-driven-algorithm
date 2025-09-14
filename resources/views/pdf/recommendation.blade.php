@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -202,9 +203,9 @@
             <h4>Location:</h4>
             <p>
                 @if($recommendation->farmer->location)
-                    {{ $recommendation->farmer->location->barangay->name ?? '' }}, {{ $recommendation->farmer->location->municipality->name ?? '' }}
+                {{ $recommendation->farmer->location->barangay->name ?? '' }}, {{ $recommendation->farmer->location->municipality->name ?? '' }}
                 @else
-                    {{ $recommendation->farm->location->barangay->name ?? 'N/A' }}
+                {{ $recommendation->farm->location->barangay->name ?? 'N/A' }}
                 @endif
             </p>
         </div>
@@ -235,18 +236,17 @@
     <!-- Fertilizer Recommendation and Landscape Info -->
     <table class="data-table">
         <tr>
-            <th>Fertilizer Recommendation Rate (kg/ha)</th>
+            <th>Fertilizer Recommendation Rate {{ $fertilizer_recommendations['nitrogen']['crop_fertilizer'][0]['unit'] ?? '' }}</th>
             <th>Landscape</th>
         </tr>
         <tr>
             <td>
                 @php
-                    $nitrogen = $recommendation->farm->soils->first()->nitrogen ?? 0;
-                    $phosphorus = $recommendation->farm->soils->first()->phosphorus ?? 0;
-                    $potassium = $recommendation->farm->soils->first()->potassium ?? 0;
+                $nRecoAmmount = $fertilizer_recommendations['nitrogen']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
+                $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
+                $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
                 @endphp
-                {{ number_format($nitrogen, 0) }} - {{ number_format($phosphorus, 0) }} - {{ number_format($potassium, 0) }}
-            </td>
+                {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
             <td>{{ strtoupper($recommendation->farm->location->barangay->name ?? 'HILLYLAND') }}</td>
         </tr>
     </table>

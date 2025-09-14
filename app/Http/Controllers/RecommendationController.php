@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Climate;
 use App\Models\Crop;
+use App\Models\CropFertilizer;
 use App\Models\Farmer;
 use App\Models\Fertilizer;
 use App\Models\Pesticide;
 use App\Models\Recommendation;
 use App\Models\Soil;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Inertia\Inertia;
 
 class RecommendationController extends Controller
 {
@@ -45,30 +46,97 @@ class RecommendationController extends Controller
                     'farm.location.municipality',
                     'farm.location.barangay',
                     'farm.soils',
-                    'farm.climates'
+                    'farm.climates',
                 ])
                 ->latest()
                 ->orderByDesc('confidence_score')
                 ->first();
 
-            if (!$recommendation) {
+            if (! $recommendation) {
                 return back()->withErrors(['pdf_error' => 'No recommendations found for the selected farmer.']);
             }
 
-            $farmerName = trim($recommendation->farmer->firstname . ' ' . ($recommendation->farmer->middlename ?? '') . ' ' . $recommendation->farmer->lastname);
+            $nitrogen = $this->mapSoilLevel($recommendation->farm->soils->last()->nitrogen_level ?? '');
+            $phosphorus = $this->mapSoilLevel($recommendation->farm->soils->last()->phosphorus_level ?? '');
+            $potassium = $this->mapSoilLevel($recommendation->farm->soils->last()->potassium_level ?? '');
+
+            $reco_crop = $recommendation->crop->name;
+
+            // Get detailed fertilizer recommendations
+            $fertilizer_recommendations = $this->getFertilizerRecommendations(
+                $reco_crop,
+                $nitrogen,
+                $phosphorus,
+                $potassium
+            );
+
+            // dd($fertilizer_recommendations);
+
+            $farmerName = trim($recommendation->farmer->firstname.' '.($recommendation->farmer->middlename ?? '').' '.$recommendation->farmer->lastname);
 
             $pdf = Pdf::loadView('pdf.recommendation', [
                 'recommendation' => $recommendation,
+                'fertilizer_recommendations' => $fertilizer_recommendations,
             ])->setPaper('a4', 'portrait');
 
-            $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
+            $fileName = 'Crop_Recommendation_'.preg_replace('/\s+/', '_', $farmerName).'_'.now()->format('Ymd_His').'.pdf';
 
             return $pdf->download($fileName);
-
         } catch (\Exception $e) {
-            Log::error('PDF Generation Error: ' . $e->getMessage());
+            Log::error('PDF Generation Error: '.$e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
+        }
+    }
+
+    private function getFertilizerRecommendations(string $cropName, string $nLevel, string $pLevel, string $kLevel): array
+    {
+        $recommendations = [];
+
+        // Get Nitrogen recommendations
+        $nitrogenFertilizers = CropFertilizer::where('crop_name', $cropName)
+            ->where('nutrient', 'NITROGEN')
+            ->where('soil_level', $nLevel)
+            ->get();
+
+        // Get Phosphorus recommendations
+        $phosphorusFertilizers = CropFertilizer::where('crop_name', $cropName)
+            ->where('nutrient', 'PHOSPHORUS')
+            ->where('soil_level', $pLevel)
+            ->get();
+
+        // Get Potassium recommendations
+        $potassiumFertilizers = CropFertilizer::where('crop_name', $cropName)
+            ->where('nutrient', 'POTASSIUM')
+            ->where('soil_level', $kLevel)
+            ->get();
+
+        return [
+            'nitrogen' => [
+                'crop_fertilizer' => $nitrogenFertilizers->toArray(),
+            ],
+            'phosphorus' => [
+                'crop_fertilizer' => $phosphorusFertilizers->toArray(),
+            ],
+            'potassium' => [
+                'crop_fertilizer' => $potassiumFertilizers->toArray(),
+            ],
+        ];
+    }
+
+    private function mapSoilLevel($level)
+    {
+        switch (strtolower($level)) {
+            case 'very low':
+            case 'low':
+                return 'L';
+            case 'medium':
+                return 'M';
+            case 'high':
+            case 'very high':
+                return 'H';
+            default:
+                return null;
         }
     }
 
@@ -168,10 +236,25 @@ class RecommendationController extends Controller
                             'recommendation_date' => now(),
                         ]);
 
+                        $nitrogen = $this->mapSoilLevel($validated['nitrogen_level']);
+                        $phosphorus = $this->mapSoilLevel($validated['phosphorus_level']);
+                        $potassium = $this->mapSoilLevel($validated['potassium_level']);
+
+                        $reco_crop = $crop->name;
+
+                        // Get detailed fertilizer recommendations
+                        $fertilizer_recommendations = $this->getFertilizerRecommendations(
+                            $reco_crop,
+                            $nitrogen,
+                            $phosphorus,
+                            $potassium
+                        );
+
                         // Add to the array for frontend display
                         $recommendedCrops[] = [
                             'farmer_id' => $saveRecommendation['farmer_id'],
                             'crop_name' => $crop->name,
+                            'fertilizer_recommendations' => $fertilizer_recommendations,
                             'confidence_score' => $confidenceScore,
                         ];
                     }
@@ -189,7 +272,7 @@ class RecommendationController extends Controller
                 $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
 
                 if ($response->body()) {
-                    $errorMessage .= ' Response: ' . $response->body();
+                    $errorMessage .= ' Response: '.$response->body();
                 }
 
                 return back()->withErrors(['api_error' => $errorMessage]);
@@ -212,17 +295,17 @@ class RecommendationController extends Controller
 
             // Generic connection error
             return back()->withErrors([
-                'api_error' => 'Unable to connect to the recommendation service: ' . $errorMessage,
+                'api_error' => 'Unable to connect to the recommendation service: '.$errorMessage,
             ]);
         } catch (\Illuminate\Http\Client\RequestException $e) {
             // Handle other HTTP client errors
             return back()->withErrors([
-                'api_error' => 'Request failed: ' . $e->getMessage(),
+                'api_error' => 'Request failed: '.$e->getMessage(),
             ]);
         } catch (\Exception $e) {
             // Handle any other unexpected errors
             return back()->withErrors([
-                'api_error' => 'An unexpected error occurred while generating recommendations: ' . $e->getMessage(),
+                'api_error' => 'An unexpected error occurred while generating recommendations: '.$e->getMessage(),
             ]);
         }
     }
@@ -244,35 +327,35 @@ class RecommendationController extends Controller
                 return [
                     'min' => 0,
                     'max' => round(0.049 * $conversionFactor, 1),
-                    'range' => '0-' . round(0.049 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => '0-'.round(0.049 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'low':
                 // 0.05-0.15%
                 return [
                     'min' => round(0.05 * $conversionFactor, 1),
                     'max' => round(0.15 * $conversionFactor, 1),
-                    'range' => round(0.05 * $conversionFactor, 1) . '-' . round(0.15 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => round(0.05 * $conversionFactor, 1).'-'.round(0.15 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'medium':
                 // >0.15-0.2%
                 return [
                     'min' => round(0.15 * $conversionFactor, 1),
                     'max' => round(0.2 * $conversionFactor, 1),
-                    'range' => round(0.15 * $conversionFactor, 1) . '-' . round(0.2 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => round(0.15 * $conversionFactor, 1).'-'.round(0.2 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'high':
                 // >0.2-0.3%
                 return [
                     'min' => round(0.2 * $conversionFactor, 1),
                     'max' => round(0.3 * $conversionFactor, 1),
-                    'range' => round(0.2 * $conversionFactor, 1) . '-' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => round(0.2 * $conversionFactor, 1).'-'.round(0.3 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'very high':
                 // >0.3%
                 return [
                     'min' => round(0.3 * $conversionFactor, 1),
                     'max' => null,
-                    'range' => '>' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => '>'.round(0.3 * $conversionFactor, 1).' kg/ha',
                 ];
             default:
                 return [
@@ -302,35 +385,35 @@ class RecommendationController extends Controller
                     return [
                         'min' => 0,
                         'max' => round(3 * $conversionFactor, 2),
-                        'range' => '0-' . round(3 * $conversionFactor, 2) . ' kg/ha (Bray)',
+                        'range' => '0-'.round(3 * $conversionFactor, 2).' kg/ha (Bray)',
                         'method' => 'Bray',
                     ];
                 case 'low':
                     return [
                         'min' => round(3 * $conversionFactor, 2),
                         'max' => round(10 * $conversionFactor, 2),
-                        'range' => round(3 * $conversionFactor, 2) . '-' . round(10 * $conversionFactor, 2) . ' kg/ha (Bray)',
+                        'range' => round(3 * $conversionFactor, 2).'-'.round(10 * $conversionFactor, 2).' kg/ha (Bray)',
                         'method' => 'Bray',
                     ];
                 case 'medium':
                     return [
                         'min' => round(10 * $conversionFactor, 2),
                         'max' => round(20 * $conversionFactor, 2),
-                        'range' => round(10 * $conversionFactor, 2) . '-' . round(20 * $conversionFactor, 2) . ' kg/ha (Bray)',
+                        'range' => round(10 * $conversionFactor, 2).'-'.round(20 * $conversionFactor, 2).' kg/ha (Bray)',
                         'method' => 'Bray',
                     ];
                 case 'high':
                     return [
                         'min' => round(20 * $conversionFactor, 2),
                         'max' => round(30 * $conversionFactor, 2),
-                        'range' => round(20 * $conversionFactor, 2) . '-' . round(30 * $conversionFactor, 2) . ' kg/ha (Bray)',
+                        'range' => round(20 * $conversionFactor, 2).'-'.round(30 * $conversionFactor, 2).' kg/ha (Bray)',
                         'method' => 'Bray',
                     ];
                 case 'very high':
                     return [
                         'min' => round(30 * $conversionFactor, 2),
                         'max' => null,
-                        'range' => '>' . round(30 * $conversionFactor, 2) . ' kg/ha (Bray)',
+                        'range' => '>'.round(30 * $conversionFactor, 2).' kg/ha (Bray)',
                         'method' => 'Bray',
                     ];
                 default:
@@ -348,35 +431,35 @@ class RecommendationController extends Controller
                     return [
                         'min' => 0,
                         'max' => round(3 * $conversionFactor, 2),
-                        'range' => '0-' . round(3 * $conversionFactor, 2) . ' kg/ha (Olsen)',
+                        'range' => '0-'.round(3 * $conversionFactor, 2).' kg/ha (Olsen)',
                         'method' => 'Olsen',
                     ];
                 case 'low':
                     return [
                         'min' => 0,
                         'max' => round(7 * $conversionFactor, 2),
-                        'range' => '0-' . round(7 * $conversionFactor, 2) . ' kg/ha (Olsen)',
+                        'range' => '0-'.round(7 * $conversionFactor, 2).' kg/ha (Olsen)',
                         'method' => 'Olsen',
                     ];
                 case 'medium':
                     return [
                         'min' => round(7 * $conversionFactor, 2),
                         'max' => round(25 * $conversionFactor, 2),
-                        'range' => round(7 * $conversionFactor, 2) . '-' . round(25 * $conversionFactor, 2) . ' kg/ha (Olsen)',
+                        'range' => round(7 * $conversionFactor, 2).'-'.round(25 * $conversionFactor, 2).' kg/ha (Olsen)',
                         'method' => 'Olsen',
                     ];
                 case 'high':
                     return [
                         'min' => round(25 * $conversionFactor, 2),
                         'max' => round(33 * $conversionFactor, 2),
-                        'range' => round(25 * $conversionFactor, 2) . '-' . round(33 * $conversionFactor, 2) . ' kg/ha (Olsen)',
+                        'range' => round(25 * $conversionFactor, 2).'-'.round(33 * $conversionFactor, 2).' kg/ha (Olsen)',
                         'method' => 'Olsen',
                     ];
                 case 'very high':
                     return [
                         'min' => round(33 * $conversionFactor, 2),
                         'max' => null,
-                        'range' => '>' . round(33 * $conversionFactor, 2) . ' kg/ha (Olsen)',
+                        'range' => '>'.round(33 * $conversionFactor, 2).' kg/ha (Olsen)',
                         'method' => 'Olsen',
                     ];
                 default:
@@ -408,35 +491,35 @@ class RecommendationController extends Controller
                 return [
                     'min' => 0,
                     'max' => round(0.3 * $conversionFactor, 1),
-                    'range' => '0-' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => '0-'.round(0.3 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'low':
                 // 0.3-1.0 cmol/kg
                 return [
                     'min' => round(0.3 * $conversionFactor, 1),
                     'max' => round(1.0 * $conversionFactor, 1),
-                    'range' => round(0.3 * $conversionFactor, 1) . '-' . round(1.0 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => round(0.3 * $conversionFactor, 1).'-'.round(1.0 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'medium':
                 // 1.0-3.0 cmol/kg
                 return [
                     'min' => round(1.0 * $conversionFactor, 1),
                     'max' => round(3.0 * $conversionFactor, 1),
-                    'range' => round(1.0 * $conversionFactor, 1) . '-' . round(3.0 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => round(1.0 * $conversionFactor, 1).'-'.round(3.0 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'high':
                 // 3.0-8.0 cmol/kg
                 return [
                     'min' => round(3.0 * $conversionFactor, 1),
                     'max' => round(8.0 * $conversionFactor, 1),
-                    'range' => round(3.0 * $conversionFactor, 1) . '-' . round(8.0 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => round(3.0 * $conversionFactor, 1).'-'.round(8.0 * $conversionFactor, 1).' kg/ha',
                 ];
             case 'very high':
                 // >8.0 cmol/kg
                 return [
                     'min' => round(8.0 * $conversionFactor, 1),
                     'max' => null,
-                    'range' => '>' . round(8.0 * $conversionFactor, 1) . ' kg/ha',
+                    'range' => '>'.round(8.0 * $conversionFactor, 1).' kg/ha',
                 ];
             default:
                 return [

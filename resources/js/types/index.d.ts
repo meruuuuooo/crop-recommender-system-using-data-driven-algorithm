@@ -133,9 +133,32 @@ export interface Farm {
     [key: string]: unknown; // This allows for additional properties and routing...
 }
 
+export interface Fertilizer_recommendations{
+    nitrogen: {
+        crop_fertilizer?: CropFertilizer[];
+    };
+    phosphorus: {
+        crop_fertilizer?: CropFertilizer[];
+    };
+    potassium: {
+        crop_fertilizer?: CropFertilizer[];
+    };
+    [key: string]: unknown; // This allows for additional properties and routing...
+}
+
+export interface CropFertilizer {
+    crop_name: string;
+    variety_and_condition: string;
+    nutrient: string;
+    soil_level: string;
+    recommendation_amount: string | number;
+    unit: string;
+}
+
 export interface RecommendationResult {
     farmer_id: number;
     crop_name: string;
+    fertilizer_recommendations: Fertilizer_recommendations;
     confidence_score: number;
 }
 

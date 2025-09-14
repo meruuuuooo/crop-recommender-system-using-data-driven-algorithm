@@ -38,17 +38,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('crop_pesticide', function (Blueprint $table) {
+        Schema::create('crop_fertilizers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
-            $table->foreignId('pesticide_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
-
-        Schema::create('crop_fertilizer', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('crop_id')->constrained()->onDelete('cascade');
-            $table->foreignId('fertilizer_id')->constrained()->onDelete('cascade');
+            $table->string('crop_name');
+            $table->string('variety_and_condition')->nullable();
+            $table->string('nutrient');
+            $table->string('soil_level');
+            $table->string('recommendation_amount');
+            $table->string('unit');
             $table->timestamps();
         });
 
@@ -59,6 +56,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('crop_fertilizers');
         Schema::dropIfExists('recommendations');
         Schema::dropIfExists('crops');
         Schema::dropIfExists('categories');

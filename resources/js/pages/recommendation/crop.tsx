@@ -6,7 +6,7 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, Farmer, Recommendation, RecommendationResult } from '@/types';
+import { type BreadcrumbItem, Fertilizer_recommendations, Farmer, Recommendation, RecommendationResult } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
 import Swal from 'sweetalert2';
@@ -42,6 +42,8 @@ export default function Crop({
         farm_id: '',
     });
 
+    console.log('Recommendation Result:', recommendationResult);
+
     // Get farms for the selected farmer
     const selectedFarmer = farmers.find((farmer) => farmer.id === Number(data.farmer_id));
     const availableFarms = selectedFarmer?.farms || [];
@@ -60,6 +62,26 @@ export default function Crop({
 
         router.get(route('recommendation.showCropRecommendation', { recommendation: recommendationId }));
     };
+
+    const getCropFertilizerRate = (fertilizer_recommendations: Fertilizer_recommendations): string => {
+
+        console.log('Crop Fertilizer Data:', fertilizer_recommendations);
+        
+        try {
+            if (!fertilizer_recommendations) {
+                return 'N/A';
+            }
+
+            const nitrogen = fertilizer_recommendations.nitrogen?.crop_fertilizer?.[0]?.recommendation_amount || '0';
+            const phosphorus = fertilizer_recommendations.phosphorus?.crop_fertilizer?.[0]?.recommendation_amount || '0';
+            const potassium = fertilizer_recommendations.potassium?.crop_fertilizer?.[0]?.recommendation_amount || '0';
+
+            return `${nitrogen}-${phosphorus}-${potassium}`;
+        } catch (error) {
+            console.error('Error parsing fertilizer rate:', error);
+            return 'N/A';
+        }
+    }
 
     const handleDownloadPdf = (farmerId: number) => {
         console.log('Farmer ID for PDF download:', farmerId);
@@ -694,6 +716,7 @@ export default function Crop({
                                             <tr className="bg-gray-50">
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Rank</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Crop Name</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Fertilizer Rate</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Confidence Score</th>
                                             </tr>
                                         </thead>
@@ -702,6 +725,7 @@ export default function Crop({
                                                 <tr key={idx} className="border-b last:border-0">
                                                     <td className="px-4 py-2">#{idx + 1}</td>
                                                     <td className="px-4 py-2 font-medium">{item.crop_name}</td>
+                                                    <td className="px-4 py-2">{getCropFertilizerRate(item.fertilizer_recommendations)} kg/ha</td>
                                                     <td className="px-4 py-2">
                                                         <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                                             {item.confidence_score}%
