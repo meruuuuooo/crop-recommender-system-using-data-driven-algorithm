@@ -120,6 +120,7 @@ export interface Farm {
     id: number;
     name: string;
     total_area: number;
+    cropping_system?: string;
     prev_crops?: string;
     farmer_id: number;
     location_id: number;
@@ -179,9 +180,10 @@ export interface Recommendation {
 export interface Crop {
     id: number;
     name: string;
-    soil_type: string;
     time_of_planting: string;
     maturity: string;
+    ph_preference: string;
+    soil_requirement: string;
     category_id: number;
     created_at: string;
     updated_at: string;

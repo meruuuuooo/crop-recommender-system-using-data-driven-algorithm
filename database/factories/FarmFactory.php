@@ -19,6 +19,7 @@ class FarmFactory extends Factory
         return [
             'name' => fake()->words(2, true).' Farm',
             'total_area' => fake()->randomFloat(2, 0.5, 100), // in hectares
+            'cropping_system' => fake()->randomElement(['Monocropping', 'Crop Rotation', 'Intercropping', 'Relay Cropping']),
             'prev_crops' => implode(', ', fake()->randomElements(['Rice', 'Corn', 'Tomato', 'Cabbage', 'Eggplant'], 2)),
             'farmer_id' => \App\Models\Farmer::factory(),
             'location_id' => \App\Models\Location::factory(),

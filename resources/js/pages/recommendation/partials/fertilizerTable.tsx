@@ -97,6 +97,11 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
     return (
         <TooltipProvider>
             <Card className="border-[#D6E3D4]" role="region" aria-labelledby="fertilizers-table-heading">
+
+                
+            </Card>
+
+            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="fertilizers-table-heading">
                 <CardHeader className="pb-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">

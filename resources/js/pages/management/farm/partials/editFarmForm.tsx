@@ -7,11 +7,14 @@ import { useForm } from '@inertiajs/react';
 import { FormEventHandler, useMemo } from 'react';
 import Swal from 'sweetalert2';
 import type { EditFarmProps } from '@/types/farm';
+import { route } from 'ziggy-js';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function EditFarmForm({ farm, farmers, provinces, municipalities, barangays }: EditFarmProps) {
     const { data, setData, put, processing, errors } = useForm({
         name: farm?.name || '',
         total_area: farm?.total_area?.toString() || '',
+        cropping_system: farm?.cropping_system || '',
         prev_crops: farm?.prev_crops || '',
         farmer_id: farm?.farmer?.id?.toString() || '',
         province_id: farm?.location?.province?.id?.toString() || '',
@@ -37,6 +40,17 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
         const currentBarangay = barangays?.find(b => String(b.id) === data.barangay_id);
         return currentBarangay?.name || null;
     }, [barangays, data.barangay_id]);
+
+    const croppingSystems = [
+        { 'Moiocropping': 'Moiocropping' },
+        { 'Mixed Cropping': 'Mixed Cropping' },
+        { 'Inter Cropping': 'Inter Cropping' },
+        { 'Crop Rotation': 'Crop Rotation' },
+        { 'Relay Cropping': 'Relay Cropping' },
+        { 'Sequential Cropping': 'Sequential Cropping' },
+        { 'Alley Cropping': 'Alley Cropping' },
+        { 'Strip Cropping': 'Strip Cropping' },
+    ];
 
 
     const submit: FormEventHandler = (e) => {
@@ -126,6 +140,42 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                                 Enter area in hectares (0.01 - 1000)
                             </div>
                             <InputError message={errors.total_area} id="total-area-error" />
+                        </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="cropping_system" className="text-sm font-medium text-gray-700">
+                                Cropping System
+                                <span className="text-red-500" aria-label="required">
+                                    *
+                                </span>
+                            </Label>
+                            <Select
+                                onValueChange={(value) => setData('cropping_system', value)}
+                                value={data.cropping_system || ''}
+                                name="cropping_system"
+                                aria-describedby={errors.cropping_system ? "cropping-system-error" : "cropping-system-help"}
+                                aria-invalid={errors.cropping_system ? "true" : "false"}
+                            >
+                                <SelectTrigger className="w-full border border-[#D6E3D4] text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent">
+                                    <SelectValue
+                                        placeholder={data.cropping_system || "Select Cropping System"}
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                     {croppingSystems.map((system) => {
+                                        const key = Object.keys(system)[0];
+                                        return (
+                                            <SelectItem key={key} value={key}>
+                                                {system[key as keyof typeof system]}
+                                            </SelectItem>
+                                        );
+                                    })}
+                                </SelectContent>
+                            </Select>
+                            <div id="cropping-system-help" className="text-xs text-gray-500">
+                                Choose the cropping system used on the farm
+                            </div>
+                            <InputError message={errors.cropping_system} id="cropping-system-error" />
                         </div>
 
                         <div className="space-y-2">

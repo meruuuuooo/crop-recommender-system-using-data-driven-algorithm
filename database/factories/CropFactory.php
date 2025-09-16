@@ -21,12 +21,12 @@ class CropFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word(),
             'category_id' => Category::factory(),
-            'crop_season' => $this->faker->randomElement(['Spring', 'Summer', 'Fall', 'Winter']),
-            'maturity' => $this->faker->randomElement(['90 days', '120 days', '60-90 days', '3-4 months']),
-            'soil_type' => $this->faker->randomElement(['clay', 'loam', 'sandy', 'silt']),
-            'time_of_planting' => $this->faker->randomElement(['May-June', 'October-November', 'January-February', 'March-April']),
+            'name' => $this->faker->word(),
+            'time_of_planting' => $this->faker->monthName(),
+            'maturity' => $this->faker->numberBetween(60, 120) . ' days',
+            'ph_preference' => $this->faker->randomElement(['Acidic', 'Neutral', 'Alkaline']),
+            'soil_requirement' => $this->faker->sentence(),
         ];
     }
 }

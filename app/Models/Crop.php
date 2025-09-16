@@ -12,9 +12,10 @@ class Crop extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'soil_type',
         'time_of_planting',
         'maturity',
+        'ph_preference',
+        'soil_requirement',
     ];
 
     public function recommendations()

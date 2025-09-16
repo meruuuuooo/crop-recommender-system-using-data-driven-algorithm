@@ -22,9 +22,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('name');
-            $table->string('soil_type')->nullable();
             $table->string('time_of_planting')->nullable();
             $table->string('maturity')->nullable();
+            $table->string('ph_preference')->nullable();
+            $table->text('soil_requirement')->nullable();
             $table->timestamps();
         });
 

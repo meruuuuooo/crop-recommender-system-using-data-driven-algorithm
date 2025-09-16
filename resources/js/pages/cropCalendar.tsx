@@ -222,8 +222,12 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                             <div className="mt-1 text-gray-700">{crop.maturity || 'Not specified'}</div>
                         </div>
                         <div>
-                            <span className="font-medium text-[#619154]">Soil Type:</span>
-                            <div className="mt-1 text-gray-700">{crop.soil_type || 'Not specified'}</div>
+                            <span className="font-medium text-[#619154]">pH Preference:</span>
+                            <div className="mt-1 text-gray-700">{crop.ph_preference || 'Not specified'}</div>
+                        </div>
+                        <div>
+                            <span className="font-medium text-[#619154]">Soil Requirement:</span>
+                            <div className="mt-1 text-gray-700">{crop.soil_requirement || 'Not specified'}</div>
                         </div>
                     </div>
                     {hasPlantingData && (

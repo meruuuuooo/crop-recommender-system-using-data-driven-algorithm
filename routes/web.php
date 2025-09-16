@@ -17,9 +17,6 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('registration', [RegisteredFarmerController::class, 'registration'])->name('registration');
-    Route::post('registration', [RegisteredFarmerController::class, 'store'])->name('registration.store');
-
     // Farmer Management
     Route::prefix('management/farmer')->name('management.farmer.')->group(function () {
         Route::get('/', [FarmerController::class, 'index'])->name('index');

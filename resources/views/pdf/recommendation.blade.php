@@ -257,12 +257,20 @@
         <tr>
             <th>Best Planting Season</th>
             <th>Expected Maturity</th>
-            <th>Soil Type Suitable</th>
+            <th>pH Preference</th>
         </tr>
         <tr>
             <td>{{ $recommendation->crop->time_of_planting ?? 'All Season' }}</td>
             <td>{{ $recommendation->crop->maturity ?? 'N/A' }}</td>
-            <td>{{ $recommendation->crop->soil_type ?? 'Various' }}</td>
+            <td>{{ $recommendation->crop->ph_preference ?? 'Various' }}</td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <th>Soil Requirement</th>
+        </tr>
+        <tr>
+            <td>{{ $recommendation->crop->soil_requirement ?? 'Various' }}</td>
         </tr>
     </table>
 
@@ -272,14 +280,17 @@
         <tr>
             <th>Farm Name</th>
             <th>Total Area</th>
+            <th>Cropping System</th>
             <th>Previous Crops</th>
         </tr>
         <tr>
             <td>{{ $recommendation->farm->name }}</td>
             <td>{{ $recommendation->farm->total_area }} hectares</td>
+            <td>{{ $recommendation->farm->cropping_system ?? 'N/A' }}</td>
             <td>{{ $recommendation->farm->prev_crops ?? 'First Planting' }}</td>
         </tr>
     </table>
+
 
     <!-- Footer Section -->
     <div class="footer">
