@@ -65,7 +65,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('reports')->name('reports.')->group(function () {
-        Route::get('/index', [ReportController::class, 'index'])->name('index');
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/report1', [ReportController::class, 'report1'])->name('report1');
+        Route::get('/report2', [ReportController::class, 'report2'])->name('report2');
+        Route::get('/report3', [ReportController::class, 'report3'])->name('report3');
+        Route::get('/report4', [ReportController::class, 'report4'])->name('report4');
+        Route::get('/report5', [ReportController::class, 'report5'])->name('report5');
+        Route::get('/report7', [ReportController::class, 'report7'])->name('report7');
+        Route::get('/report9', [ReportController::class, 'report9'])->name('report9');
     });
 
     Route::get('/crop/calendar', function () {
@@ -74,8 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'categories' => \App\Models\Category::has('crops')->orderBy('name')->get(),
         ]);
     })->name('crop.calendar');
-
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

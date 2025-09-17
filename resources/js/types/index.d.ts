@@ -203,7 +203,7 @@ export interface Category {
 
 export interface Soil {
     id: number;
-    ph_level: number;
+    pH: number;
     nitrogen_level: string;
     phosphorus_level: string;
     potassium_level: string;

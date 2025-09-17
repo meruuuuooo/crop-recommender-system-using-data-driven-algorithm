@@ -50,6 +50,8 @@ class DashboardController extends Controller
             ];
         });
 
+
+
         return Inertia::render('dashboard', [
             'metrics' => [
                 'totalFarms' => $totalFarms,
