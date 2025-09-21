@@ -23,14 +23,15 @@ class CropRecommendationRequest extends FormRequest
     {
         return [
             'farmer_id' => 'required|exists:farmers,id',
-            'soilType' => 'required|string|in:sand,Sandy loam,loam,Silt Loam,Clay Loam, Clay',
-            'nitrogen_level' => 'required|string|in:very_low,low,medium,high,very_high',
-            'potassium_level' => 'required|string|in:very_low,low,medium,high,very_high',
-            'phosphorus_level' => 'required|string|in:very_low,low,medium,high,very_high',
+            'farm_id' => 'required|exists:farms,id',
+            'soilType' => 'required|string|in:Clay,Loamy,Peaty,Saline,Sandy',
+            'nitrogen_level' => 'required|string|in:low,medium,high',
+            'potassium_level' => 'required|string|in:low,medium,high',
+            'phosphorus_level' => 'required|string|in:low,medium,high',
             'ph_level' => 'required|numeric|min:0|max:14',
-            'temperature' => 'required', 'numeric',
-            'rainfall' => 'required', 'numeric',
-            'humidity' => 'required', 'numeric',
+            'temperature' => 'required|numeric',
+            'rainfall' => 'required|numeric',
+            'humidity' => 'required|numeric',
         ];
     }
 
@@ -43,6 +44,8 @@ class CropRecommendationRequest extends FormRequest
         return [
             'farmer_id.required' => 'Please select a farmer.',
             'farmer_id.exists' => 'The selected farmer is invalid.',
+            'farm_id.required' => 'Please select a farm.',
+            'farm_id.exists' => 'The selected farm is invalid.',
             'soilType.required' => 'Please select a soil type.',
             'soilType.in' => 'Please select a valid soil type.',
             'nitrogen_level.required' => 'Please select nitrogen level.',

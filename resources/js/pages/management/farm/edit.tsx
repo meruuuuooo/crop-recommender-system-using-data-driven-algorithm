@@ -16,7 +16,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Edit({ farm, farmers, provinces, municipalities, barangays }: EditFarmProps) {
+export default function Edit({ farm, farmers, provinces, municipalities, barangays, crops }: EditFarmProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Farm" />
@@ -29,6 +29,7 @@ export default function Edit({ farm, farmers, provinces, municipalities, baranga
                         provinces={provinces}
                         municipalities={municipalities}
                         barangays={barangays}
+                        crops={crops}
                     />
                 </div>
             </div>

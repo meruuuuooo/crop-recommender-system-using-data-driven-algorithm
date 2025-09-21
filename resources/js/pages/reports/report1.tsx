@@ -2,11 +2,22 @@ import { DataTable } from '@/components/data-table';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
 import { Badge } from '@/components/ui/badge';
 import HeadingSmall from '@/components/heading-small';
-import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import AppLayout from '@/layouts/app-layout';
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Reports',
+        href: '/reports',
+    },
+    {
+        title: 'Soil Test Results',
+        href: '/reports/report1',
+    },
+];
 
 // Extended Soil interface to match database schema
 interface SoilData {
@@ -58,12 +69,16 @@ interface Report1Props {
     };
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Reports',
-        href: '/reports/report1',
-    },
-];
+// const breadcrumbs: BreadcrumbItem[] = [
+//     {
+//         title: 'Reports',
+//         href: '/reports',
+//     },
+//     {
+//         title: 'Soil Test Results',
+//         href: '/reports/report1',
+//     },
+// ];
 
 // Define the data structure for our table rows
 type SoilTestRow = {
@@ -261,12 +276,12 @@ export default function Report1({ farms, filters }: Report1Props) {
     // Transform the data for the table
     const transformedData: SoilTestRow[] = farms.data.flatMap((farm: FarmWithSoils) => {
         if (!farm.soils || farm.soils.length === 0) return [];
-        
+
         return farm.soils.map((soil: SoilData, index: number) => {
-            const farmerName = farm.farmer 
+            const farmerName = farm.farmer
                 ? `${farm.farmer.firstname} ${farm.farmer.middlename ? farm.farmer.middlename + ' ' : ''}${farm.farmer.lastname}`.trim()
                 : 'Unknown Farmer';
-            
+
             return {
                 id: `${farm.id}-${soil.id}-${index}`,
                 farmName: farm.name,

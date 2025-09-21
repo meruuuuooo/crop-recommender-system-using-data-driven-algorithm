@@ -27,7 +27,7 @@ class FarmerRequest extends FormRequest
             'middlename' => ['nullable', 'string', 'max:50', 'regex:/^[a-zA-Z\s\-]+$/'],
             'contact_number' => ['required', 'string', 'max:15', 'regex:/^[0-9]+$/'],
             'farming_experience' => ['required', 'numeric'],
-            'street' => ['required', 'string', 'max:60'],
+            'street' => ['string', 'max:60'],
             'province_id' => ['required', 'exists:provinces,id'],
             'municipality_id' => ['required', 'exists:municipalities,id'],
             'barangay_id' => ['required', 'exists:barangays,id'],

@@ -12,6 +12,8 @@ use App\Models\Province;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Crop;
+
 
 class FarmController extends Controller
 {
@@ -75,11 +77,14 @@ class FarmController extends Controller
         $barangay = Barangay::all();
         $farmer = Farmer::all();
 
+        $crops = Crop::all(['id', 'name']);
+
         return Inertia::render('management/farm/create', [
             'provinces' => $province,
             'municipalities' => $municipality,
             'barangays' => $barangay,
             'farmers' => $farmer,
+            'crops' => $crops,
         ]);
     }
 
@@ -146,12 +151,15 @@ class FarmController extends Controller
             'farmer',
         ]);
 
+        $crops = Crop::all(['id', 'name']);
+
         return Inertia::render('management/farm/edit', [
             'farm' => $farm,
             'provinces' => $provinces,
             'municipalities' => $municipalities,
             'barangays' => $barangays,
             'farmers' => $farmers,
+            'crops' => $crops,
         ]);
     }
 

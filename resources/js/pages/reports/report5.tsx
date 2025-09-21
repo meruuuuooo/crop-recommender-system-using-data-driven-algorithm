@@ -11,6 +11,10 @@ import { format } from 'date-fns';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Reports',
+        href: '/reports',
+    },
+    {
+        title: 'Detailed Crop Recommendations',
         href: '/reports/report5',
     },
 ];
@@ -155,7 +159,7 @@ const columns: ColumnDef<DetailedRecommendationRow>[] = [
             const soilType = row.getValue("soilType") as string;
             const pH = row.original.pH;
             const nitrogenLevel = row.original.nitrogenLevel;
-            
+
             const getPhColor = (pH: number) => {
                 if (pH < 5.5) return "text-red-600 dark:text-red-400";
                 if (pH > 8.0) return "text-blue-600 dark:text-blue-400";
@@ -189,7 +193,7 @@ const columns: ColumnDef<DetailedRecommendationRow>[] = [
             const temp = row.getValue("temperature") as number;
             const rainfall = row.original.rainfall;
             const humidity = row.original.humidity;
-            
+
             return (
                 <div className="space-y-1">
                     <div className="flex items-center gap-1 text-xs">
@@ -224,15 +228,15 @@ export default function Report5({ recommendations, filters }: Report5Props) {
 
     // Transform the data for the table
     const transformedData: DetailedRecommendationRow[] = recommendations.data.map((recommendation: Recommendation) => {
-        const farmerName = recommendation.farmer 
+        const farmerName = recommendation.farmer
             ? `${recommendation.farmer.firstname} ${recommendation.farmer.middlename ? recommendation.farmer.middlename + ' ' : ''}${recommendation.farmer.lastname}`.trim()
             : 'Unknown Farmer';
-        
+
         // Get latest soil data
         const latestSoil = recommendation.farm?.soils?.[0];
         // Get latest climate data
         const latestClimate = recommendation.farm?.climates?.[0];
-        
+
         return {
             id: recommendation.id.toString(),
             farmName: recommendation.farm?.name || 'Unknown Farm',
@@ -246,8 +250,8 @@ export default function Report5({ recommendations, filters }: Report5Props) {
             rainfall: latestClimate?.rainfall || 0,
             humidity: latestClimate?.humidity || 0,
             recommendationDate: recommendation.recommendation_date,
-            formattedDate: recommendation.recommendation_date 
-                ? format(new Date(recommendation.recommendation_date), 'MMM dd, yyyy') 
+            formattedDate: recommendation.recommendation_date
+                ? format(new Date(recommendation.recommendation_date), 'MMM dd, yyyy')
                 : 'Unknown',
         };
     });

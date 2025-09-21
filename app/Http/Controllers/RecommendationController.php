@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CropRecommendationRequest;
 use App\Models\Category;
 use App\Models\Climate;
 use App\Models\Crop;
@@ -25,7 +26,7 @@ class RecommendationController extends Controller
 
         $recent_recommendations = Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get();
 
-       
+
 
         return Inertia::render('recommendation/crop', [
             'farmers' => $farmers,
@@ -34,11 +35,18 @@ class RecommendationController extends Controller
         ]);
     }
 
-    public function downloadRecommendationPdf($farmer)
+    public function downloadRecommendationPdf($farmer, $crop)
     {
         try {
+            // Safely get crop ID
+            $cropModel = Crop::where('name', $crop)->first();
+            if (!$cropModel) {
+                return back()->withErrors(['pdf_error' => 'Crop not found.']);
+            }
+
             // Get the latest recommendation for the farmer with highest confidence score
             $recommendation = Recommendation::where('farmer_id', $farmer)
+                ->where('crop_id', $cropModel->id)
                 ->with([
                     'farmer.location.province',
                     'farmer.location.municipality',
@@ -58,9 +66,11 @@ class RecommendationController extends Controller
                 return back()->withErrors(['pdf_error' => 'No recommendations found for the selected farmer.']);
             }
 
-            $nitrogen = $this->mapSoilLevel($recommendation->farm->soils->last()->nitrogen_level ?? '');
-            $phosphorus = $this->mapSoilLevel($recommendation->farm->soils->last()->phosphorus_level ?? '');
-            $potassium = $this->mapSoilLevel($recommendation->farm->soils->last()->potassium_level ?? '');
+            // Map soil levels to single-letter codes - use last() instead of latest()
+            $latestSoil = $recommendation->farm->soils->last();
+            $nitrogen = $this->mapSoilLevel($latestSoil->nitrogen_level ?? '') ?: 'L';
+            $phosphorus = $this->mapSoilLevel($latestSoil->phosphorus_level ?? '') ?: 'L';
+            $potassium = $this->mapSoilLevel($latestSoil->potassium_level ?? '') ?: 'L';
 
             $reco_crop = $recommendation->crop->name;
 
@@ -72,18 +82,18 @@ class RecommendationController extends Controller
                 $potassium
             );
 
-            // dd($fertilizer_recommendations);
+            $farmerName = trim($recommendation->farmer->firstname . ' ' . $recommendation->farmer->lastname);
 
-            $farmerName = trim($recommendation->farmer->firstname . ' ' . ($recommendation->farmer->middlename ?? '') . ' ' . $recommendation->farmer->lastname);
 
             $pdf = Pdf::loadView('pdf.recommendation', [
                 'recommendation' => $recommendation,
                 'fertilizer_recommendations' => $fertilizer_recommendations,
             ])->setPaper('a4', 'portrait');
 
+
             $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
 
-            return $pdf->download($fileName);
+            return $pdf->stream($fileName);
         } catch (\Exception $e) {
             Log::error('PDF Generation Error: ' . $e->getMessage());
 
@@ -129,147 +139,176 @@ class RecommendationController extends Controller
     private function mapSoilLevel($level)
     {
         switch (strtolower($level)) {
-            case 'very low':
             case 'low':
                 return 'L';
             case 'medium':
                 return 'M';
             case 'high':
-            case 'very high':
                 return 'H';
             default:
-                return null;
+                return 'L'; // Default to Low instead of null
         }
     }
 
-    public function showCropRecommendation(Recommendation $recommendation)
+    private function convertNitrogenToKgHa($level)
     {
-
-        $showRecommendation = Recommendation::with('farmer', 'crop', 'farm')->findOrFail($recommendation->id);
-
-        return Inertia::render('recommendation/showCropRecommendation', [
-            'recommendation' => $showRecommendation,
-        ]);
+        switch (strtolower($level)) {
+            case 'very low':
+                return ['min' => 0, 'max' => 20];
+            case 'low':
+                return ['min' => 21, 'max' => 40];
+            case 'medium':
+                return ['min' => 41, 'max' => 60];
+            case 'high':
+                return ['min' => 61, 'max' => 80];
+            case 'very high':
+                return ['min' => 81, 'max' => 100];
+            default:
+                return ['min' => 0, 'max' => 0];
+        }
     }
 
-    public function getCropRecommendation(Request $request)
+    private function convertPhosphorusToKgHa($level)
     {
+        switch (strtolower($level)) {
+            case 'very low':
+                return ['min' => 0, 'max' => 15];
+            case 'low':
+                return ['min' => 16, 'max' => 30];
+            case 'medium':
+                return ['min' => 31, 'max' => 45];
+            case 'high':
+                return ['min' => 46, 'max' => 60];
+            case 'very high':
+                return ['min' => 61, 'max' => 75];
+            default:
+                return ['min' => 0, 'max' => 0];
+        }
+    }
 
-        $validated = $request->validate([
-            'soilType' => 'required|string',
-            'ph_level' => 'required|numeric',
-            'rainfall' => 'required|numeric',
-            'nitrogen_level' => 'required|string|in:very low,low,medium,high,very high',
-            'phosphorus_level' => 'required|string|in:very low,low,medium,high,very high',
-            'potassium_level' => 'required|string|in:very low,low,medium,high,very high',
-            'temperature' => 'required|numeric',
-            'humidity' => 'required|numeric',
-        ]);
-        $npkInKgHa = [
-            'nitrogen' => $this->convertNitrogenToKgHa($validated['nitrogen_level']),
-            'phosphorus' => $this->convertPhosphorusToKgHa($validated['phosphorus_level'], $validated['ph_level']),
-            'potassium' => $this->convertPotassiumToKgHa($validated['potassium_level']),
+    private function convertPotassiumToKgHa($level)
+    {
+        switch (strtolower($level)) {
+            case 'very low':
+                return ['min' => 0, 'max' => 25];
+            case 'low':
+                return ['min' => 26, 'max' => 50];
+            case 'medium':
+                return ['min' => 51, 'max' => 75];
+            case 'high':
+                return ['min' => 76, 'max' => 100];
+            case 'very high':
+                return ['min' => 101, 'max' => 125];
+            default:
+                return ['min' => 0, 'max' => 0];
+        }
+    }
+
+    public function store(CropRecommendationRequest $request)
+    {
+        $validated = $request->validated();
+
+        $nitrogen = $this->convertNitrogenToKgHa($validated['nitrogen_level']);
+        $phosphorus = $this->convertPhosphorusToKgHa($validated['phosphorus_level']);
+        $potassium = $this->convertPotassiumToKgHa($validated['potassium_level']);
+
+        $apiInput = [
+            'Soil_Type' => $validated['soilType'],
+            'Soil_pH' => (float) $validated['ph_level'],
+            'Temperature' => (float) $validated['temperature'],
+            'Humidity' => (float) $validated['humidity'],
+            'N' => $nitrogen['max'] ?? 0,
+            'P' => $phosphorus['max'] ?? 0,
+            'K' => $potassium['max'] ?? 0,
         ];
 
-        $apiData = [
-            'soil_type' => $validated['soilType'],
-            'soil_ph' => (float) $validated['ph_level'],
-            'temperature' => (float) $validated['temperature'],
-            'humidity' => (float) $validated['humidity'],
-            'nitrogen' => $npkInKgHa['nitrogen']['max'] ?? 0,
-            'phosphorus' => $npkInKgHa['phosphorus']['max'] ?? 0,
-            'potassium' => $npkInKgHa['potassium']['max'] ?? 0,
-        ];
-
-        // Call the Python ML model API with timeout and error handling
         try {
-            $response = Http::timeout(30)->post('http://localhost:5000/predict', $apiData);
+            $recommendations = $this->callCropRecommendationApi($apiInput);
 
-            if ($response->successful()) {
-                $predictions = $response->json();
+            $recommendedCrops = [];
 
-                // Validate farmer and farm data for saving
-                $saveRecommendation = $request->validate([
-                    'farmer_id' => 'required|exists:farmers,id',
-                    'farm_id' => 'required|exists:farms,id',
+            // Check if API response has recommendations array
+            if (isset($recommendations['recommendations'])) {
+                // Save soil and climate records once (not per recommendation)
+                Soil::create([
+                    'soil_type' => $validated['soilType'],
+                    'pH' => $validated['ph_level'],
+                    'nitrogen_level' => $validated['nitrogen_level'],
+                    'phosphorus_level' => $validated['phosphorus_level'],
+                    'potassium_level' => $validated['potassium_level'],
+                    'nitrogen' => $apiInput['N'],
+                    'phosphorus' => $apiInput['P'],
+                    'potassium' => $apiInput['K'],
+                    'farm_id' => $validated['farm_id'],
+                    'test_date' => now(),
                 ]);
 
-                // Check if the API response is successful and has recommendations
-                if ($predictions['status'] === 'success' && isset($predictions['recommended_crop'])) {
-                    $recommendedCrops = [];
+                Climate::create([
+                    'farm_id' => $validated['farm_id'],
+                    'temperature' => $validated['temperature'],
+                    'rainfall' => $validated['rainfall'],
+                    'humidity' => $validated['humidity'],
+                    'climate_record_date' => now(),
+                ]);
 
-                    // Process the single recommendation
-                    $cropName = $predictions['recommended_crop'];
-                    $confidenceScore = (float) str_replace('%', '', $predictions['confidence_score']);
+                // Process each crop recommendation
+                foreach ($recommendations['recommendations'] as $rec) {
 
-                    // Find the crop in the database
-                    $crop = Crop::where('name', $cropName)->first();
+                    $crop = Crop::where('name', $rec['crop'])->first();
 
                     if ($crop) {
-                        // Create soil record
-                        Soil::create([
-                            'soil_type' => $validated['soilType'],
-                            'pH' => $validated['ph_level'],
-                            'nitrogen_level' => $validated['nitrogen_level'],
-                            'phosphorus_level' => $validated['phosphorus_level'],
-                            'potassium_level' => $validated['potassium_level'],
-                            'nitrogen' => $apiData['nitrogen'],
-                            'phosphorus' => $apiData['phosphorus'],
-                            'potassium' => $apiData['potassium'],
-                            'farm_id' => $saveRecommendation['farm_id'],
-                            'test_date' => now(),
-                        ]);
-
-                        // Create climate record
-                        Climate::create([
-                            'farm_id' => $saveRecommendation['farm_id'],
-                            'temperature' => $validated['temperature'],
-                            'rainfall' => $validated['rainfall'],
-                            'humidity' => $validated['humidity'],
-                            'climate_record_date' => now(),
-                        ]);
-
-                        // Save the recommendation to the database
+                        // Save recommendation to database
                         Recommendation::create([
-                            'farmer_id' => $saveRecommendation['farmer_id'],
-                            'farm_id' => $saveRecommendation['farm_id'],
+                            'farmer_id' => $validated['farmer_id'],
+                            'farm_id' => $validated['farm_id'],
                             'crop_id' => $crop->id,
-                            'confidence_score' => $confidenceScore / 100, // Convert percentage to decimal
+                            'confidence_score' => $rec['confidence'], // Use decimal value directly
                             'recommendation_date' => now(),
                         ]);
 
-                        $nitrogen = $this->mapSoilLevel($validated['nitrogen_level']);
-                        $phosphorus = $this->mapSoilLevel($validated['phosphorus_level']);
-                        $potassium = $this->mapSoilLevel($validated['potassium_level']);
-
-                        $reco_crop = $crop->name;
+                        // Get soil level mappings for fertilizer recommendations
+                        $nLevel = $this->mapSoilLevel($validated['nitrogen_level']);
+                        $pLevel = $this->mapSoilLevel($validated['phosphorus_level']);
+                        $kLevel = $this->mapSoilLevel($validated['potassium_level']);
 
                         // Get detailed fertilizer recommendations
                         $fertilizer_recommendations = $this->getFertilizerRecommendations(
-                            $reco_crop,
-                            $nitrogen,
-                            $phosphorus,
-                            $potassium
+                            $crop->name,
+                            $nLevel,
+                            $pLevel,
+                            $kLevel
                         );
 
                         // Add to the array for frontend display
                         $recommendedCrops[] = [
-                            'farmer_id' => $saveRecommendation['farmer_id'],
+                            'farmer_id' => $validated['farmer_id'],
                             'crop_name' => $crop->name,
                             'fertilizer_recommendations' => $fertilizer_recommendations,
-                            'confidence_score' => $confidenceScore,
+                            'confidence_score' => $rec['confidence'] * 100, // Convert to percentage for display
                         ];
                     }
                 }
+            }
+            return Inertia::render('recommendation/crop', [
+                'farmers' => Farmer::with('farms')->get(),
+                'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
+                'recommendationResult' => $recommendedCrops,
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['api_error' => 'An error occurred while processing your request. Please try again later.']);
+        }
+    }
 
-                return Inertia::render('recommendation/crop', [
-                    'farmers' => Farmer::with('farms')->get(),
-                    'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
-                    'recommendationResult' => $recommendedCrops ?? [],
-                    'apiResponse' => $predictions,
-                ]);
+    private function callCropRecommendationApi(array $data)
+    {
+        try {
+            $response = Http::timeout(30)->post('http://127.0.0.1:5000/api/predict/topk?k=3', $data);
+
+            if ($response->successful()) {
+                $predictions = $response->json();
+
+                return $predictions;
             } else {
-                // Handle HTTP error responses
                 $statusCode = $response->status();
                 $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
 
@@ -277,260 +316,171 @@ class RecommendationController extends Controller
                     $errorMessage .= ' Response: ' . $response->body();
                 }
 
-                return back()->withErrors(['api_error' => $errorMessage]);
+                throw new \Exception($errorMessage);
             }
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            // Handle connection errors (cURL error 7, network issues, etc.)
-            $errorMessage = $e->getMessage();
+            $errorMessage = 'The crop recommendation service is currently unavailable.
+            The Model recommendation service may not be running or there may be network connectivity issues.';
 
-            if (
-                str_contains($errorMessage, 'cURL error 7') ||
-                str_contains($errorMessage, 'Failed to connect') ||
-                str_contains($errorMessage, 'Connection refused') ||
-                str_contains($errorMessage, 'Couldn\'t connect to server')
-            ) {
-
-                return back()->withErrors([
-                    'api_error' => 'The crop recommendation service is currently unavailable. The Model recommendation service may not be running or there may be network connectivity issues.',
-                ]);
-            }
-
-            // Generic connection error
-            return back()->withErrors([
-                'api_error' => 'Unable to connect to the recommendation service: ' . $errorMessage,
-            ]);
-        } catch (\Illuminate\Http\Client\RequestException $e) {
-            // Handle other HTTP client errors
-            return back()->withErrors([
-                'api_error' => 'Request failed: ' . $e->getMessage(),
-            ]);
-        } catch (\Exception $e) {
-            // Handle any other unexpected errors
-            return back()->withErrors([
-                'api_error' => 'An unexpected error occurred while generating recommendations: ' . $e->getMessage(),
-            ]);
+            throw new \Exception($errorMessage);
         }
     }
 
-    /**
-     * Convert nitrogen percentage to kg/ha
-     * Assumes typical soil bulk density of 1.3 g/cm³ and 20cm depth
-     */
-    private function convertNitrogenToKgHa(string $level): array
-    {
-        // Soil bulk density (g/cm³) and depth (cm) for calculation
-        $bulkDensity = 1.3; // g/cm³
-        $depth = 20; // cm (typical soil sampling depth)
-        $conversionFactor = $bulkDensity * $depth * 10; // kg/ha per 1%
 
-        switch ($level) {
-            case 'very low':
-                // <0.05% = 0-0.049%
-                return [
-                    'min' => 0,
-                    'max' => round(0.049 * $conversionFactor, 1),
-                    'range' => '0-' . round(0.049 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'low':
-                // 0.05-0.15%
-                return [
-                    'min' => round(0.05 * $conversionFactor, 1),
-                    'max' => round(0.15 * $conversionFactor, 1),
-                    'range' => round(0.05 * $conversionFactor, 1) . '-' . round(0.15 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'medium':
-                // >0.15-0.2%
-                return [
-                    'min' => round(0.15 * $conversionFactor, 1),
-                    'max' => round(0.2 * $conversionFactor, 1),
-                    'range' => round(0.15 * $conversionFactor, 1) . '-' . round(0.2 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'high':
-                // >0.2-0.3%
-                return [
-                    'min' => round(0.2 * $conversionFactor, 1),
-                    'max' => round(0.3 * $conversionFactor, 1),
-                    'range' => round(0.2 * $conversionFactor, 1) . '-' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'very high':
-                // >0.3%
-                return [
-                    'min' => round(0.3 * $conversionFactor, 1),
-                    'max' => null,
-                    'range' => '>' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            default:
-                return [
-                    'min' => 0,
-                    'max' => 0,
-                    'range' => 'Unknown',
-                ];
-        }
-    }
 
-    /**
-     * Convert phosphorus mg/kg to kg/ha
-     * Uses Bray or Olsen method based on pH
-     */
-    private function convertPhosphorusToKgHa(string $level, float $pH): array
-    {
-        $bulkDensity = 1.3; // g/cm³
-        $depth = 20; // cm
-        $conversionFactor = $bulkDensity * $depth / 1000; // kg/ha per 1 mg/kg
+    // public function getCropRecommendation(CropRecommendationRequest $request)
+    // {
 
-        $isBrayMethod = $pH <= 5.5;
+    //     // $validated = $request->validated();
 
-        if ($isBrayMethod) {
-            // Bray method ranges
-            switch ($level) {
-                case 'very low':
-                    return [
-                        'min' => 0,
-                        'max' => round(3 * $conversionFactor, 2),
-                        'range' => '0-' . round(3 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray',
-                    ];
-                case 'low':
-                    return [
-                        'min' => round(3 * $conversionFactor, 2),
-                        'max' => round(10 * $conversionFactor, 2),
-                        'range' => round(3 * $conversionFactor, 2) . '-' . round(10 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray',
-                    ];
-                case 'medium':
-                    return [
-                        'min' => round(10 * $conversionFactor, 2),
-                        'max' => round(20 * $conversionFactor, 2),
-                        'range' => round(10 * $conversionFactor, 2) . '-' . round(20 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray',
-                    ];
-                case 'high':
-                    return [
-                        'min' => round(20 * $conversionFactor, 2),
-                        'max' => round(30 * $conversionFactor, 2),
-                        'range' => round(20 * $conversionFactor, 2) . '-' . round(30 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray',
-                    ];
-                case 'very high':
-                    return [
-                        'min' => round(30 * $conversionFactor, 2),
-                        'max' => null,
-                        'range' => '>' . round(30 * $conversionFactor, 2) . ' kg/ha (Bray)',
-                        'method' => 'Bray',
-                    ];
-                default:
-                    return [
-                        'min' => 0,
-                        'max' => 0,
-                        'range' => 'Unknown',
-                        'method' => 'Bray',
-                    ];
-            }
-        } else {
-            // Olsen method ranges
-            switch ($level) {
-                case 'very low':
-                    return [
-                        'min' => 0,
-                        'max' => round(3 * $conversionFactor, 2),
-                        'range' => '0-' . round(3 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen',
-                    ];
-                case 'low':
-                    return [
-                        'min' => 0,
-                        'max' => round(7 * $conversionFactor, 2),
-                        'range' => '0-' . round(7 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen',
-                    ];
-                case 'medium':
-                    return [
-                        'min' => round(7 * $conversionFactor, 2),
-                        'max' => round(25 * $conversionFactor, 2),
-                        'range' => round(7 * $conversionFactor, 2) . '-' . round(25 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen',
-                    ];
-                case 'high':
-                    return [
-                        'min' => round(25 * $conversionFactor, 2),
-                        'max' => round(33 * $conversionFactor, 2),
-                        'range' => round(25 * $conversionFactor, 2) . '-' . round(33 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen',
-                    ];
-                case 'very high':
-                    return [
-                        'min' => round(33 * $conversionFactor, 2),
-                        'max' => null,
-                        'range' => '>' . round(33 * $conversionFactor, 2) . ' kg/ha (Olsen)',
-                        'method' => 'Olsen',
-                    ];
-                default:
-                    return [
-                        'min' => 0,
-                        'max' => 0,
-                        'range' => 'Unknown',
-                        'method' => 'Olsen',
-                    ];
-            }
-        }
-    }
+    //     // dd($validated);
 
-    /**
-     * Convert potassium cmol/kg to kg/ha
-     * Uses ammonium acetate extraction method
-     */
-    private function convertPotassiumToKgHa(string $level): array
-    {
-        $bulkDensity = 1.3; // g/cm³
-        $depth = 20; // cm
-        $potassiumAtomicWeight = 39.1; // g/mol
-        // 1 cmol/kg = 39.1 mg K/kg soil
-        $conversionFactor = $bulkDensity * $depth * $potassiumAtomicWeight / 1000; // kg/ha per 1 cmol/kg
+    //     // // $npkInKgHa = [
+    //     // //     'nitrogen' => $this->convertNitrogenToKgHa($validated['nitrogen_level']),
+    //     // //     'phosphorus' => $this->convertPhosphorusToKgHa($validated['phosphorus_level'], $validated['ph_level']),
+    //     // //     'potassium' => $this->convertPotassiumToKgHa($validated['potassium_level']),
+    //     // // ];
 
-        switch ($level) {
-            case 'very low':
-                // <0.3 cmol/kg
-                return [
-                    'min' => 0,
-                    'max' => round(0.3 * $conversionFactor, 1),
-                    'range' => '0-' . round(0.3 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'low':
-                // 0.3-1.0 cmol/kg
-                return [
-                    'min' => round(0.3 * $conversionFactor, 1),
-                    'max' => round(1.0 * $conversionFactor, 1),
-                    'range' => round(0.3 * $conversionFactor, 1) . '-' . round(1.0 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'medium':
-                // 1.0-3.0 cmol/kg
-                return [
-                    'min' => round(1.0 * $conversionFactor, 1),
-                    'max' => round(3.0 * $conversionFactor, 1),
-                    'range' => round(1.0 * $conversionFactor, 1) . '-' . round(3.0 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'high':
-                // 3.0-8.0 cmol/kg
-                return [
-                    'min' => round(3.0 * $conversionFactor, 1),
-                    'max' => round(8.0 * $conversionFactor, 1),
-                    'range' => round(3.0 * $conversionFactor, 1) . '-' . round(8.0 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            case 'very high':
-                // >8.0 cmol/kg
-                return [
-                    'min' => round(8.0 * $conversionFactor, 1),
-                    'max' => null,
-                    'range' => '>' . round(8.0 * $conversionFactor, 1) . ' kg/ha',
-                ];
-            default:
-                return [
-                    'min' => 0,
-                    'max' => 0,
-                    'range' => 'Unknown',
-                ];
-        }
-    }
+    //     // $apiData = [
+    //     //     'soil_type' => $validated['soilType'],
+    //     //     'soil_ph' => (float) $validated['ph_level'],
+    //     //     'temperature' => (float) $validated['temperature'],
+    //     //     'humidity' => (float) $validated['humidity'],
+    //     //     'nitrogen' => $npkInKgHa['nitrogen']['max'] ?? 0,
+    //     //     'phosphorus' => $npkInKgHa['phosphorus']['max'] ?? 0,
+    //     //     'potassium' => $npkInKgHa['potassium']['max'] ?? 0,
+    //     // ];
+
+    //     // // Call the Python ML model API with timeout and error handling
+    //     // try {
+    //     //     $response = Http::timeout(30)->post('http://localhost:5000/predict', $apiData);
+
+    //     //     if ($response->successful()) {
+    //     //         $predictions = $response->json();
+
+    //     //         // Validate farmer and farm data for saving
+    //     //         $saveRecommendation = $request->validate([
+    //     //             'farmer_id' => 'required|exists:farmers,id',
+    //     //             'farm_id' => 'required|exists:farms,id',
+    //     //         ]);
+
+    //     //         // Check if the API response is successful and has recommendations
+    //     //         if ($predictions['status'] === 'success' && isset($predictions['recommended_crop'])) {
+    //     //             $recommendedCrops = [];
+
+    //     //             // Process the single recommendation
+    //     //             $cropName = $predictions['recommended_crop'];
+    //     //             $confidenceScore = (float) str_replace('%', '', $predictions['confidence_score']);
+
+    //     //             // Find the crop in the database
+    //     //             $crop = Crop::where('name', $cropName)->first();
+
+    //     //             if ($crop) {
+    //     //                 // Create soil record
+    //     //                 Soil::create([
+    //     //                     'soil_type' => $validated['soilType'],
+    //     //                     'pH' => $validated['ph_level'],
+    //     //                     'nitrogen_level' => $validated['nitrogen_level'],
+    //     //                     'phosphorus_level' => $validated['phosphorus_level'],
+    //     //                     'potassium_level' => $validated['potassium_level'],
+    //     //                     'nitrogen' => $apiData['nitrogen'],
+    //     //                     'phosphorus' => $apiData['phosphorus'],
+    //     //                     'potassium' => $apiData['potassium'],
+    //     //                     'farm_id' => $saveRecommendation['farm_id'],
+    //     //                     'test_date' => now(),
+    //     //                 ]);
+
+    //     //                 // Create climate record
+    //     //                 Climate::create([
+    //     //                     'farm_id' => $saveRecommendation['farm_id'],
+    //     //                     'temperature' => $validated['temperature'],
+    //     //                     'rainfall' => $validated['rainfall'],
+    //     //                     'humidity' => $validated['humidity'],
+    //     //                     'climate_record_date' => now(),
+    //     //                 ]);
+
+    //     //                 // Save the recommendation to the database
+    //     //                 Recommendation::create([
+    //     //                     'farmer_id' => $saveRecommendation['farmer_id'],
+    //     //                     'farm_id' => $saveRecommendation['farm_id'],
+    //     //                     'crop_id' => $crop->id,
+    //     //                     'confidence_score' => $confidenceScore / 100, // Convert percentage to decimal
+    //     //                     'recommendation_date' => now(),
+    //     //                 ]);
+
+    //     //                 $nitrogen = $this->mapSoilLevel($validated['nitrogen_level']);
+    //     //                 $phosphorus = $this->mapSoilLevel($validated['phosphorus_level']);
+    //     //                 $potassium = $this->mapSoilLevel($validated['potassium_level']);
+
+    //     //                 $reco_crop = $crop->name;
+
+    //     //                 // Get detailed fertilizer recommendations
+    //     //                 $fertilizer_recommendations = $this->getFertilizerRecommendations(
+    //     //                     $reco_crop,
+    //     //                     $nitrogen,
+    //     //                     $phosphorus,
+    //     //                     $potassium
+    //     //                 );
+
+    //     //                 // Add to the array for frontend display
+    //     //                 $recommendedCrops[] = [
+    //     //                     'farmer_id' => $saveRecommendation['farmer_id'],
+    //     //                     'crop_name' => $crop->name,
+    //     //                     'fertilizer_recommendations' => $fertilizer_recommendations,
+    //     //                     'confidence_score' => $confidenceScore,
+    //     //                 ];
+    //     //             }
+    //     //         }
+
+    //     //         return Inertia::render('recommendation/crop', [
+    //     //             'farmers' => Farmer::with('farms')->get(),
+    //     //             'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
+    //     //             'recommendationResult' => $recommendedCrops ?? [],
+    //     //             'apiResponse' => $predictions,
+    //     //         ]);
+    //     //     } else {
+    //     //         // Handle HTTP error responses
+    //     //         $statusCode = $response->status();
+    //     //         $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
+
+    //     //         if ($response->body()) {
+    //     //             $errorMessage .= ' Response: ' . $response->body();
+    //     //         }
+
+    //     //         return back()->withErrors(['api_error' => $errorMessage]);
+    //     //     }
+    //     // } catch (\Illuminate\Http\Client\ConnectionException $e) {
+    //     //     // Handle connection errors (cURL error 7, network issues, etc.)
+    //     //     $errorMessage = $e->getMessage();
+
+    //     //     if (
+    //     //         str_contains($errorMessage, 'cURL error 7') ||
+    //     //         str_contains($errorMessage, 'Failed to connect') ||
+    //     //         str_contains($errorMessage, 'Connection refused') ||
+    //     //         str_contains($errorMessage, 'Couldn\'t connect to server')
+    //     //     ) {
+
+    //     //         return back()->withErrors([
+    //     //             'api_error' => 'The crop recommendation service is currently unavailable. The Model recommendation service may not be running or there may be network connectivity issues.',
+    //     //         ]);
+    //     //     }
+
+    //     //     // Generic connection error
+    //     //     return back()->withErrors([
+    //     //         'api_error' => 'Unable to connect to the recommendation service: ' . $errorMessage,
+    //     //     ]);
+    //     // } catch (\Illuminate\Http\Client\RequestException $e) {
+    //     //     // Handle other HTTP client errors
+    //     //     return back()->withErrors([
+    //     //         'api_error' => 'Request failed: ' . $e->getMessage(),
+    //     //     ]);
+    //     // } catch (\Exception $e) {
+    //     //     // Handle any other unexpected errors
+    //     //     return back()->withErrors([
+    //     //         'api_error' => 'An unexpected error occurred while generating recommendations: ' . $e->getMessage(),
+    //     //     ]);
+    //     // }
+    // }
 
     public function fertilizer(Request $request)
     {

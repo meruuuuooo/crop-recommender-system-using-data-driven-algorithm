@@ -11,6 +11,10 @@ import { format } from 'date-fns';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Reports',
+        href: '/reports',
+    },
+    {
+        title: 'Climate Data',
         href: '/reports/report2',
     },
 ];
@@ -207,19 +211,19 @@ export default function Report2({ farms, filters }: Report2Props) {
     // Transform the data for the table
     const transformedData: ClimateReportRow[] = farms.data.flatMap((farm: FarmWithClimate) => {
         if (!farm.climates || farm.climates.length === 0) return [];
-        
+
         return farm.climates.map((climate: ClimateData, index: number) => {
-            const farmerName = farm.farmer 
+            const farmerName = farm.farmer
                 ? `${farm.farmer.firstname} ${farm.farmer.middlename ? farm.farmer.middlename + ' ' : ''}${farm.farmer.lastname}`.trim()
                 : 'Unknown Farmer';
-            
+
             // Build location string
             const locationParts = [];
             if (farm.location?.barangay?.name) locationParts.push(`Brgy. ${farm.location.barangay.name}`);
             if (farm.location?.municipality?.name) locationParts.push(farm.location.municipality.name);
             if (farm.location?.province?.name) locationParts.push(farm.location.province.name);
             const location = locationParts.length > 0 ? locationParts.join(', ') : 'Unknown Location';
-            
+
             return {
                 id: `${farm.id}-${climate.id}-${index}`,
                 farmName: farm.name,
@@ -229,8 +233,8 @@ export default function Report2({ farms, filters }: Report2Props) {
                 humidity: climate.humidity || 0,
                 rainfall: climate.rainfall || 0,
                 recordDate: climate.climate_record_date,
-                formattedRecordDate: climate.climate_record_date 
-                    ? format(new Date(climate.climate_record_date), 'MMM dd, yyyy') 
+                formattedRecordDate: climate.climate_record_date
+                    ? format(new Date(climate.climate_record_date), 'MMM dd, yyyy')
                     : 'Unknown',
             };
         });

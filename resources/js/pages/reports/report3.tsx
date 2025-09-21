@@ -12,6 +12,10 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Reports',
+        href: '/reports',
+    },
+    {
+        title: 'Farms by Owner',
         href: '/reports/report3',
     },
 ];
@@ -174,18 +178,18 @@ export default function Report3({ farms, farmers, filters }: Report3Props) {
 
     // Transform the data for the table
     const transformedData: FarmRow[] = farms.data.map((farm: FarmWithLocation) => {
-        const farmerName = farm.farmer 
+        const farmerName = farm.farmer
             ? `${farm.farmer.firstname} ${farm.farmer.middlename ? farm.farmer.middlename + ' ' : ''}${farm.farmer.lastname}`.trim()
             : 'Unknown Farmer';
-        
-        const location = farm.location 
+
+        const location = farm.location
             ? [
                 farm.location.barangay?.name,
                 farm.location.municipality?.name,
                 farm.location.province?.name
               ].filter(Boolean).join(', ')
             : 'Unknown Location';
-        
+
         return {
             id: farm.id.toString(),
             farmName: farm.name,
@@ -222,7 +226,7 @@ export default function Report3({ farms, farmers, filters }: Report3Props) {
                                     searchPlaceholder="Search farmers..."
                                     clearable
                                 />
-                                
+
                             </div>
                             <div className="text-sm text-gray-600 dark:text-gray-400">
                                 Total Farms: {transformedData.length}

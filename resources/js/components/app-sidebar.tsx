@@ -75,41 +75,6 @@ const mainNavItems: NavItem[] = [
                 href: '/reports',
                 icon: ScrollText,
             },
-            {
-                title: 'Report 1',
-                href: '/reports/report1',
-                icon: ScrollText,
-            },
-            {
-                title: 'Report 2',
-                href: '/reports/report2',
-                icon: ScrollText,
-            },
-            {
-                title: 'Report 3',
-                href: '/reports/report3',
-                icon: ScrollText,
-            },
-            {
-                title: 'Report 4',
-                href: '/reports/report4',
-                icon: ScrollText,
-            },
-            {
-                title: 'Report 5',
-                href: '/reports/report5',
-                icon: ScrollText,
-            },
-            {
-                title: 'Report 7',
-                href: '/reports/report7',
-                icon: ScrollText,
-            },
-            {
-                title: 'Report 9',
-                href: '/reports/report9',
-                icon: ScrollText,
-            },
         ]
     },
 ];

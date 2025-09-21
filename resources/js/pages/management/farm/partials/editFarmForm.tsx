@@ -1,3 +1,4 @@
+
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,7 @@ import type { EditFarmProps } from '@/types/farm';
 import { route } from 'ziggy-js';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export default function EditFarmForm({ farm, farmers, provinces, municipalities, barangays }: EditFarmProps) {
+export default function EditFarmForm({ farm, farmers, provinces, municipalities, barangays, crops }: EditFarmProps) {
     const { data, setData, put, processing, errors } = useForm({
         name: farm?.name || '',
         total_area: farm?.total_area?.toString() || '',
@@ -93,7 +94,7 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                     <h3 id="farm-info-heading" className="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-200 pb-2">
                         Farm Information
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="farmName" className="text-sm font-medium text-gray-700">
                                 Farm Name <span className="text-red-500" aria-label="required">*</span>
@@ -118,7 +119,8 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
 
                         <div className="space-y-2">
                             <Label htmlFor="farmSize" className="text-sm font-medium text-gray-700">
-                                Total Area (hectares) <span className="text-red-500" aria-label="required">*</span>
+                                Total Area (hectares){' '}
+                                <span className="text-gray-500 text-xs"> (Optional)</span>
                             </Label>
                             <Input
                                 id="farmSize"
@@ -126,7 +128,6 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                                 className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
                                 value={data.total_area}
                                 onChange={(e) => setData('total_area', e.target.value)}
-                                required
                                 autoComplete="off"
                                 placeholder="0.00"
                                 type="number"
@@ -150,7 +151,13 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                                 </span>
                             </Label>
                             <Select
-                                onValueChange={(value) => setData('cropping_system', value)}
+                                onValueChange={(value) => {
+                                    setData('cropping_system', value);
+                                    // If switching to Monocropping and multiple crops are selected, clear them
+                                    if (value === 'Moiocropping' && data.prev_crops && data.prev_crops.includes(', ')) {
+                                        setData('prev_crops', '');
+                                    }
+                                }}
                                 value={data.cropping_system || ''}
                                 name="cropping_system"
                                 aria-describedby={errors.cropping_system ? "cropping-system-error" : "cropping-system-help"}
@@ -182,19 +189,61 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                             <Label htmlFor="previousCrops" className="text-sm font-medium text-gray-700">
                                 Previous Crops <span className="text-gray-500 text-xs">(Optional)</span>
                             </Label>
-                            <Input
-                                id="previousCrops"
-                                name="prev_crops"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:ring-2 focus:ring-[#619154] focus:border-transparent"
-                                value={data.prev_crops}
-                                onChange={(e) => setData('prev_crops', e.target.value)}
-                                autoComplete="off"
-                                placeholder="e.g., Rice, Corn, Vegetables"
-                                aria-describedby={errors.prev_crops ? "prev-crops-error" : "prev-crops-help"}
-                                aria-invalid={errors.prev_crops ? "true" : "false"}
-                            />
+                            <div className="relative">
+                                <Select
+                                    onValueChange={(value) => {
+                                        if (value) {
+                                            // If switching to Monocropping and multiple crops are selected, clear them
+                                            if (data.cropping_system === 'Moiocropping' && data.prev_crops && data.prev_crops.includes(', ')) {
+                                                setData('prev_crops', '');
+                                            }
+                                            // If Monocropping is selected, only allow one crop
+                                            if (data.cropping_system === 'Moiocropping') {
+                                                setData('prev_crops', value);
+                                            } else {
+                                                // For other cropping systems, allow multiple crops
+                                                const currentCrops = data.prev_crops ? data.prev_crops.split(', ') : [];
+                                                if (!currentCrops.includes(value)) {
+                                                    const newCrops = [...currentCrops, value].join(', ');
+                                                    setData('prev_crops', newCrops);
+                                                }
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
+                                        <SelectValue placeholder={data.cropping_system === 'Moiocropping' ? "Select one previous crop" : "Select previous crops"}>
+                                            {data.prev_crops || (data.cropping_system === 'Moiocropping' ? "Select one previous crop" : "Select previous crops")}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {crops?.map((crop) => (
+                                            <SelectItem key={crop.id} value={crop.name}>
+                                                {crop.name}
+                                            </SelectItem>
+                                        )) || []}
+                                    </SelectContent>
+                                </Select>
+
+                                {/* Clear button */}
+                                {data.prev_crops && (
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setData('prev_crops', '');
+                                        }}
+                                        className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 focus:outline-none text-xs px-1"
+                                        aria-label="Clear all crops"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
                             <div id="prev-crops-help" className="text-xs text-gray-500">
-                                Update crops previously grown on this farm
+                                {data.cropping_system === 'Moiocropping'
+                                    ? 'Select one crop that was previously grown on this farm.'
+                                    : 'Select crops that were previously grown on this farm. You can select multiple crops.'}
                             </div>
                             <InputError message={errors.prev_crops} id="prev-crops-error" />
                         </div>
@@ -330,9 +379,6 @@ export default function EditFarmForm({ farm, farmers, provinces, municipalities,
                             disabled={
                                 processing||
                                 !data.name ||
-                                !data.total_area ||
-                                Number(data.total_area) < 0.01 ||
-                                Number(data.total_area) > 1000 ||
                                 !data.farmer_id ||
                                 !data.province_id ||
                                 !data.municipality_id ||

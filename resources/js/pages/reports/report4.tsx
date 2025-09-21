@@ -12,7 +12,11 @@ import { format } from 'date-fns';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Reports',
+       title: 'Reports',
+       href: '/reports',
+    },
+    {
+        title: 'Farms by Recommendation',
         href: '/reports/report4',
     },
 ];
@@ -197,18 +201,18 @@ export default function Report4({ recommendations, provinces, municipalities, fi
 
     // Transform the data for the table
     const transformedData: RecommendationRow[] = recommendations.data.map((recommendation: Recommendation) => {
-        const farmerName = recommendation.farmer 
+        const farmerName = recommendation.farmer
             ? `${recommendation.farmer.firstname} ${recommendation.farmer.middlename ? recommendation.farmer.middlename + ' ' : ''}${recommendation.farmer.lastname}`.trim()
             : 'Unknown Farmer';
-        
-        const location = recommendation.farm?.location 
+
+        const location = recommendation.farm?.location
             ? [
                 recommendation.farm.location.barangay?.name,
                 recommendation.farm.location.municipality?.name,
                 recommendation.farm.location.province?.name
               ].filter(Boolean).join(', ')
             : 'Unknown Location';
-        
+
         return {
             id: recommendation.id.toString(),
             farmName: recommendation.farm?.name || 'Unknown Farm',
@@ -217,8 +221,8 @@ export default function Report4({ recommendations, provinces, municipalities, fi
             location,
             confidenceScore: recommendation.confidence_score || 0,
             recommendationDate: recommendation.recommendation_date,
-            formattedDate: recommendation.recommendation_date 
-                ? format(new Date(recommendation.recommendation_date), 'MMM dd, yyyy') 
+            formattedDate: recommendation.recommendation_date
+                ? format(new Date(recommendation.recommendation_date), 'MMM dd, yyyy')
                 : 'Unknown',
         };
     });
@@ -233,7 +237,7 @@ export default function Report4({ recommendations, provinces, municipalities, fi
                             title="Crop Recommendations by Location"
                             description="Lists crop recommendations for farms in a specific location."
                         />
-                        
+
                         <div className="flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-2">
                                 <label className="text-sm font-medium">Province:</label>
@@ -254,7 +258,7 @@ export default function Report4({ recommendations, provinces, municipalities, fi
                                     </SelectContent>
                                 </Select>
                             </div>
-                            
+
                             {filters.province_id && municipalities.length > 0 && (
                                 <div className="flex items-center gap-2">
                                     <label className="text-sm font-medium">Municipality:</label>
@@ -276,7 +280,7 @@ export default function Report4({ recommendations, provinces, municipalities, fi
                                     </Select>
                                 </div>
                             )}
-                            
+
                             <div className="text-sm text-gray-600 dark:text-gray-400">
                                 Total Recommendations: {transformedData.length}
                             </div>

@@ -2,11 +2,12 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { type CreateFarmerProps } from '@/types/farmer';
 import { useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 import Swal from 'sweetalert2';
+import { SearchableSelect } from '@/components/ui/searchable-select';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function CreateFarmerForm({ provinces, municipalities, barangays }: CreateFarmerProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -23,7 +24,6 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
     });
 
     const filteredMunicipalities = municipalities.filter((municipality) => String(municipality.province_id) === data.province_id);
-
     const filteredBarangays = barangays.filter((barangay) => String(barangay.municipality_id) === data.municipality_id);
 
     const submit: FormEventHandler = (e) => {
@@ -188,146 +188,122 @@ export default function CreateFarmerForm({ provinces, municipalities, barangays 
                     </div>
                 </div>
 
-                <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6" role="region" aria-labelledby="address-info-heading">
-                    <h3 id="address-info-heading" className="mb-4 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
-                        Address Information
-                    </h3>
-                    <div className="space-y-4">
-                        {/* Province, Municipality, and Barangay */}
-                        <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            <legend className="sr-only">Location Selection</legend>
-                            <div className="space-y-2">
-                                <Label htmlFor="province" className="text-sm font-medium text-gray-700">
-                                    Province{' '}
-                                    <span className="text-red-500" aria-label="required">
-                                        *
-                                    </span>
-                                </Label>
-                                <Select
-                                    onValueChange={(value) => {
-                                        setData('province_id', value);
-                                        setData('municipality_id', '');
-                                        setData('barangay_id', '');
-                                    }}
-                                    required
-                                >
-                                    <SelectTrigger
-                                        className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                        aria-describedby={errors.province_id ? 'province-error' : 'province-help'}
-                                        aria-invalid={errors.province_id ? 'true' : 'false'}
-                                    >
-                                        <SelectValue placeholder="Select Province" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {provinces.map((province) => (
-                                            <SelectItem key={province.id} value={String(province.id)}>
-                                                {province.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <div id="province-help" className="text-xs text-gray-500">
-                                    Choose the province where the farmer is located
+                                <div className="rounded-lg border border-gray-200 bg-white p-4 sm:p-6" role="region" aria-labelledby="location-info-heading">
+                                    <h3 id="location-info-heading" className="mb-4 border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
+                                        Farm Location
+                                    </h3>
+                                    <div className="space-y-4">
+                                        <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                            <legend className="sr-only">Farm Location Selection</legend>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="province" className="text-sm font-medium text-gray-700">
+                                                    Province{' '}
+                                                    <span className="text-red-500" aria-label="required">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <SearchableSelect
+                                                    options={provinces.map((province) => ({
+                                                        value: String(province.id),
+                                                        label: province.name,
+                                                    }))}
+                                                    value={data.province_id}
+                                                    onValueChange={(value) => {
+                                                        setData('province_id', value);
+                                                        setData('municipality_id', '');
+                                                        setData('barangay_id', '');
+                                                    }}
+                                                    placeholder="Select Province"
+                                                    searchPlaceholder="Search provinces..."
+                                                    clearable
+                                                    aria-describedby={errors.province_id ? 'province-error' : 'province-help'}
+                                                    aria-invalid={errors.province_id ? 'true' : 'false'}
+                                                />
+                                                <div id="province-help" className="text-xs text-gray-500">
+                                                    Choose the province where the farm is located
+                                                </div>
+                                                <InputError message={errors.province_id} id="province-error" />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="municipality" className="text-sm font-medium text-gray-700">
+                                                    Municipality{' '}
+                                                    <span className="text-red-500" aria-label="required">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <SearchableSelect
+                                                    options={filteredMunicipalities.map((municipality) => ({
+                                                        value: String(municipality.id),
+                                                        label: municipality.name,
+                                                    }))}
+                                                    value={data.municipality_id}
+                                                    onValueChange={(value) => {
+                                                        setData('municipality_id', value);
+                                                        setData('barangay_id', '');
+                                                    }}
+                                                    placeholder={!data.province_id ? 'Select Province first' : 'Select Municipality'}
+                                                    searchPlaceholder="Search municipalities..."
+                                                    disabled={!data.province_id}
+                                                    clearable
+                                                    aria-describedby={errors.municipality_id ? 'municipality-error' : 'municipality-help'}
+                                                    aria-invalid={errors.municipality_id ? 'true' : 'false'}
+                                                />
+                                                <div id="municipality-help" className="text-xs text-gray-500">
+                                                    {!data.province_id ? 'Province must be selected first' : 'Choose the municipality within the selected province'}
+                                                </div>
+                                                <InputError message={errors.municipality_id} id="municipality-error" />
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label htmlFor="barangay" className="text-sm font-medium text-gray-700">
+                                                    Barangay{' '}
+                                                    <span className="text-red-500" aria-label="required">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <SearchableSelect
+                                                    options={filteredBarangays.map((barangay) => ({
+                                                        value: String(barangay.id),
+                                                        label: barangay.name,
+                                                    }))}
+                                                    value={data.barangay_id}
+                                                    onValueChange={(value) => setData('barangay_id', value)}
+                                                    placeholder={!data.municipality_id ? 'Select Municipality first' : 'Select Barangay'}
+                                                    searchPlaceholder="Search barangays..."
+                                                    disabled={!data.municipality_id}
+                                                    clearable
+                                                    aria-describedby={errors.barangay_id ? 'barangay-error' : 'barangay-help'}
+                                                    aria-invalid={errors.barangay_id ? 'true' : 'false'}
+                                                />
+                                                <div id="barangay-help" className="text-xs text-gray-500">
+                                                    {!data.municipality_id
+                                                        ? 'Municipality must be selected first'
+                                                        : 'Choose the barangay within the selected municipality'}
+                                                </div>
+                                                <InputError message={errors.barangay_id} id="barangay-error" />
+                                            </div>
+                                            <div className="space-y-2 lg:col-span-3">
+                                                <Label htmlFor="street" className="text-sm font-medium text-gray-700">
+                                                    Street Address{' '}
+                                                </Label>
+                                                <Input
+                                                    id="street"
+                                                    name="street"
+                                                    className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                                    value={data.street}
+                                                    onChange={(e) => setData('street', e.target.value)}
+                                                    required
+                                                    autoComplete="street-address"
+                                                    placeholder="Enter street address"
+                                                    aria-describedby={errors.street ? 'street-error' : undefined}
+                                                    aria-invalid={errors.street ? 'true' : 'false'}
+                                                />
+                                                <InputError message={errors.street} id="street-error" />
+                                            </div>
+                                        </fieldset>
+                                    </div>
                                 </div>
-                                <InputError message={errors.province_id} id="province-error" />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="municipality" className="text-sm font-medium text-gray-700">
-                                    Municipality{' '}
-                                    <span className="text-red-500" aria-label="required">
-                                        *
-                                    </span>
-                                </Label>
-                                <Select
-                                    onValueChange={(value) => {
-                                        setData('municipality_id', value);
-                                        setData('barangay_id', '');
-                                    }}
-                                    disabled={!data.province_id}
-                                    required
-                                >
-                                    <SelectTrigger
-                                        className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154] disabled:cursor-not-allowed disabled:opacity-50"
-                                        aria-describedby={errors.municipality_id ? 'municipality-error' : 'municipality-help'}
-                                        aria-invalid={errors.municipality_id ? 'true' : 'false'}
-                                    >
-                                        <SelectValue placeholder={!data.province_id ? 'Select Province first' : 'Select Municipality'} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filteredMunicipalities.map((municipality) => (
-                                            <SelectItem key={municipality.id} value={String(municipality.id)}>
-                                                {municipality.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <div id="municipality-help" className="text-xs text-gray-500">
-                                    {!data.province_id ? 'Province must be selected first' : 'Choose the municipality within the selected province'}
-                                </div>
-                                <InputError message={errors.municipality_id} id="municipality-error" />
-                            </div>
-
-                            <div className="space-y-2">
-                                <Label htmlFor="barangay" className="text-sm font-medium text-gray-700">
-                                    Barangay{' '}
-                                    <span className="text-red-500" aria-label="required">
-                                        *
-                                    </span>
-                                </Label>
-                                <Select onValueChange={(value) => setData('barangay_id', value)} disabled={!data.municipality_id} required>
-                                    <SelectTrigger
-                                        className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154] disabled:cursor-not-allowed disabled:opacity-50"
-                                        aria-describedby={errors.barangay_id ? 'barangay-error' : 'barangay-help'}
-                                        aria-invalid={errors.barangay_id ? 'true' : 'false'}
-                                    >
-                                        <SelectValue placeholder={!data.municipality_id ? 'Select Municipality first' : 'Select Barangay'} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {filteredBarangays.map((barangay) => (
-                                            <SelectItem key={barangay.id} value={String(barangay.id)}>
-                                                {barangay.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <div id="barangay-help" className="text-xs text-gray-500">
-                                    {!data.municipality_id
-                                        ? 'Municipality must be selected first'
-                                        : 'Choose the barangay within the selected municipality'}
-                                </div>
-                                <InputError message={errors.barangay_id} id="barangay-error" />
-                            </div>
-                        </fieldset>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="street" className="text-sm font-medium text-gray-700">
-                                Street Address/Zone{' '}
-                                <span className="text-red-500" aria-label="required">
-                                    *
-                                </span>
-                            </Label>
-                            <Input
-                                id="street"
-                                name="street"
-                                className="w-full border border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                value={data.street}
-                                onChange={(e) => setData('street', e.target.value)}
-                                required
-                                autoComplete="street-address"
-                                placeholder="Enter street address, zone, or landmark"
-                                type="text"
-                                aria-describedby={errors.street ? 'street-error' : 'street-help'}
-                                aria-invalid={errors.street ? 'true' : 'false'}
-                            />
-                            <div id="street-help" className="text-xs text-gray-500">
-                                Include house number, street name, zone, or nearby landmark
-                            </div>
-                            <InputError message={errors.street} id="street-error" />
-                        </div>
-                    </div>
-                </div>
-
                 <div className="flex flex-col items-center justify-end gap-4 pt-4 sm:flex-row">
                     <div className="flex gap-3">
                         <Button

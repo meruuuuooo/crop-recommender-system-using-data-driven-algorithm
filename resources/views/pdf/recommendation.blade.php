@@ -30,7 +30,7 @@
         }
 
         .logo {
-            max-width: 120px;
+            max-width: 50px;
             height: auto;
         }
 
@@ -38,7 +38,6 @@
             color: rgb(55 65 81);
             font-size: 1.25rem;
             font-weight: bold;
-            text-align: center;
         }
 
         .section-title {
@@ -179,40 +178,33 @@
         <table class="w-full">
             <tr>
                 <td class="w-half">
-                    <img src="{{ asset('cropTAPLogiICO.ico') }}" alt="CropTAP Logo" class="logo" />
+                    <img src="{{ public_path('crop.svg') }}" alt="CropTAP Logo" class="logo" />
                 </td>
                 <td class="w-half" style="text-align: right;">
-                    <div class="report-title">CROP RECOMMENDATION REPORT</div>
+                    <div class="report-title">CROP RECOMMENDATION</div>
                     <div class="generated-date">Generated on: {{ now()->format('F d, Y') }}</div>
                 </td>
             </tr>
         </table>
-    </div>
+        <!-- Top Information Bar -->
 
-    <!-- Top Information Bar -->
-    <div class="compact-info">
-        <div class="info-section">
-            <h4>Farmer Name:</h4>
-            <p>{{ $recommendation->farmer->firstname }} {{ $recommendation->farmer->middlename ?? '' }} {{ $recommendation->farmer->lastname }}</p>
-        </div>
-        <div class="info-section">
-            <h4>Recommendation Date:</h4>
-            <p>{{ $recommendation->recommendation_date->format('F d, Y') }}</p>
-        </div>
-        <div class="info-section">
-            <h4>Location:</h4>
-            <p>
-                @if($recommendation->farmer->location)
-                {{ $recommendation->farmer->location->barangay->name ?? '' }}, {{ $recommendation->farmer->location->municipality->name ?? '' }}
-                @else
-                {{ $recommendation->farm->location->barangay->name ?? 'N/A' }}
-                @endif
-            </p>
-        </div>
-        <div class="info-section">
-            <h4>Sample ID:</h4>
-            <p>#{{$recommendation->id}}</p>
-        </div>
+        <table class="w-full">
+            <tr>
+                <td class="w-half">
+                    <div class="info-section">
+                        <h4>Farmer Fullname:</h4>
+                        <p style="white-space: nowrap;">{{ $recommendation->farmer->lastname }}, {{ $recommendation->farmer->firstname }} {{ $recommendation->farmer->middlename ? substr($recommendation->farmer->middlename, 0, 1) . '.' : '' }}</p>
+                    </div>
+                </td>
+                <td class="w-half">
+                    <div class="info-section">
+                        <h4>Farm Address:</h4>
+                        <p style="white-space: nowrap;">{{ $recommendation->farm->location->barangay->name ?? 'N/A' }}, {{ $recommendation->farm->location->municipality->name ?? 'N/A' }}, {{ $recommendation->farm->location->province->name ?? 'N/A' }}</p>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <!-- Soil Analysis and Crop Recommendation -->
@@ -223,6 +215,7 @@
             <th>Phosphorus</th>
             <th>Potassium</th>
             <th>Recommended Crop</th>
+            <th>Suitability Score</th>
         </tr>
         <tr>
             <td>{{ $recommendation->farm->soils->first()->pH ?? 'N/A' }}</td>
@@ -230,6 +223,7 @@
             <td>{{ strtoupper($recommendation->farm->soils->first()->phosphorus_level ?? 'N/A') }}</td>
             <td>{{ strtoupper($recommendation->farm->soils->first()->potassium_level ?? 'N/A') }}</td>
             <td class="highlight-cell">{{ strtoupper($recommendation->crop->name) }}</td>
+            <td class="highlight-cell">{{ $recommendation->confidence_score ? number_format($recommendation->confidence_score * 100) . '%' : 'N/A' }}</td>
         </tr>
     </table>
 
@@ -237,7 +231,6 @@
     <table class="data-table">
         <tr>
             <th>Fertilizer Recommendation Rate {{ $fertilizer_recommendations['nitrogen']['crop_fertilizer'][0]['unit'] ?? '' }}</th>
-            <th>Landscape</th>
         </tr>
         <tr>
             <td>
@@ -247,8 +240,28 @@
                 $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
                 @endphp
                 {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
-            <td>{{ strtoupper($recommendation->farm->location->barangay->name ?? 'HILLYLAND') }}</td>
+            </td>
         </tr>
+        <!-- <tr>
+            <td>
+                @php
+                $nRecoAmmount = $fertilizer_recommendations['nitrogen']['crop_fertilizer'][1]['recommendation_amount'] ?? 0;
+                $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][1]['recommendation_amount'] ?? 0;
+                $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][1]['recommendation_amount'] ?? 0;
+                @endphp
+                {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @php
+                $nRecoAmmount = $fertilizer_recommendations['nitrogen']['crop_fertilizer'][2]['recommendation_amount'] ?? 0;
+                $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][2]['recommendation_amount'] ?? 0;
+                $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][2]['recommendation_amount'] ?? 0;
+                @endphp
+                {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
+            </td>
+        </tr> -->
     </table>
 
     <!-- Additional Recommendations -->

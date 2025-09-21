@@ -54,8 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('recommendation')->name('recommendation.')->group(function () {
         Route::get('/crop', [RecommendationController::class, 'crop'])->name('crop');
-        Route::post('/crop', [RecommendationController::class, 'getCropRecommendation'])->name('getCropRecommendation');
-        Route::get('/crop/download/{farmer}', [RecommendationController::class, 'downloadRecommendationPdf'])->name('downloadRecommendationPdf');
+        Route::post('/crop', [RecommendationController::class, 'store'])->name('store');
+        Route::get('/crop/download/{farmer}/{crop}', [RecommendationController::class, 'downloadRecommendationPdf'])->name('downloadRecommendationPdf');
         Route::get('/crop/show/{recommendation}', [RecommendationController::class, 'showCropRecommendation'])->name('showCropRecommendation');
 
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
@@ -72,7 +72,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/report4', [ReportController::class, 'report4'])->name('report4');
         Route::get('/report5', [ReportController::class, 'report5'])->name('report5');
         Route::get('/report7', [ReportController::class, 'report7'])->name('report7');
-        Route::get('/report9', [ReportController::class, 'report9'])->name('report9');
     });
 
     Route::get('/crop/calendar', function () {

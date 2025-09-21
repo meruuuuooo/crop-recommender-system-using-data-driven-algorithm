@@ -1,4 +1,4 @@
-import { Farm, Farmer, Location, Province, Municipality, Barangay, PaginatedResponse } from './index';
+import { Farm, Farmer, Location, Province, Municipality, Barangay, PaginatedResponse, Crop } from './index';
 
 export type { Farm, Farmer, Location, Province, Municipality, Barangay };
 
@@ -21,6 +21,7 @@ export type CreateFarmProps = {
     provinces: Province[];
     municipalities: Municipality[];
     barangays: Barangay[];
+    crops: Crop[];
 };
 
 export type EditFarmProps = {
@@ -29,6 +30,7 @@ export type EditFarmProps = {
     provinces: Province[];
     municipalities: Municipality[];
     barangays: Barangay[];
+    crops: Crop[];
 };
 
 // Legacy type names for backward compatibility

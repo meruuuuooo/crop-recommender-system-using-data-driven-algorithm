@@ -11,6 +11,10 @@ import { type ColumnDef } from '@tanstack/react-table';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Reports',
+        href: '/reports',
+    },
+    {
+        title: 'Farms by Soil Types',
         href: '/reports/report7',
     },
 ];
@@ -195,7 +199,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
     const transformedData: FarmRow[] = farms.data.map((farm: Farm) => {
         const latestSoil = farm.soils[0]; // Assuming sorted by test_date desc
         const cropNames = farm.recommendations.map(rec => rec.crop.name).join(', ');
-        
+
         return {
             id: farm.id.toString(),
             farmName: farm.name,
@@ -211,7 +215,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
     // Get summary statistics
     const soilTypeStats: { [key: string]: number } = {};
     const phRanges = { acidic: 0, neutral: 0, alkaline: 0 };
-    
+
     transformedData.forEach(farm => {
         soilTypeStats[farm.soilType] = (soilTypeStats[farm.soilType] || 0) + 1;
         const ph = parseFloat(farm.phLevel);
@@ -237,7 +241,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
                             title="Farms with Specific Soil Types and Recommended Crops"
                             description="Lists farms with specific soil types and their recommended crops based on soil conditions."
                         />
-                        
+
                         {/* Filters */}
                         <div className="flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-2">

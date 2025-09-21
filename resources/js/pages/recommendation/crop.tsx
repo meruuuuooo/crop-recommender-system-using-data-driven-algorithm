@@ -8,10 +8,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, Fertilizer_recommendations, Farmer, Recommendation, RecommendationResult } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { Eye } from 'lucide-react';
+import { Download } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { route } from 'ziggy-js';
-import { router } from '@inertiajs/react';
+// import { router } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -42,7 +42,6 @@ export default function Crop({
         farm_id: '',
     });
 
-    console.log('Recommendation Result:', recommendationResult);
 
     // Get farms for the selected farmer
     const selectedFarmer = farmers.find((farmer) => farmer.id === Number(data.farmer_id));
@@ -57,16 +56,14 @@ export default function Crop({
         }));
     };
 
-    const handleViewRecommendation = (recommendationId: number) => {
-        console.log('Viewing recommendation ID:', recommendationId);
+    // const handleViewRecommendation = (recommendationId: number) => {
+    //     console.log('Viewing recommendation ID:', recommendationId);
 
-        router.get(route('recommendation.showCropRecommendation', { recommendation: recommendationId }));
-    };
+    //     router.get(route('recommendation.showCropRecommendation', { recommendation: recommendationId }));
+    // };
 
     const getCropFertilizerRate = (fertilizer_recommendations: Fertilizer_recommendations): string => {
 
-        console.log('Crop Fertilizer Data:', fertilizer_recommendations);
-        
         try {
             if (!fertilizer_recommendations) {
                 return 'N/A';
@@ -83,9 +80,7 @@ export default function Crop({
         }
     }
 
-    const handleDownloadPdf = (farmerId: number) => {
-        console.log('Farmer ID for PDF download:', farmerId);
-
+    const handleDownloadPdf = (farmerId: number, cropName: string | undefined) => {
         Swal.fire({
             title: 'Download PDF',
             text: 'Are you sure you want to download the recommendation PDF?',
@@ -95,9 +90,7 @@ export default function Crop({
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log('Downloading PDF for farmer ID:', farmerId);
-                // Use direct window.location to trigger file download
-                window.location.href = route('recommendation.downloadRecommendationPdf', { farmer: farmerId });
+                window.location.href = route('recommendation.downloadRecommendationPdf', { farmer: farmerId, crop: cropName });
             }
         });
     };
@@ -148,76 +141,76 @@ export default function Crop({
         }));
     };
 
-    const getNitrogenRange = (level: string) => {
-        switch (level) {
-            case 'very low':
-                return '<0.05%';
-            case 'low':
-                return '0.05-0.15%';
-            case 'medium':
-                return '>0.15-0.2%';
-            case 'high':
-                return '>0.2-0.3%';
-            case 'very high':
-                return '>0.3%';
-            default:
-                return 'Total Nitrogen (%)';
-        }
-    };
+    // const getNitrogenRange = (level: string) => {
+    //     switch (level) {
+    //         case 'very low':
+    //             return '<0.05%';
+    //         case 'low':
+    //             return '0.05-0.15%';
+    //         case 'medium':
+    //             return '>0.15-0.2%';
+    //         case 'high':
+    //             return '>0.2-0.3%';
+    //         case 'very high':
+    //             return '>0.3%';
+    //         default:
+    //             return 'Total Nitrogen (%)';
+    //     }
+    // };
 
-    const getPotassiumRange = (level: string) => {
-        switch (level) {
-            case 'very low':
-                return '<0.3 cmol/kg';
-            case 'low':
-                return '0.3-1.0 cmol/kg';
-            case 'medium':
-                return '1.0-3.0 cmol/kg';
-            case 'high':
-                return '3.0-8.0 cmol/kg';
-            case 'very high':
-                return '>8.0 cmol/kg';
-            default:
-                return 'Exchangeable K (cmol/kg)';
-        }
-    };
+    // const getPotassiumRange = (level: string) => {
+    //     switch (level) {
+    //         case 'very low':
+    //             return '<0.3 cmol/kg';
+    //         case 'low':
+    //             return '0.3-1.0 cmol/kg';
+    //         case 'medium':
+    //             return '1.0-3.0 cmol/kg';
+    //         case 'high':
+    //             return '3.0-8.0 cmol/kg';
+    //         case 'very high':
+    //             return '>8.0 cmol/kg';
+    //         default:
+    //             return 'Exchangeable K (cmol/kg)';
+    //     }
+    // };
 
-    const getPhosphorusRange = (level: string) => {
-        // Bray or Olsen method is determined by pH
-        const isBrayMethod = parseFloat(data.ph_level as unknown as string) <= 5.5;
+    // const getPhosphorusRange = (level: string) => {
+    //     // Bray or Olsen method is determined by pH
+    //     const isBrayMethod = parseFloat(data.ph_level as unknown as string) <= 5.5;
 
-        if (isBrayMethod) {
-            switch (level) {
-                case 'very low':
-                    return '<3 mg/kg (Bray)';
-                case 'low':
-                    return '3-10 mg/kg (Bray)';
-                case 'medium':
-                    return '>10-20 mg/kg (Bray)';
-                case 'high':
-                    return '>20-30 mg/kg (Bray)';
-                case 'very high':
-                    return '>30 mg/kg (Bray)';
-                default:
-                    return 'Available P (Bray)';
-            }
-        } else {
-            switch (level) {
-                case 'very low':
-                    return '<3 mg/kg (Olsen)';
-                case 'low':
-                    return '0-7 mg/kg (Olsen)';
-                case 'medium':
-                    return '>7-25 mg/kg (Olsen)';
-                case 'high':
-                    return '>25-33 mg/kg (Olsen)';
-                case 'very high':
-                    return '>33 mg/kg (Olsen)';
-                default:
-                    return 'Available P (Olsen)';
-            }
-        }
-    };
+    //     if (isBrayMethod) {
+    //         switch (level) {
+    //             case 'very low':
+    //                 return '<3 mg/kg (Bray)';
+    //             case 'low':
+    //                 return '3-10 mg/kg (Bray)';
+    //             case 'medium':
+    //                 return '>10-20 mg/kg (Bray)';
+    //             case 'high':
+    //                 return '>20-30 mg/kg (Bray)';
+    //             case 'very high':
+    //                 return '>30 mg/kg (Bray)';
+    //             default:
+    //                 return 'Available P (Bray)';
+    //         }
+    //     } else {
+    //         switch (level) {
+    //             case 'very low':
+    //                 return '<3 mg/kg (Olsen)';
+    //             case 'low':
+    //                 return '0-7 mg/kg (Olsen)';
+    //             case 'medium':
+    //                 return '>7-25 mg/kg (Olsen)';
+    //             case 'high':
+    //                 return '>25-33 mg/kg (Olsen)';
+    //             case 'very high':
+    //                 return '>33 mg/kg (Olsen)';
+    //             default:
+    //                 return 'Available P (Olsen)';
+    //         }
+    //     }
+    // };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -337,11 +330,11 @@ export default function Crop({
                                                 <SelectItem value="silt_loam">Silt Loam</SelectItem>
                                                 <SelectItem value="clay_loam">Clay Loam</SelectItem>
                                                 <SelectItem value="clay">Clay</SelectItem> */}
-                                                <SelectItem value="clay">Clay</SelectItem>
-                                                <SelectItem value="loamy">Loamy</SelectItem>
-                                                <SelectItem value="peaty">Peaty</SelectItem>
-                                                <SelectItem value="saline">Saline</SelectItem>
-                                                <SelectItem value="sandy">Sandy</SelectItem>
+                                                <SelectItem value="Clay">Clay</SelectItem>
+                                                <SelectItem value="Loamy">Loamy</SelectItem>
+                                                <SelectItem value="Peaty">Peaty</SelectItem>
+                                                <SelectItem value="Saline">Saline</SelectItem>
+                                                <SelectItem value="Sandy">Sandy</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <div id="soil-type-help" className="text-xs text-gray-500">
@@ -366,12 +359,6 @@ export default function Crop({
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="very low">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-red-600"></div>
-                                                                Very Low
-                                                            </div>
-                                                        </SelectItem>
                                                         <SelectItem value="low">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-yellow-400"></div>
@@ -390,15 +377,8 @@ export default function Crop({
                                                                 High
                                                             </div>
                                                         </SelectItem>
-                                                        <SelectItem value="very high">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-green-900"></div>
-                                                                Very High
-                                                            </div>
-                                                        </SelectItem>
                                                     </SelectContent>
                                                 </Select>
-                                                <div className="text-xs text-gray-500">{getNitrogenRange(data.nitrogen_level)}</div>
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="potassium-level" className="text-sm font-medium text-gray-700">
@@ -409,12 +389,6 @@ export default function Crop({
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="very low">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-red-600"></div>
-                                                                Very Low
-                                                            </div>
-                                                        </SelectItem>
                                                         <SelectItem value="low">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-red-800"></div>
@@ -433,15 +407,8 @@ export default function Crop({
                                                                 High
                                                             </div>
                                                         </SelectItem>
-                                                        <SelectItem value="very high">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-yellow-400"></div>
-                                                                Very High
-                                                            </div>
-                                                        </SelectItem>
                                                     </SelectContent>
                                                 </Select>
-                                                <div className="text-xs text-gray-500">{getPotassiumRange(data.potassium_level)}</div>
                                             </div>
                                             <div className="space-y-2">
                                                 <Label htmlFor="phosphorus-level" className="text-sm font-medium text-gray-700">
@@ -452,12 +419,6 @@ export default function Crop({
                                                         <SelectValue placeholder="Select Level" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="very low">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-blue-300"></div>
-                                                                Very Low
-                                                            </div>
-                                                        </SelectItem>
                                                         <SelectItem value="low">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-blue-100"></div>
@@ -476,15 +437,8 @@ export default function Crop({
                                                                 High
                                                             </div>
                                                         </SelectItem>
-                                                        <SelectItem value="very high">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-indigo-900"></div>
-                                                                Very High
-                                                            </div>
-                                                        </SelectItem>
                                                     </SelectContent>
                                                 </Select>
-                                                <div className="text-xs text-gray-500">{getPhosphorusRange(data.phosphorus_level)}</div>
                                             </div>
                                         </div>
                                     </fieldset>
@@ -674,7 +628,7 @@ export default function Crop({
                     <Card className="border-[#D6E3D4]" role="region" aria-labelledby="results-heading">
                         <CardHeader>
                             <CardHeader>
-                                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                                {/* <div className="flex items-center justify-between border-b border-gray-200 pb-2">
                                     <CardTitle id="results-heading" className="text-lg font-semibold text-gray-900">
                                         Recommendation Results
                                     </CardTitle>
@@ -686,7 +640,7 @@ export default function Crop({
                                     >
                                         Download PDF
                                     </Button>
-                                </div>
+                                </div> */}
                                 <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
                             </CardHeader>
                         </CardHeader>
@@ -718,6 +672,7 @@ export default function Crop({
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Crop Name</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Fertilizer Rate</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Confidence Score</th>
+                                                <th className='px-4 py-2 font-semibold text-gray-700'>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -730,6 +685,16 @@ export default function Crop({
                                                         <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                                             {item.confidence_score}%
                                                         </span>
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        <Button
+                                                            onClick={() => handleDownloadPdf(recommendationResult[0]?.farmer_id, item.crop_name)}
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                        >
+                                                            <Download className="h-4 w-4 text-[#619154]" />
+                                                        </Button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -796,12 +761,12 @@ export default function Crop({
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
                                                                     <Button
-                                                                        onClick={() => handleViewRecommendation(item.id)}
+                                                                        onClick={() => handleDownloadPdf(item.farmer_id, item.crop?.name)}
                                                                         size="sm"
                                                                         variant="outline"
                                                                         className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
                                                                     >
-                                                                        <Eye className="h-4 w-4 text-[#619154]" />
+                                                                        <Download className="h-4 w-4 text-[#619154]" />
                                                                     </Button>
                                                                 </TooltipTrigger>
                                                                 <TooltipContent>

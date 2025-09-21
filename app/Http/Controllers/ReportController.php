@@ -72,7 +72,7 @@ class ReportController extends Controller
                 $query->select('id', 'firstname', 'middlename', 'lastname');
             },
             'location.province',
-            'location.municipality', 
+            'location.municipality',
             'location.barangay',
             'climates' => function ($query) {
                 $query->orderBy('climate_record_date', 'desc');
@@ -112,7 +112,7 @@ class ReportController extends Controller
     }
 
     // Report 3: Shows all farms owned by a specific farmer, including location and size details
-    public function report3(Request $request) 
+    public function report3(Request $request)
     {
         $search = $request->get('search');
         $perPage = $request->get('per_page', 20);
@@ -125,7 +125,7 @@ class ReportController extends Controller
                 $query->select('id', 'firstname', 'middlename', 'lastname');
             },
             'location.province',
-            'location.municipality', 
+            'location.municipality',
             'location.barangay'
         ])
         ->when($farmerId, function ($query, $farmerId) {
@@ -161,13 +161,13 @@ class ReportController extends Controller
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
-                'farmer_id' => $farmerId, 
+                'farmer_id' => $farmerId,
             ],
         ]);
     }
 
     // Report 4: Lists crop recommendations for farms in a specific location
-    public function report4(Request $request) 
+    public function report4(Request $request)
     {
         $search = $request->get('search');
         $perPage = $request->get('per_page', 10);
@@ -175,8 +175,8 @@ class ReportController extends Controller
         $municipalityId = $request->get('municipality_id');
 
         $provinces = Province::select('id', 'name')->get();
-        $municipalities = $provinceId ? 
-            Municipality::where('province_id', $provinceId)->select('id', 'name')->get() : 
+        $municipalities = $provinceId ?
+            Municipality::where('province_id', $provinceId)->select('id', 'name')->get() :
             collect();
 
         $recommendations = Recommendation::with([
@@ -229,7 +229,7 @@ class ReportController extends Controller
     }
 
     // Report 5: Details crop recommendations tailored to soil and climate conditions on farms
-    public function report5(Request $request) 
+    public function report5(Request $request)
     {
         $search = $request->get('search');
         $perPage = $request->get('per_page', 10);
@@ -282,7 +282,7 @@ class ReportController extends Controller
 
 
     // Report 7: Lists Farms with Specific Soil Types and Their Recommended Crops
-    public function report7(Request $request) 
+    public function report7(Request $request)
     {
         $search = $request->get('search');
         $perPage = $request->get('per_page', 10);
@@ -327,53 +327,6 @@ class ReportController extends Controller
                 'search' => $search,
                 'per_page' => $perPage,
                 'soil_type' => $soilType,
-            ],
-        ]);
-    }
-
-    // Report 9: Most Recommended Crops for Specific Locations Based on Suitability Scores and Environmental Data
-    public function report9(Request $request) 
-    {
-        $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
-        $municipalityId = $request->get('municipality_id');
-
-        $municipalities = Municipality::select('id', 'name')->get();
-
-        $cropRecommendations = Recommendation::select([
-                'crop_id',
-                DB::raw('AVG(confidence_score) as avg_confidence_score'),
-                DB::raw('COUNT(*) as recommendation_count')
-            ])
-            ->with([
-                'crop',
-                'farm.location.province',
-                'farm.location.municipality'
-            ])
-            ->when($municipalityId, function ($query, $municipalityId) {
-                return $query->whereHas('farm.location', function ($q) use ($municipalityId) {
-                    $q->where('municipality_id', $municipalityId);
-                });
-            })
-            ->when($search, function ($query, $search) {
-                return $query->whereHas('crop', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-            })
-            ->groupBy('crop_id')
-            ->having('recommendation_count', '>=', 1)
-            ->orderBy('avg_confidence_score', 'desc')
-            ->orderBy('recommendation_count', 'desc')
-            ->paginate($perPage)
-            ->withQueryString();
-
-        return Inertia::render('reports/report9', [
-            'cropRecommendations' => $cropRecommendations,
-            'municipalities' => $municipalities,
-            'filters' => [
-                'search' => $search,
-                'per_page' => $perPage,
-                'municipality_id' => $municipalityId,
             ],
         ]);
     }
