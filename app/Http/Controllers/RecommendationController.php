@@ -26,8 +26,6 @@ class RecommendationController extends Controller
 
         $recent_recommendations = Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get();
 
-
-
         return Inertia::render('recommendation/crop', [
             'farmers' => $farmers,
             'recent_recommendations' => $recent_recommendations,
@@ -35,18 +33,11 @@ class RecommendationController extends Controller
         ]);
     }
 
-    public function downloadRecommendationPdf($farmer, $crop)
+    public function downloadRecommendationPdf($recommendation)
     {
         try {
-            // Safely get crop ID
-            $cropModel = Crop::where('name', $crop)->first();
-            if (!$cropModel) {
-                return back()->withErrors(['pdf_error' => 'Crop not found.']);
-            }
-
-            // Get the latest recommendation for the farmer with highest confidence score
-            $recommendation = Recommendation::where('farmer_id', $farmer)
-                ->where('crop_id', $cropModel->id)
+            // Get the recommendation with all necessary relationships
+            $reco = Recommendation::where('id', $recommendation)
                 ->with([
                     'farmer.location.province',
                     'farmer.location.municipality',
@@ -55,24 +46,22 @@ class RecommendationController extends Controller
                     'farm.location.province',
                     'farm.location.municipality',
                     'farm.location.barangay',
-                    'farm.soils',
-                    'farm.climates',
+                    'soil',
+                    'climate',
                 ])
-                ->latest()
-                ->orderByDesc('confidence_score')
                 ->first();
 
-            if (! $recommendation) {
-                return back()->withErrors(['pdf_error' => 'No recommendations found for the selected farmer.']);
+            if (! $reco) {
+                return back()->withErrors(['pdf_error' => 'No recommendation found.']);
             }
 
-            // Map soil levels to single-letter codes - use last() instead of latest()
-            $latestSoil = $recommendation->farm->soils->last();
-            $nitrogen = $this->mapSoilLevel($latestSoil->nitrogen_level ?? '') ?: 'L';
-            $phosphorus = $this->mapSoilLevel($latestSoil->phosphorus_level ?? '') ?: 'L';
-            $potassium = $this->mapSoilLevel($latestSoil->potassium_level ?? '') ?: 'L';
+            // Map soil levels to single-letter codes
+            $soil = $reco->soil;
+            $nitrogen = $this->mapSoilLevel($soil->nitrogen_level ?? '') ?: 'L';
+            $phosphorus = $this->mapSoilLevel($soil->phosphorus_level ?? '') ?: 'L';
+            $potassium = $this->mapSoilLevel($soil->potassium_level ?? '') ?: 'L';
 
-            $reco_crop = $recommendation->crop->name;
+            $reco_crop = $reco->crop->name;
 
             // Get detailed fertilizer recommendations
             $fertilizer_recommendations = $this->getFertilizerRecommendations(
@@ -82,20 +71,18 @@ class RecommendationController extends Controller
                 $potassium
             );
 
-            $farmerName = trim($recommendation->farmer->firstname . ' ' . $recommendation->farmer->lastname);
-
+            $farmerName = trim($reco->farmer->firstname.' '.$reco->farmer->lastname);
 
             $pdf = Pdf::loadView('pdf.recommendation', [
-                'recommendation' => $recommendation,
+                'recommendation' => $reco,
                 'fertilizer_recommendations' => $fertilizer_recommendations,
             ])->setPaper('a4', 'portrait');
 
+            $fileName = 'Crop_Recommendation_'.preg_replace('/\s+/', '_', $farmerName).'_'.now()->format('Ymd_His').'.pdf';
 
-            $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
-
-            return $pdf->stream($fileName);
+            return $pdf->download($fileName);
         } catch (\Exception $e) {
-            Log::error('PDF Generation Error: ' . $e->getMessage());
+            Log::error('PDF Generation Error: '.$e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
         }
@@ -230,7 +217,7 @@ class RecommendationController extends Controller
             // Check if API response has recommendations array
             if (isset($recommendations['recommendations'])) {
                 // Save soil and climate records once (not per recommendation)
-                Soil::create([
+                $soil = Soil::create([
                     'soil_type' => $validated['soilType'],
                     'pH' => $validated['ph_level'],
                     'nitrogen_level' => $validated['nitrogen_level'],
@@ -243,7 +230,7 @@ class RecommendationController extends Controller
                     'test_date' => now(),
                 ]);
 
-                Climate::create([
+                $climate = Climate::create([
                     'farm_id' => $validated['farm_id'],
                     'temperature' => $validated['temperature'],
                     'rainfall' => $validated['rainfall'],
@@ -258,10 +245,12 @@ class RecommendationController extends Controller
 
                     if ($crop) {
                         // Save recommendation to database
-                        Recommendation::create([
+                        $reco = Recommendation::create([
                             'farmer_id' => $validated['farmer_id'],
                             'farm_id' => $validated['farm_id'],
                             'crop_id' => $crop->id,
+                            'soil_id' => $soil->id,
+                            'climate_id' => $climate->id,
                             'confidence_score' => $rec['confidence'], // Use decimal value directly
                             'recommendation_date' => now(),
                         ]);
@@ -281,6 +270,7 @@ class RecommendationController extends Controller
 
                         // Add to the array for frontend display
                         $recommendedCrops[] = [
+                            'recommendation_id' => $reco->id,
                             'farmer_id' => $validated['farmer_id'],
                             'crop_name' => $crop->name,
                             'fertilizer_recommendations' => $fertilizer_recommendations,
@@ -289,13 +279,16 @@ class RecommendationController extends Controller
                     }
                 }
             }
+
             return Inertia::render('recommendation/crop', [
                 'farmers' => Farmer::with('farms')->get(),
                 'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
                 'recommendationResult' => $recommendedCrops,
             ]);
         } catch (\Exception $e) {
-            return back()->withErrors(['api_error' => 'An error occurred while processing your request. Please try again later.']);
+            Log::error('Crop recommendation error: '.$e->getMessage());
+
+            return back()->withErrors(['api_error' => $e->getMessage()]);
         }
     }
 
@@ -313,7 +306,7 @@ class RecommendationController extends Controller
                 $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
 
                 if ($response->body()) {
-                    $errorMessage .= ' Response: ' . $response->body();
+                    $errorMessage .= ' Response: '.$response->body();
                 }
 
                 throw new \Exception($errorMessage);
@@ -325,8 +318,6 @@ class RecommendationController extends Controller
             throw new \Exception($errorMessage);
         }
     }
-
-
 
     // public function getCropRecommendation(CropRecommendationRequest $request)
     // {

@@ -12,8 +12,9 @@ class Crop extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'time_of_planting',
-        'maturity',
+        'planting_season_primary',
+        'harvesting_period',
+        'growth_duration_days',
         'ph_preference',
         'soil_requirement',
     ];

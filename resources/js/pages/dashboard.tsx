@@ -161,7 +161,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                     <tbody>
                                         {recentRecommendations.map((item, idx) => (
                                             <tr key={idx} className="border-b last:border-0">
-                                                <td className="px-4 py-2">{item.recommendation_date}</td>
+                                                <td className="px-4 py-2">{new Date(item.recommendation_date).toLocaleDateString()}</td>
                                                 <td className="px-4 py-2">{item.crop?.name}</td>
                                                 <td className="px-4 py-2">{item.farmer?.lastname}</td>
                                                 <td className="px-4 py-2">{item.confidence_score} %</td>

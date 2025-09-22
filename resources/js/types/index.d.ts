@@ -157,6 +157,7 @@ export interface CropFertilizer {
 }
 
 export interface RecommendationResult {
+    recommendation_id: number;
     farmer_id: number;
     crop_name: string;
     fertilizer_recommendations: Fertilizer_recommendations;
@@ -168,6 +169,8 @@ export interface Recommendation {
     farmer_id: number;
     farm_id: number;
     crop_id: number;
+    soil_id: number;
+    climate_id: number;
     confidence_score: number;
     recommendation_date: string;
     created_at: string;
@@ -180,8 +183,9 @@ export interface Recommendation {
 export interface Crop {
     id: number;
     name: string;
-    time_of_planting: string;
-    maturity: string;
+    planting_season_primary: string;
+    harvesting_period: string;
+    growing_duration_days: string;
     ph_preference: string;
     soil_requirement: string;
     category_id: number;

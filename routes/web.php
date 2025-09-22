@@ -55,7 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('recommendation')->name('recommendation.')->group(function () {
         Route::get('/crop', [RecommendationController::class, 'crop'])->name('crop');
         Route::post('/crop', [RecommendationController::class, 'store'])->name('store');
-        Route::get('/crop/download/{farmer}/{crop}', [RecommendationController::class, 'downloadRecommendationPdf'])->name('downloadRecommendationPdf');
+        Route::get('/crop/download/{recommendation}', [RecommendationController::class, 'downloadRecommendationPdf'])->name('downloadRecommendationPdf');
         Route::get('/crop/show/{recommendation}', [RecommendationController::class, 'showCropRecommendation'])->name('showCropRecommendation');
 
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');

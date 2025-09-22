@@ -22,8 +22,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->string('name');
-            $table->string('time_of_planting')->nullable();
-            $table->string('maturity')->nullable();
+            $table->string('planting_season_primary')->nullable();
+            $table->string('harvesting_period')->nullable();
+            $table->string('growing_duration_days')->nullable();
             $table->string('ph_preference')->nullable();
             $table->text('soil_requirement')->nullable();
             $table->timestamps();
@@ -34,6 +35,8 @@ return new class extends Migration
             $table->foreignId('farmer_id')->constrained()->onDelete('cascade');
             $table->foreignId('farm_id')->constrained()->onDelete('cascade');
             $table->foreignId('crop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('soil_id')->constrained('soils')->onDelete('cascade');
+            $table->foreignId('climate_id')->constrained('climates')->onDelete('cascade');
             $table->float('confidence_score');
             $table->date('recommendation_date');
             $table->timestamps();

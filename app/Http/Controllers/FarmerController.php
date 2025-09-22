@@ -100,7 +100,7 @@ class FarmerController extends Controller
             'location_id' => $location->id,
             'user_id' => $user_id,
         ]);
-        return redirect()->route('management.farmer.index')->with('success', 'Farmer created successfully.');
+        return redirect()->route('management.farm.create')->with('success', 'Farmer created successfully.');
     }
 
     /**

@@ -218,10 +218,10 @@
             <th>Suitability Score</th>
         </tr>
         <tr>
-            <td>{{ $recommendation->farm->soils->first()->pH ?? 'N/A' }}</td>
-            <td>{{ strtoupper($recommendation->farm->soils->first()->nitrogen_level ?? 'N/A') }}</td>
-            <td>{{ strtoupper($recommendation->farm->soils->first()->phosphorus_level ?? 'N/A') }}</td>
-            <td>{{ strtoupper($recommendation->farm->soils->first()->potassium_level ?? 'N/A') }}</td>
+            <td>{{ $recommendation->soil->pH }}</td>
+            <td>{{ strtoupper($recommendation->soil->nitrogen_level ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->soil->phosphorus_level ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->soil->potassium_level ?? 'N/A') }}</td>
             <td class="highlight-cell">{{ strtoupper($recommendation->crop->name) }}</td>
             <td class="highlight-cell">{{ $recommendation->confidence_score ? number_format($recommendation->confidence_score * 100) . '%' : 'N/A' }}</td>
         </tr>
@@ -268,13 +268,15 @@
     <div class="section-title">PLANTING RECOMMENDATIONS</div>
     <table class="data-table">
         <tr>
-            <th>Best Planting Season</th>
-            <th>Expected Maturity</th>
-            <th>pH Preference</th>
+            <th>Planting Season</th>
+            <th>Harvesting Period</th>
+            <th>Growing Duration</th>
+            <th>PH Preference</th>
         </tr>
         <tr>
-            <td>{{ $recommendation->crop->time_of_planting ?? 'All Season' }}</td>
-            <td>{{ $recommendation->crop->maturity ?? 'N/A' }}</td>
+            <td>{{ $recommendation->crop->planting_season_primary ?? 'All Season' }}</td>
+            <td>{{ $recommendation->crop->harvesting_period ?? 'N/A' }}</td>
+            <td>{{ $recommendation->crop->growing_duration_days ?? 'Various' }}</td>
             <td>{{ $recommendation->crop->ph_preference ?? 'Various' }}</td>
         </tr>
     </table>
@@ -309,7 +311,7 @@
     <div class="footer">
         <div><strong>CropTAP - A Crop Recommender System Using Data-Driven Algorithms</strong></div>
         <div>This recommendation is based on scientific analysis of your farm conditions and historical data.</div>
-        <div class="generated-date">Report generated on {{ now()->format('F d, Y \a\t g:i A') }}</div>
+        <div class="generated-date">Report generated on {{ $recommendation->created_at->setTimezone('Asia/Manila')->format('F d, Y g:i A') }}</div>
     </div>
 </body>
 

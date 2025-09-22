@@ -13,6 +13,8 @@ class Recommendation extends Model
         'farmer_id',
         'farm_id',
         'crop_id',
+        'soil_id',
+        'climate_id',
         'confidence_score',
         'recommendation_date'
     ];
@@ -38,6 +40,16 @@ class Recommendation extends Model
     public function crop()
     {
         return $this->belongsTo(Crop::class);
+    }
+
+    public function soil()
+    {
+        return $this->belongsTo(Soil::class);
+    }
+
+    public function climate()
+    {
+        return $this->belongsTo(Climate::class);
     }
 
     public function recentRecommendations()

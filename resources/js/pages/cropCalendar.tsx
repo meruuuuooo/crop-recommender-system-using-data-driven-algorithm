@@ -21,15 +21,17 @@ interface CroppingCalendarProps {
     categories: Category[];
 }
 
-const parseTimeOfPlanting = (timeOfPlanting: string) => {
-    if (!timeOfPlanting ||
-        timeOfPlanting.toLowerCase() === 'n/a' ||
-        timeOfPlanting.trim() === '') {
+const parseTimeOfPlanting = (plantingSeason: string): number[] => {
+    if (!plantingSeason ||
+        plantingSeason.toLowerCase() === 'n/a' ||
+        plantingSeason.toLowerCase() === 'none' ||
+        plantingSeason.trim() === '') {
         return []; // Return empty array for no planting months
     }
 
-    // Handle "All season" crops - they can be planted year-round
-    if (timeOfPlanting.toLowerCase() === 'all season') {
+    // Handle "Year round" crops - they can be planted year-round
+    if (plantingSeason.toLowerCase().includes('year round') ||
+        plantingSeason.toLowerCase().includes('all season')) {
         return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; // All 12 months
     }
 
@@ -59,14 +61,24 @@ const parseTimeOfPlanting = (timeOfPlanting: string) => {
         december: 12,
     };
 
+    // Extract months from parentheses (e.g., "Start of rainy season (May-June)")
+    const parenthesesMatch = plantingSeason.match(/\(([^)]+)\)/);
+    if (parenthesesMatch) {
+        const extractedPart = parenthesesMatch[1];
+        const extractedMonths = parseTimeOfPlanting(extractedPart);
+        if (extractedMonths.length > 0) {
+            return extractedMonths;
+        }
+    }
+
     const plantingMonths: number[] = [];
 
     // Split by common separators and clean up
-    const parts = timeOfPlanting
+    const parts = plantingSeason
         .toLowerCase()
         .split(/[/,\s-]+/)
-        .map((part) => part.trim())
-        .filter((part) => part.length > 0);
+        .map((part: string) => part.trim())
+        .filter((part: string) => part.length > 0);
 
     for (let i = 0; i < parts.length; i++) {
         const part = parts[i];
@@ -105,10 +117,12 @@ const parseTimeOfPlanting = (timeOfPlanting: string) => {
     return [...new Set(plantingMonths)]; // Remove duplicates
 };
 
+
+
 const CropCalendarView = ({ crop }: { crop: Crop }) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    const plantingMonths = parseTimeOfPlanting(crop.time_of_planting || '');
+    const plantingMonths = parseTimeOfPlanting(crop.planting_season_primary || '');
     const hasPlantingData = plantingMonths.length > 0;
 
     const getMonthStatus = (monthIndex: number) => {
@@ -165,6 +179,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                     {months.map((month, index) => {
                                         const status = getMonthStatus(index);
                                         const isPlanting = status === 'planting';
+
                                         return (
                                             <div key={month} className="relative">
                                                 <div
@@ -212,22 +227,56 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
 
                 {/* Calendar Summary Info */}
                 <div className="mt-6 rounded-lg border border-[#D6E3D4] bg-gradient-to-r from-[#F8FAF8] to-white p-4">
-                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2 lg:grid-cols-4">
                         <div>
-                            <span className="font-medium text-[#619154]">Planting Time:</span>
-                            <div className="mt-1 text-gray-700">{crop.time_of_planting || 'Not specified'}</div>
+                            <span className="font-medium text-[#619154]">Planting Season:</span>
+                            <div className="mt-1 text-gray-700">
+                                {crop.planting_season_primary &&
+                                 crop.planting_season_primary.toLowerCase() !== 'none' &&
+                                 crop.planting_season_primary.toLowerCase() !== 'n/a'
+                                    ? crop.planting_season_primary
+                                    : 'Not specified'}
+                            </div>
                         </div>
                         <div>
-                            <span className="font-medium text-[#619154]">Maturity Period:</span>
-                            <div className="mt-1 text-gray-700">{crop.maturity || 'Not specified'}</div>
+                            <span className="font-medium text-[#619154]">Harvesting Period:</span>
+                            <div className="mt-1 text-gray-700">
+                                {crop.harvesting_period &&
+                                 crop.harvesting_period.toLowerCase() !== 'none' &&
+                                 crop.harvesting_period.toLowerCase() !== 'n/a'
+                                    ? crop.harvesting_period
+                                    : 'Not specified'}
+                            </div>
+                        </div>
+                        <div>
+                            <span className="font-medium text-[#619154]">Growth Duration:</span>
+                            <div className="mt-1 text-gray-700">
+                                {crop.growing_duration_days &&
+                                 crop.growing_duration_days.toLowerCase() !== 'none' &&
+                                 crop.growing_duration_days.toLowerCase() !== 'n/a'
+                                    ? `${crop.growing_duration_days} days`
+                                    : 'Not specified'}
+                            </div>
                         </div>
                         <div>
                             <span className="font-medium text-[#619154]">pH Preference:</span>
-                            <div className="mt-1 text-gray-700">{crop.ph_preference || 'Not specified'}</div>
+                            <div className="mt-1 text-gray-700">
+                                {crop.ph_preference &&
+                                 crop.ph_preference.toLowerCase() !== 'none' &&
+                                 crop.ph_preference.toLowerCase() !== 'n/a'
+                                    ? crop.ph_preference
+                                    : 'Not specified'}
+                            </div>
                         </div>
-                        <div>
+                        <div className="md:col-span-2 lg:col-span-4">
                             <span className="font-medium text-[#619154]">Soil Requirement:</span>
-                            <div className="mt-1 text-gray-700">{crop.soil_requirement || 'Not specified'}</div>
+                            <div className="mt-1 text-gray-700">
+                                {crop.soil_requirement &&
+                                 crop.soil_requirement.toLowerCase() !== 'none' &&
+                                 crop.soil_requirement.toLowerCase() !== 'n/a'
+                                    ? crop.soil_requirement
+                                    : 'Not specified'}
+                            </div>
                         </div>
                     </div>
                     {hasPlantingData && (

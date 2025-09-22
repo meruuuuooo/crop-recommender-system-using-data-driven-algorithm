@@ -8,7 +8,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, Fertilizer_recommendations, Farmer, Recommendation, RecommendationResult } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import Swal from 'sweetalert2';
 import { route } from 'ziggy-js';
 // import { router } from '@inertiajs/react';
@@ -42,6 +43,10 @@ export default function Crop({
         farm_id: '',
     });
 
+    const [isFetchingClimate, setIsFetchingClimate] = useState(false);
+
+    console.log('Recommendation Result:', recommendationResult);
+    console.log('recent_recommendations:', recent_recommendations);
 
     // Get farms for the selected farmer
     const selectedFarmer = farmers.find((farmer) => farmer.id === Number(data.farmer_id));
@@ -80,7 +85,7 @@ export default function Crop({
         }
     }
 
-    const handleDownloadPdf = (farmerId: number, cropName: string | undefined) => {
+    const handleDownloadPdf = (recommendationId: number) => {
         Swal.fire({
             title: 'Download PDF',
             text: 'Are you sure you want to download the recommendation PDF?',
@@ -90,7 +95,7 @@ export default function Crop({
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = route('recommendation.downloadRecommendationPdf', { farmer: farmerId, crop: cropName });
+                window.location.href = route('recommendation.downloadRecommendationPdf', { recommendation: recommendationId });// Redirect to download URL
             }
         });
     };
@@ -131,14 +136,40 @@ export default function Crop({
         });
     };
 
-    const handleFetchClimate = () => {
-        // Use setData to update the form state
-        setData((prevData) => ({
-            ...prevData,
-            temperature: '28',
-            rainfall: '150',
-            humidity: '75',
-        }));
+    const handleFetchClimate = async () => {
+        setIsFetchingClimate(true);
+
+        try {
+            // Simulate API call - replace this with actual climate data fetching
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Use setData to update the form state
+            setData((prevData) => ({
+                ...prevData,
+                temperature: '28',
+                rainfall: '150',
+                humidity: '75',
+            }));
+
+            Swal.fire({
+                title: 'Climate Data Fetched',
+                text: 'Climate data has been successfully retrieved.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                timer: 2000,
+                timerProgressBar: true,
+            });
+        } catch (error) {
+            console.error('Error fetching climate data:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to fetch climate data. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+        } finally {
+            setIsFetchingClimate(false);
+        }
     };
 
     // const getNitrogenRange = (level: string) => {
@@ -380,36 +411,7 @@ export default function Crop({
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="potassium-level" className="text-sm font-medium text-gray-700">
-                                                    Potassium (K)
-                                                </Label>
-                                                <Select onValueChange={(value) => setData('potassium_level', value)} value={data.potassium_level}>
-                                                    <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
-                                                        <SelectValue placeholder="Select Level" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="low">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-red-800"></div>
-                                                                Low
-                                                            </div>
-                                                        </SelectItem>
-                                                        <SelectItem value="medium">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-amber-800"></div>
-                                                                Medium
-                                                            </div>
-                                                        </SelectItem>
-                                                        <SelectItem value="high">
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="h-4 w-4 rounded-sm bg-amber-400"></div>
-                                                                High
-                                                            </div>
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+
                                             <div className="space-y-2">
                                                 <Label htmlFor="phosphorus-level" className="text-sm font-medium text-gray-700">
                                                     Phosphorus (P)
@@ -434,6 +436,36 @@ export default function Crop({
                                                         <SelectItem value="high">
                                                             <div className="flex items-center gap-2">
                                                                 <div className="h-4 w-4 rounded-sm bg-blue-900"></div>
+                                                                High
+                                                            </div>
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="potassium-level" className="text-sm font-medium text-gray-700">
+                                                    Potassium (K)
+                                                </Label>
+                                                <Select onValueChange={(value) => setData('potassium_level', value)} value={data.potassium_level}>
+                                                    <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
+                                                        <SelectValue placeholder="Select Level" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="low">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-4 w-4 rounded-sm bg-red-800"></div>
+                                                                Low
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="medium">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-4 w-4 rounded-sm bg-amber-800"></div>
+                                                                Medium
+                                                            </div>
+                                                        </SelectItem>
+                                                        <SelectItem value="high">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="h-4 w-4 rounded-sm bg-amber-400"></div>
                                                                 High
                                                             </div>
                                                         </SelectItem>
@@ -491,11 +523,19 @@ export default function Crop({
                                     </div>
                                     <Button
                                         onClick={handleFetchClimate}
-                                        className="w-fit shrink-0 bg-blue-500 text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                        className="w-fit shrink-0 bg-blue-500 text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                         type="button"
                                         aria-describedby="fetch-climate-help"
+                                        disabled={isFetchingClimate}
                                     >
-                                        Fetch Climate Data
+                                        {isFetchingClimate ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Fetching...
+                                            </>
+                                        ) : (
+                                            'Fetch Climate Data'
+                                        )}
                                     </Button>
                                 </div>
                                 <div id="fetch-climate-help" className="text-xs text-gray-500">
@@ -688,7 +728,7 @@ export default function Crop({
                                                     </td>
                                                     <td className="px-4 py-2">
                                                         <Button
-                                                            onClick={() => handleDownloadPdf(recommendationResult[0]?.farmer_id, item.crop_name)}
+                                                            onClick={() => handleDownloadPdf(recommendationResult[0]?.recommendation_id)}
                                                             size="sm"
                                                             variant="outline"
                                                             className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
@@ -761,7 +801,7 @@ export default function Crop({
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
                                                                     <Button
-                                                                        onClick={() => handleDownloadPdf(item.farmer_id, item.crop?.name)}
+                                                                        onClick={() => handleDownloadPdf(item.id)}
                                                                         size="sm"
                                                                         variant="outline"
                                                                         className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
