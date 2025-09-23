@@ -1,15 +1,14 @@
 import ActivityChart from '@/components/activity-chart';
 import ChartPieSimple from '@/components/chart-pie-simple';
 import MetricsSummary from '@/components/metrics-summary';
-import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
 import { Eye } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -47,7 +46,6 @@ interface DashboardProps {
 }
 
 const supportedCropList = (supportedCrops: DashboardProps['supportedCrops']) => {
-
     console.log('Supported Crops Data:', supportedCrops);
     console.log('Is Array:', Array.isArray(supportedCrops));
     console.log('Length:', supportedCrops?.length);
@@ -59,19 +57,15 @@ const supportedCropList = (supportedCrops: DashboardProps['supportedCrops']) => 
     }
 
     return (
-        <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400">
+        <div className="scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 max-h-64 overflow-y-auto">
             <ul className="space-y-2 pr-2">
                 {supportedCrops.map((cropData, index) => (
                     <li key={index} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
                         <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-[#619154]" />
-                            <span className="text-sm font-medium text-gray-700">
-                                {cropData.supported_crops}
-                            </span>
+                            <span className="text-sm font-medium text-gray-700">{cropData.supported_crops}</span>
                         </div>
-                        <span className="text-xs text-gray-500">
-                            ({cropData.total_count})
-                        </span>
+                        <span className="text-xs text-gray-500">({cropData.total_count})</span>
                     </li>
                 ))}
             </ul>
@@ -95,15 +89,16 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     <ChartPieSimple data={topRecommendedCrops} />
                     <Card className="border-[#D6E3D4]">
                         <CardHeader>
-                            <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
-                                Supported Crops
-                            </CardTitle>
+                            <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
                             <p className="text-sm text-gray-600">List of crops supported by the recommendation system</p>
                         </CardHeader>
                         <CardContent>
                             {supportedCrops.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
-                                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
+                                    <div
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                                        aria-hidden="true"
+                                    >
                                         <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
@@ -121,7 +116,6 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                         </CardContent>
                     </Card>
                 </div>
-
 
                 <Card className="border-[#D6E3D4]" role="region" aria-labelledby="recent-results-heading">
                     <CardHeader>
@@ -164,7 +158,11 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                                 <td className="px-4 py-2">{new Date(item.recommendation_date).toLocaleDateString()}</td>
                                                 <td className="px-4 py-2">{item.crop?.name}</td>
                                                 <td className="px-4 py-2">{item.farmer?.lastname}</td>
-                                                <td className="px-4 py-2">{item.confidence_score} %</td>
+                                                <td className="px-4 py-2">
+                                                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                                        {item.confidence_score.toFixed(2)}%
+                                                    </span>
+                                                </td>
                                                 <td className="px-4 py-2">
                                                     <div className="flex items-center gap-2">
                                                         <Tooltip>

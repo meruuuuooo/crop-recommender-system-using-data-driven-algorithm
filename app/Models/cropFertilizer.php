@@ -11,14 +11,15 @@ class CropFertilizer extends Model
     use HasFactory;
     protected $fillable = [
         'crop_name',
-        'variety_and_condition',
-        'nutrient',
-        'soil_level',
-        'recommendation_amount',
-        'unit',
+        'growth_stage',
+        'soil_type',
+        'nitrogen_level',
+        'nitrogen_rate',
+        'phosphorus_level',
+        'phosphorus_rate',
+        'potassium_level',
+        'potassium_rate',
+        'unit_of_measure'
     ];
-
-
-
 
 }

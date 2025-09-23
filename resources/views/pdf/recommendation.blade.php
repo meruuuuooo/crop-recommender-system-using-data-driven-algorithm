@@ -214,54 +214,64 @@
             <th>Nitrogen</th>
             <th>Phosphorus</th>
             <th>Potassium</th>
-            <th>Recommended Crop</th>
-            <th>Suitability Score</th>
+            <th>Temperature (°C)</th>
+            <th>Rainfall (mm)</th>
+            <th>Humidity (%)</th>
+
         </tr>
         <tr>
             <td>{{ $recommendation->soil->pH }}</td>
             <td>{{ strtoupper($recommendation->soil->nitrogen_level ?? 'N/A') }}</td>
             <td>{{ strtoupper($recommendation->soil->phosphorus_level ?? 'N/A') }}</td>
             <td>{{ strtoupper($recommendation->soil->potassium_level ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->climate->temperature ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->climate->rainfall ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->climate->humidity ?? 'N/A') }}</td>
+
+        </tr>
+    </table>
+
+    <table class="data-table">
+        <tr>
+            <th>Recommended Crop</th>
+            <th>Suitability Score</th>
+        </tr>
+        <tr>
             <td class="highlight-cell">{{ strtoupper($recommendation->crop->name) }}</td>
             <td class="highlight-cell">{{ $recommendation->confidence_score ? number_format($recommendation->confidence_score * 100) . '%' : 'N/A' }}</td>
         </tr>
+
     </table>
 
     <!-- Fertilizer Recommendation and Landscape Info -->
     <table class="data-table">
         <tr>
-            <th>Fertilizer Recommendation Rate {{ $fertilizer_recommendations['nitrogen']['crop_fertilizer'][0]['unit'] ?? '' }}</th>
+            <th>Variety</th>
+            <th style="width: 281px;">Fertilizer Recommendation Rate</th>
+            <th>Growth Stage</th>
+            <th>Unit</th>
         </tr>
-        <tr>
-            <td>
-                @php
-                $nRecoAmmount = $fertilizer_recommendations['nitrogen']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
-                $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
-                $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][0]['recommendation_amount'] ?? 0;
-                @endphp
-                {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
-            </td>
-        </tr>
-        <!-- <tr>
-            <td>
-                @php
-                $nRecoAmmount = $fertilizer_recommendations['nitrogen']['crop_fertilizer'][1]['recommendation_amount'] ?? 0;
-                $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][1]['recommendation_amount'] ?? 0;
-                $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][1]['recommendation_amount'] ?? 0;
-                @endphp
-                {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                @php
-                $nRecoAmmount = $fertilizer_recommendations['nitrogen']['crop_fertilizer'][2]['recommendation_amount'] ?? 0;
-                $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][2]['recommendation_amount'] ?? 0;
-                $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][2]['recommendation_amount'] ?? 0;
-                @endphp
-                {{ number_format($nRecoAmmount, 0) }} - {{ number_format($pRecoAmmount, 0) }} - {{ number_format($kRecoAmmount, 0) }}
-            </td>
-        </tr> -->
+        @if(isset($fertilizer_recommendations['nitrogen']['crop_fertilizer']) && count($fertilizer_recommendations['nitrogen']['crop_fertilizer']) > 0)
+            @foreach($fertilizer_recommendations['nitrogen']['crop_fertilizer'] as $index => $fertilizer)
+                <tr>
+                    <td class="highlight-cell">{{ $fertilizer['crop_name'] ?? 'N/A' }}</td>
+                    <td>
+                        @php
+                        $nRecoAmmount = $fertilizer['nitrogen_rate'] ?? 0;
+                        $pRecoAmmount = $fertilizer_recommendations['phosphorus']['crop_fertilizer'][$index]['phosphorus_rate'] ?? 0;
+                        $kRecoAmmount = $fertilizer_recommendations['potassium']['crop_fertilizer'][$index]['potassium_rate'] ?? 0;
+                        @endphp
+                        {{ number_format($nRecoAmmount, 0) }} N - {{ number_format($pRecoAmmount, 0) }} P - {{ number_format($kRecoAmmount, 0) }} K
+                    </td>
+                    <td>{{ $fertilizer['growth_stage'] ?? 'N/A' }}</td>
+                    <td>{{ $fertilizer['unit_of_measure'] ?? '' }}</td>
+                </tr>
+            @endforeach
+        @else
+            <tr>
+                <td colspan="4" style="text-align: center; color: rgb(107 114 128); font-style: italic;">No fertilizer recommendations available</td>
+            </tr>
+        @endif
     </table>
 
     <!-- Additional Recommendations -->

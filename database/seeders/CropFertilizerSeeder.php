@@ -13,7 +13,7 @@ class CropFertilizerSeeder extends Seeder
      */
     public function run(): void
     {
-        $csvFile = Storage::disk('public')->path('csv/fertilizer_per_crop.csv');
+        $csvFile = Storage::disk('public')->path('csv/fertilizer_recommendation_v2.csv');
 
         if (! file_exists($csvFile)) {
             $this->command->error('CSV file not found: '.$csvFile);
@@ -27,12 +27,16 @@ class CropFertilizerSeeder extends Seeder
 
         while (($row = fgetcsv($file)) !== false) {
             CropFertilizer::create([
-                'crop_name' => $row[0],
-                'variety_and_condition' => $row[1] ?? 'N/A',
-                'nutrient' => $row[2],
-                'soil_level' => $row[3],
-                'recommendation_amount' => $row[4],
-                'unit' => $row[5],
+                'crop_name' => $row[1],
+                'growth_stage' => $row[2] ?: 'N/A',
+                'soil_type' => $row[3] ?: 'N/A',
+                'nitrogen_level' => $row[4] ?: null,
+                'nitrogen_rate' => is_numeric($row[5]) ? (float) $row[5] : null,
+                'phosphorus_level' => $row[6] ?: null,
+                'phosphorus_rate' => is_numeric($row[7]) ? (float) $row[7] : null,
+                'potassium_level' => $row[8] ?: null,
+                'potassium_rate' => is_numeric($row[9]) ? (float) $row[9] : null,
+                'unit_of_measure' => $row[10] ?: null,
             ]);
         }
 

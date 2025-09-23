@@ -137,23 +137,32 @@ export interface Farm {
 export interface Fertilizer_recommendations{
     nitrogen: {
         crop_fertilizer?: CropFertilizer[];
+        level?: string | null;
     };
     phosphorus: {
         crop_fertilizer?: CropFertilizer[];
+        level?: string | null;
     };
     potassium: {
         crop_fertilizer?: CropFertilizer[];
+        level?: string | null;
     };
     [key: string]: unknown; // This allows for additional properties and routing...
 }
 
 export interface CropFertilizer {
+    id?: number;
     crop_name: string;
-    variety_and_condition: string;
-    nutrient: string;
-    soil_level: string;
-    recommendation_amount: string | number;
-    unit: string;
+    growth_stage: string;
+    soil_type: string;
+    nitrogen_level: string | null;
+    nitrogen_rate: number | null;
+    phosphorus_level: string | null;
+    phosphorus_rate: number | null;
+    potassium_level: string | null;
+    potassium_rate: number | null;
+    unit_of_measure: string | null;
+    [key: string]: unknown; // This allows for additional properties and routing...
 }
 
 export interface RecommendationResult {

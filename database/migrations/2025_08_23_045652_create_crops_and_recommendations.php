@@ -45,11 +45,15 @@ return new class extends Migration
         Schema::create('crop_fertilizers', function (Blueprint $table) {
             $table->id();
             $table->string('crop_name');
-            $table->string('variety_and_condition')->nullable();
-            $table->string('nutrient');
-            $table->string('soil_level');
-            $table->string('recommendation_amount');
-            $table->string('unit');
+            $table->string('growth_stage')->nullable()->default('N/A');
+            $table->string('soil_type')->nullable()->default('N/A');
+            $table->string('nitrogen_level')->nullable();
+            $table->float('nitrogen_rate')->nullable();
+            $table->string('phosphorus_level')->nullable();
+            $table->float('phosphorus_rate')->nullable();
+            $table->string('potassium_level')->nullable();
+            $table->float('potassium_rate')->nullable();
+            $table->string('unit_of_measure')->nullable();
             $table->timestamps();
         });
 

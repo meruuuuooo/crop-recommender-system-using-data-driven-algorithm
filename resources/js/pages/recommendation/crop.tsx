@@ -6,7 +6,7 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, Fertilizer_recommendations, Farmer, Recommendation, RecommendationResult } from '@/types';
+import { type BreadcrumbItem, Farmer, Fertilizer_recommendations, Recommendation, RecommendationResult } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { Download, Loader2 } from 'lucide-react';
 import { useState } from 'react';
@@ -66,24 +66,26 @@ export default function Crop({
 
     //     router.get(route('recommendation.showCropRecommendation', { recommendation: recommendationId }));
     // };
-
     const getCropFertilizerRate = (fertilizer_recommendations: Fertilizer_recommendations): string => {
+        console.log('Fertilizer Recommendations:', fertilizer_recommendations);
 
         try {
             if (!fertilizer_recommendations) {
                 return 'N/A';
             }
 
-            const nitrogen = fertilizer_recommendations.nitrogen?.crop_fertilizer?.[0]?.recommendation_amount || '0';
-            const phosphorus = fertilizer_recommendations.phosphorus?.crop_fertilizer?.[0]?.recommendation_amount || '0';
-            const potassium = fertilizer_recommendations.potassium?.crop_fertilizer?.[0]?.recommendation_amount || '0';
+            const nitrogen = fertilizer_recommendations.nitrogen?.crop_fertilizer?.[0]?.nitrogen_rate || '0';
+            const phosphorus = fertilizer_recommendations.phosphorus?.crop_fertilizer?.[0]?.phosphorus_rate || '0';
+            const potassium = fertilizer_recommendations.potassium?.crop_fertilizer?.[0]?.potassium_rate || '0';
 
-            return `${nitrogen}-${phosphorus}-${potassium}`;
+            const unit_of_measure = fertilizer_recommendations.nitrogen?.crop_fertilizer?.[0]?.unit_of_measure || '';
+
+            return `${nitrogen}-${phosphorus}-${potassium} ${unit_of_measure}`;
         } catch (error) {
             console.error('Error parsing fertilizer rate:', error);
             return 'N/A';
         }
-    }
+    };
 
     const handleDownloadPdf = (recommendationId: number) => {
         Swal.fire({
@@ -95,7 +97,7 @@ export default function Crop({
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = route('recommendation.downloadRecommendationPdf', { recommendation: recommendationId });// Redirect to download URL
+                window.open(route('recommendation.downloadRecommendationPdf', { recommendation: recommendationId }), '_blank');
             }
         });
     };
@@ -141,14 +143,14 @@ export default function Crop({
 
         try {
             // Simulate API call - replace this with actual climate data fetching
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise((resolve) => setTimeout(resolve, 2000));
 
-            // Use setData to update the form state
+            // Use setData to update form state with random climate values
             setData((prevData) => ({
                 ...prevData,
-                temperature: '28',
-                rainfall: '150',
-                humidity: '75',
+                temperature: (Math.random() * 30 + 15).toFixed(1), // Random temp between 15-45°C
+                rainfall: Math.floor(Math.random() * 500 + 50).toString(), // Random rainfall 50-550mm
+                humidity: Math.floor(Math.random() * 40 + 40).toString(), // Random humidity 40-80%
             }));
 
             Swal.fire({
@@ -523,7 +525,7 @@ export default function Crop({
                                     </div>
                                     <Button
                                         onClick={handleFetchClimate}
-                                        className="w-fit shrink-0 bg-blue-500 text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-fit shrink-0 bg-blue-500 text-white transition-colors hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         type="button"
                                         aria-describedby="fetch-climate-help"
                                         disabled={isFetchingClimate}
@@ -560,8 +562,6 @@ export default function Crop({
                                             required
                                             type="number"
                                             step="0.1"
-                                            min="-10"
-                                            max="50"
                                             autoComplete="off"
                                             placeholder="Average temperature"
                                             aria-describedby="temperature-help"
@@ -586,8 +586,6 @@ export default function Crop({
                                             onChange={(e) => setData('rainfall', e.target.value)}
                                             required
                                             type="number"
-                                            min="0"
-                                            max="1000"
                                             autoComplete="off"
                                             placeholder="Annual rainfall"
                                             aria-describedby="rainfall-help"
@@ -612,8 +610,6 @@ export default function Crop({
                                             onChange={(e) => setData('humidity', e.target.value)}
                                             required
                                             type="number"
-                                            min="0"
-                                            max="100"
                                             autoComplete="off"
                                             placeholder="Relative humidity"
                                             aria-describedby="humidity-help"
@@ -668,19 +664,11 @@ export default function Crop({
                     <Card className="border-[#D6E3D4]" role="region" aria-labelledby="results-heading">
                         <CardHeader>
                             <CardHeader>
-                                {/* <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                                <div className="flex items-center justify-between border-b border-gray-200 pb-2">
                                     <CardTitle id="results-heading" className="text-lg font-semibold text-gray-900">
                                         Recommendation Results
                                     </CardTitle>
-                                    <Button
-                                        onClick={() => handleDownloadPdf(recommendationResult[0]?.farmer_id)}
-                                        disabled={recommendationResult.length === 0}
-                                        className="bg-green-600 px-2 py-3 text-sm font-medium text-white hover:bg-green-600 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
-                                        type="button"
-                                    >
-                                        Download PDF
-                                    </Button>
-                                </div> */}
+                                </div>
                                 <p className="text-sm text-gray-600">Your personalized crop recommendations will appear here after generation.</p>
                             </CardHeader>
                         </CardHeader>
@@ -712,7 +700,7 @@ export default function Crop({
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Crop Name</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Fertilizer Rate</th>
                                                 <th className="px-4 py-2 font-semibold text-gray-700">Confidence Score</th>
-                                                <th className='px-4 py-2 font-semibold text-gray-700'>Action</th>
+                                                <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -720,7 +708,7 @@ export default function Crop({
                                                 <tr key={idx} className="border-b last:border-0">
                                                     <td className="px-4 py-2">#{idx + 1}</td>
                                                     <td className="px-4 py-2 font-medium">{item.crop_name}</td>
-                                                    <td className="px-4 py-2">{getCropFertilizerRate(item.fertilizer_recommendations)} kg/ha</td>
+                                                    <td className="px-4 py-2">{getCropFertilizerRate(item.fertilizer_recommendations)}</td>
                                                     <td className="px-4 py-2">
                                                         <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                                                             {item.confidence_score}%
@@ -789,13 +777,25 @@ export default function Crop({
                                                 <tr key={idx} className="border-b last:border-0">
                                                     <td className="px-4 py-2">{item.farmer?.lastname}</td>
                                                     <td className="px-4 py-2">{item.crop?.name}</td>
-                                                    <td className="px-4 py-2">{item.confidence_score} %</td>
-                                                    <td className="px-4 py-2">{
-                                                        new Date(item.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })
-                                                        }</td>
-                                                    <td className="px-4 py-2">{
-                                                        new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
-                                                        }</td>
+                                                    <td className="px-4 py-2">
+                                                        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                                            {item.confidence_score.toFixed(2)}%
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        {new Date(item.created_at).toLocaleTimeString('en-US', {
+                                                            hour: 'numeric',
+                                                            minute: 'numeric',
+                                                            second: 'numeric',
+                                                        })}
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        {new Date(item.created_at).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                        })}
+                                                    </td>
                                                     <td className="px-4 py-2">
                                                         <div className="flex items-center gap-2">
                                                             <Tooltip>

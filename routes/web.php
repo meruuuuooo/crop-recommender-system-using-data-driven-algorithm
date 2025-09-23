@@ -5,7 +5,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\RecommendationController;
-use App\Http\Controllers\RegisteredFarmerController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -59,6 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/crop/show/{recommendation}', [RecommendationController::class, 'showCropRecommendation'])->name('showCropRecommendation');
 
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
+        Route::post('/fertilizer', [RecommendationController::class, 'generateFertilizerRecommendation'])->name('fertilizer.recommend');
         Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');
         Route::get('/pesticide/show/{pesticide}', [RecommendationController::class, 'showPesticide'])->name('pesticide.show');
@@ -82,5 +82,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('crop.calendar');
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/auth.php';
