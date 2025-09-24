@@ -155,10 +155,15 @@ class LocationSeeder extends Seeder
             }
         }
 
-        Location::factory(10)->create([
-            'province_id' => $province,
-            'municipality_id' => rand(1, count($municipalities)),
-            'barangay_id' => rand(1, count($barangays)),
-        ]);
+        $allBarangays = Barangay::all();
+
+        for ($i = 0; $i < 10; $i++) {
+            $randomBarangay = $allBarangays->random();
+            Location::factory()->create([
+                'province_id' => $province,
+                'municipality_id' => $randomBarangay->municipality_id,
+                'barangay_id' => $randomBarangay->id,
+            ]);
+        }
     }
 }
