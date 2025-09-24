@@ -23,7 +23,9 @@ class RecommendationController extends Controller
 {
     public function crop(Request $request)
     {
-        $farmers = Farmer::with('farms')->orderByDesc('id')->get();
+        $farmers = Farmer::with('farms.soils')->orderByDesc('id')->get();
+
+        // dd($farmers);
 
         $recent_recommendations = Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get();
 
@@ -428,7 +430,7 @@ class RecommendationController extends Controller
     private function callCropRecommendationApi(array $data)
     {
         try {
-            $response = Http::timeout(30)->post('http://127.0.0.1:5000/api/predict/topk?k=3', $data);
+            $response = Http::timeout(30)->post('http://127.0.0.1:5000/api/predict/topk?k=1', $data);
 
             if ($response->successful()) {
                 $predictions = $response->json();
@@ -475,7 +477,6 @@ class RecommendationController extends Controller
         // Get available crops, growth stages, and soil types for filters
         $crops = CropFertilizer::select('crop_name')
             ->distinct()
-            ->limit(50) // Limit to prevent timeout
             ->orderBy('crop_name')
             ->pluck('crop_name');
 

@@ -45,7 +45,7 @@ export default function ActivityChart({ data }: ActivityChartProps) {
 
   return (
     <Card className="rounded-xl">
-      <CardHeader>
+      <CardHeader className="items-center pb-0">
         <CardTitle>Registration Activity</CardTitle>
         <CardDescription>
           Monthly farm and farmer registrations
@@ -64,8 +64,8 @@ export default function ActivityChart({ data }: ActivityChartProps) {
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="date"
-              tickLine={false}
-              axisLine={false}
+              tickLine={true}
+              axisLine={true}
               tickMargin={8}
               tickFormatter={(value) => {
                 const date = new Date(value)
@@ -76,7 +76,22 @@ export default function ActivityChart({ data }: ActivityChartProps) {
             />
             <YAxis />
             <ChartTooltip
-              cursor={false}
+              cursor={true}
+              wrapperStyle={{ outline: "none" }}
+              allowEscapeViewBox={{ x: true, y: true }}
+              contentStyle={{ borderRadius: 8 }}
+              separator=""
+              formatter={(value: number, name: string) => {
+                return [value, chartConfig[name as keyof typeof chartConfig].label]
+              }}
+              labelFormatter={(label: string) => {
+                const date = new Date(label)
+                return date.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                })
+              }}
+              itemStyle={{ color: "var(--foreground)" }}
               content={<ChartTooltipContent indicator="dashed" />}
             />
             <Bar dataKey="farms" fill="var(--color-farms)" radius={4} />
@@ -84,7 +99,7 @@ export default function ActivityChart({ data }: ActivityChartProps) {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
+      <CardFooter className="flex-col items-center gap-2 text-sm">
         <div className="flex gap-2 font-medium leading-none">
           Total: {totalFarms} farms, {totalFarmers} farmers <TrendingUp className="h-4 w-4" />
         </div>

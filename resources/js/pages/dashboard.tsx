@@ -46,10 +46,6 @@ interface DashboardProps {
 }
 
 const supportedCropList = (supportedCrops: DashboardProps['supportedCrops']) => {
-    console.log('Supported Crops Data:', supportedCrops);
-    console.log('Is Array:', Array.isArray(supportedCrops));
-    console.log('Length:', supportedCrops?.length);
-
     // Ensure supportedCrops is an array before mapping
     if (!Array.isArray(supportedCrops)) {
         console.log('supportedCrops is not an array:', typeof supportedCrops);
@@ -77,7 +73,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-8">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl px-4 py-4">
                 {/* Metrics Summary Cards */}
                 <div className="grid auto-rows-min gap-4 md:grid-cols-4">
                     <MetricsSummary metrics={metrics} />
@@ -87,7 +83,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <ActivityChart data={activityTrend} />
                     <ChartPieSimple data={topRecommendedCrops} />
-                    <Card className="border-[#D6E3D4]">
+                    <Card className='rounded-xl'>
                         <CardHeader>
                             <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
                             <p className="text-sm text-gray-600">List of crops supported by the recommendation system</p>
@@ -117,7 +113,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     </Card>
                 </div>
 
-                <Card className="border-[#D6E3D4]" role="region" aria-labelledby="recent-results-heading">
+                <Card role="region" className='rounded-xl' aria-labelledby="recent-results-heading">
                     <CardHeader>
                         <CardTitle id="recent-results-heading" className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
                             Recent Recommendation Results
@@ -192,7 +188,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                 </Card>
 
                 {/* Additional Content Area */}
-                <Card className="relative min-h-[300px] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+                <Card className='rounded-xl relative overflow-hidden'>
                     <div className="p-6">
                         <h3 className="mb-4 text-lg font-semibold">Quick Actions</h3>
                         <div className="grid gap-4 md:grid-cols-3">

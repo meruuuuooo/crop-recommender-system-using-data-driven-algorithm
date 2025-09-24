@@ -228,6 +228,7 @@ export interface Soil {
     created_at: string;
     updated_at: string;
     soilType?: SoilType;
+    soil_type?: string;
     farm?: Farm;
 }
 
