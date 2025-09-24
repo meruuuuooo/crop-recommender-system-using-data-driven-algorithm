@@ -13,9 +13,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Farm;
+use App\Repositories\FarmerRepositoryInterface;
 
 class FarmerController extends Controller
 {
+    public function __construct(protected FarmerRepositoryInterface $farmerRepository) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -23,6 +26,7 @@ class FarmerController extends Controller
     {
         $search = $request->get('search');
         $perPage = $request->get('per_page', 10);
+
 
         $farmers = Farmer::with([
             'location.province',
@@ -50,7 +54,7 @@ class FarmerController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($perPage)
             ->withQueryString();
-
+            
         return Inertia::render('management/farmer/index', [
             'farmers' => $farmers,
             'filters' => [
@@ -90,7 +94,7 @@ class FarmerController extends Controller
             'street' => $request['street'],
         ]);
         $user_id = Auth::user()->id;
-        Farmer::create([
+        $this->farmerRepository->create([
             'firstname' => $request['firstname'],
             'middlename' => $request['middlename'],
             'lastname' => $request['lastname'],
@@ -192,7 +196,7 @@ class FarmerController extends Controller
             'barangay_id' => $validated['barangay_id'],
             'street' => $validated['street'],
         ]);
-        $farmer->update([
+        $this->farmerRepository->update($farmer->id, [
             'firstname' => $validated['firstname'],
             'middlename' => $validated['middlename'],
             'lastname' => $validated['lastname'],

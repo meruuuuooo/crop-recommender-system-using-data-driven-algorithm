@@ -13,10 +13,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Crop;
+use App\Repositories\FarmRepositoryInterface;
 
 
 class FarmController extends Controller
 {
+    public function __construct(protected FarmRepositoryInterface $farmRepository)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -103,7 +108,7 @@ class FarmController extends Controller
 
         $farmer_id = Farmer::find($validated['farmer_id']);
 
-        Farm::create([
+        $this->farmRepository->create([
             'name' => $validated['name'],
             'total_area' => $validated['total_area'],
             'cropping_system' => $validated['cropping_system'],
@@ -178,7 +183,7 @@ class FarmController extends Controller
 
         $farmer_id = Farmer::find($validated['farmer_id']);
 
-        $farm->update([
+        $this->farmRepository->update($farm->id, [
             'name' => $validated['name'],
             'total_area' => $validated['total_area'],
             'cropping_system' => $validated['cropping_system'],
