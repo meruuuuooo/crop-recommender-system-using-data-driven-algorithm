@@ -54,7 +54,7 @@ class FarmerController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($perPage)
             ->withQueryString();
-            
+
         return Inertia::render('management/farmer/index', [
             'farmers' => $farmers,
             'filters' => [
