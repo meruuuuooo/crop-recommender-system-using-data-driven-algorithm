@@ -78,7 +78,7 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: rgba(0, 90, 35);
   --input: rgb(159, 213, 122);
-  --ring: oklch(0.723 0.219 149.579);
+  --ring: rgba(0, 90, 35);
   --chart-1: #7bf0a9;
   --chart-2: #00c950;
   --chart-3: oklch(0.398 0.07 227.392);

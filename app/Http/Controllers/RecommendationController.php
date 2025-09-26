@@ -36,10 +36,9 @@ class RecommendationController extends Controller
         ]);
     }
 
-    public function downloadRecommendationPdf($recommendation)
+    public function downloadRecommendationPdf($recommendation): mixed
     {
         try {
-            // Get the recommendation with all necessary relationships
             $reco = Recommendation::where('id', $recommendation)
                 ->with([
                     'farmer.location.province',
@@ -55,10 +54,9 @@ class RecommendationController extends Controller
                 ->first();
 
             if (! $reco) {
-                return back()->withErrors(['pdf_error' => 'No recommendation found.']);
+                return back()->withErrors(['pdf_error' => 'No recommendation found.'])->withStatus(404);
             }
 
-            // Map soil levels to single-letter codes
             $soil = $reco->soil;
             $nitrogen = $this->mapSoilLevel($soil->nitrogen_level ?? '') ?: 'L';
             $phosphorus = $this->mapSoilLevel($soil->phosphorus_level ?? '') ?: 'L';
@@ -66,7 +64,6 @@ class RecommendationController extends Controller
 
             $reco_crop = $reco->crop->name;
 
-            // Get detailed fertilizer recommendations
             $fertilizer_recommendations = $this->getFertilizerRecommendations(
                 $reco_crop,
                 $nitrogen,
@@ -84,11 +81,12 @@ class RecommendationController extends Controller
 
             $fileName = 'Crop_Recommendation_'.preg_replace('/\s+/', '_', $farmerName).'_'.now()->format('Ymd_His').'.pdf';
 
-            return $pdf->download($fileName);
-        } catch (\Exception $e) {
-            Log::error('PDF Generation Error: '.$e->getMessage());
+            return $pdf->download($fileName)->withHeaders([
+                'Content-Type' => 'application/pdf',
+            ])->setStatusCode(200);
 
-            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
+        } catch (\Exception $e) {
+            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.'])->withStatus(500);
         }
     }
 
@@ -166,7 +164,7 @@ class RecommendationController extends Controller
                 // Check if the soil type is already in database format
                 if ($soilType === 'LIGHT SOILS' || $soilType === 'MED-HEAVY SOILS') {
                     $subQuery->orWhere('soil_type', $soilType);
-                } 
+                }
                 // Map input soil type to database categories
                 elseif (in_array($soilType, $lightSoils)) {
                     $subQuery->orWhere('soil_type', 'LIGHT SOILS');
@@ -427,6 +425,58 @@ class RecommendationController extends Controller
         }
     }
 
+    public function showCropRecommendation($recommendation)
+    {
+        try {
+            // Get the recommendation with all necessary relationships
+            $reco = Recommendation::where('id', $recommendation)
+                ->with([
+                    'farmer.location.province',
+                    'farmer.location.municipality',
+                    'farmer.location.barangay',
+                    'crop.category',
+                    'farm.location.province',
+                    'farm.location.municipality',
+                    'farm.location.barangay',
+                    'soil',
+                    'climate',
+                ])
+                ->first();
+
+            if (! $reco) {
+                return back()->withErrors(['pdf_error' => 'No recommendation found.']);
+            }
+
+            // Map soil levels to single-letter codes
+            $soil = $reco->soil;
+            $nitrogen = $this->mapSoilLevel($soil->nitrogen_level ?? '') ?: 'L';
+            $phosphorus = $this->mapSoilLevel($soil->phosphorus_level ?? '') ?: 'L';
+            $potassium = $this->mapSoilLevel($soil->potassium_level ?? '') ?: 'L';
+
+            $reco_crop = $reco->crop->name;
+
+            // Get detailed fertilizer recommendations
+            $fertilizer_recommendations = $this->getFertilizerRecommendations(
+                $reco_crop,
+                $nitrogen,
+                $phosphorus,
+                $potassium,
+                $reco->soil->soil_type ?? null
+            );
+
+            $pdf = Pdf::loadView('pdf.recommendation', [
+                'recommendation' => $reco,
+                'fertilizer_recommendations' => $fertilizer_recommendations,
+            ])->setPaper('a4', 'portrait');
+
+            return $pdf->stream();
+        } catch (\Exception $e) {
+            Log::error('PDF Generation Error: '.$e->getMessage());
+
+            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
+        }
+    }
+
     private function callCropRecommendationApi(array $data)
     {
         try {
@@ -507,16 +557,16 @@ class RecommendationController extends Controller
         ];
 
         // If we have form data from request parameters and no session recommendations, generate them
-        if (!$fertilizerRecommendations && 
-            $selectedFilters['crop_type'] && 
-            $selectedFilters['nitrogen_level'] && 
-            $selectedFilters['phosphorus_level'] && 
+        if (!$fertilizerRecommendations &&
+            $selectedFilters['crop_type'] &&
+            $selectedFilters['nitrogen_level'] &&
+            $selectedFilters['phosphorus_level'] &&
             $selectedFilters['potassium_level']) {
-            
+
             $nLevel = $this->mapNutrientLevel($selectedFilters['nitrogen_level']);
             $pLevel = $this->mapNutrientLevel($selectedFilters['phosphorus_level']);
             $kLevel = $this->mapNutrientLevel($selectedFilters['potassium_level']);
-            
+
             $fertilizerRecommendations = $this->getFertilizerRecommendations(
                 $selectedFilters['crop_type'],
                 $nLevel,
@@ -529,16 +579,16 @@ class RecommendationController extends Controller
 
         // Get crop-specific growth stages and soil types for dynamic filtering (optimized query)
         $cropSpecificData = [];
-        
+
         // Get all crop fertilizer data in one query for efficiency
         $allCropData = CropFertilizer::select('crop_name', 'growth_stage', 'soil_type')
             ->whereIn('crop_name', $crops)
             ->get()
             ->groupBy('crop_name');
-            
+
         foreach ($crops as $crop) {
             $cropData = $allCropData->get($crop, collect());
-            
+
             $cropGrowthStages = $cropData
                 ->pluck('growth_stage')
                 ->filter(function ($stage) {
@@ -548,7 +598,7 @@ class RecommendationController extends Controller
                 ->sort()
                 ->values()
                 ->toArray();
-                
+
             $cropSoilTypes = $cropData
                 ->pluck('soil_type')
                 ->filter(function ($type) {
@@ -558,7 +608,7 @@ class RecommendationController extends Controller
                 ->sort()
                 ->values()
                 ->toArray();
-                
+
             $cropSpecificData[$crop] = [
                 'growth_stages' => $cropGrowthStages,
                 'soil_types' => $cropSoilTypes,

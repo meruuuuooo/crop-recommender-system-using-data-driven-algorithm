@@ -98,8 +98,8 @@ export function SearchableSelect({
       <PopoverPrimitive.Trigger asChild>
         <button
           className={cn(
-            "flex h-9 w-full items-center justify-between rounded-md border border-[#D6E3D4] bg-transparent px-3 py-2 text-sm shadow-xs transition-colors",
-            "hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#619154] focus:ring-opacity-20",
+            "flex h-9 w-full items-center justify-between rounded-md border border-[#005a23] bg-transparent px-3 py-2 text-sm shadow-xs transition-colors",
+            "hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#98d26f] focus:ring-opacity-20",
             "disabled:cursor-not-allowed disabled:opacity-50",
             "text-[#619154] placeholder:text-[#619154]",
             className
