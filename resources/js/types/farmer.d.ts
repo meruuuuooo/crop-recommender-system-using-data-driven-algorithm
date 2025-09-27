@@ -27,10 +27,17 @@ export type CreateFarmerProps = {
 
 export type EditFarmerProps = {
     farmer: Farmer;
+};
+
+export type LocationProps = {
     provinces: Province[];
     municipalities: Municipality[];
     barangays: Barangay[];
 };
+export type FarmerCardProps = {
+    farmer: Farmer;
+};
+
 
 // Legacy type names for backward compatibility
 export type Props = EditFarmerProps;

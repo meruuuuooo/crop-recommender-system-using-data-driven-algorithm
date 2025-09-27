@@ -1,30 +1,27 @@
 import { PaginationData } from '@/components/paginationData';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { type Farmer, type FarmerIndexProps } from '@/types/farmer';
 import { router } from '@inertiajs/react';
-import { Calendar, Eye, MapPin, Phone, Search, User, Users } from 'lucide-react';
+import { Calendar, MapPin, Phone, Search, User, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import EditFarmerFormDialog from './editFarmerFormDialog';
-import { type CreateFarmerProps, type Farmer, type FarmerIndexProps } from '@/types/farmer';
 
 export interface FarmerTableProps {
     farmers: FarmerIndexProps['farmers'];
     filters: FarmerIndexProps['filters'];
-    provinces: CreateFarmerProps['provinces'];
-    municipalities: CreateFarmerProps['municipalities'];
-    barangays: CreateFarmerProps['barangays'];
     onView: (farmer: Farmer) => void;
 }
 
-export default function FarmerTable({ farmers, filters, provinces, municipalities, barangays, onView }: FarmerTableProps) {
+export default function FarmerTable({ farmers, filters, onView }: FarmerTableProps) {
+
     const [search, setSearch] = useState(filters.search || '');
-    const [perPage, setPerPage] = useState(filters.per_page || 5);
+    const [perPage, setPerPage] = useState(filters.per_page || 6);
 
     // Update search and navigate to new URL
     const handleSearchChange = (value: string) => {
@@ -142,7 +139,8 @@ export default function FarmerTable({ farmers, filters, provinces, municipalitie
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="5">5</SelectItem>
+                                        <SelectItem value="6">6</SelectItem>
+                                        <SelectItem value="10">10</SelectItem>
                                         <SelectItem value="25">25</SelectItem>
                                         <SelectItem value="50">50</SelectItem>
                                         <SelectItem value="100">100</SelectItem>
@@ -182,13 +180,20 @@ export default function FarmerTable({ farmers, filters, provinces, municipalitie
                                 </TableHeader>
                                 <TableBody>
                                     {farmers.data.map((farmer, index) => (
-                                        <TableRow key={farmer.id} className="transition-colors hover:bg-[#F8FAF8]" aria-rowindex={index + 2}>
+                                        <TableRow
+                                            key={farmer.id}
+                                            aria-rowindex={index + 2}
+                                            className="cursor-pointer transition-colors hover:bg-[#F0F4F0]"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onView(farmer);
+                                            }}
+                                        >
                                             <TableCell className="font-medium">
                                                 <div className="space-y-1">
-                                                    <div className="text-sm font-semibold text-gray-900">{getFullName(farmer)}</div>
                                                     <div className="flex items-center gap-1 text-xs text-gray-500">
                                                         <User className="h-3 w-3" />
-                                                        ID: {farmer.id}
+                                                        <div className="text-sm font-semibold text-gray-900">{getFullName(farmer)}</div>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -222,33 +227,15 @@ export default function FarmerTable({ farmers, filters, provinces, municipalitie
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    {onView && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => onView(farmer)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                    aria-label={`View details for ${getFullName(farmer)}`}
-                                                                >
-                                                                    <Eye className="h-4 w-4 text-[#619154]" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>View farmer details</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
+                                                    
 
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
-                                                            <EditFarmerFormDialog
-                                                                farmer={farmer}
-                                                                provinces={provinces}
-                                                                municipalities={municipalities}
-                                                                barangays={barangays}
-                                                            />
+                                                            <div onClick={(e) => e.stopPropagation()}>
+                                                                <EditFarmerFormDialog
+                                                                    farmer={farmer}
+                                                                />
+                                                            </div>
                                                         </TooltipTrigger>
                                                         <TooltipContent>
                                                             <p>Edit farmer</p>

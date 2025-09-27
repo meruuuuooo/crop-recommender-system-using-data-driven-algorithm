@@ -10,6 +10,7 @@ import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { usePage } from '@inertiajs/react';
 
 interface FarmerIndexPropsExtended extends CreateFarmerProps {
     provinces: CreateFarmerProps['provinces'];
@@ -21,7 +22,9 @@ interface FarmerIndexPropsExtended extends CreateFarmerProps {
     }[];
 }
 
-export default function FarmerFormDialog({ provinces, municipalities, barangays, crops }: FarmerIndexPropsExtended) {
+export default function CreateFarmFormDialog() {
+    const { provinces, municipalities, barangays, crops } = usePage().props as unknown as FarmerIndexPropsExtended;
+
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState(1);
     const [sameAsHome, setSameAsHome] = useState(false);
@@ -226,7 +229,7 @@ export default function FarmerFormDialog({ provinces, municipalities, barangays,
                         {/* Farmer Address */}
                         <h3 className="font-semibold text-gray-900">Home Address</h3>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            <div>
+                            <div className="space-y-2 lg:col-span-1">
                                 <Label>
                                     Province{' '}
                                     <span className="text-red-500" aria-label="required">
@@ -249,7 +252,7 @@ export default function FarmerFormDialog({ provinces, municipalities, barangays,
                                 </div>
                                 <InputError message={errors['farmer.province_id']} />
                             </div>
-                            <div>
+                            <div className="space-y-2 lg:col-span-1">
                                 <Label>
                                     Municipality{' '}
                                     <span className="text-red-500" aria-label="required">
@@ -274,7 +277,7 @@ export default function FarmerFormDialog({ provinces, municipalities, barangays,
                                 </div>
                                 <InputError message={errors['farmer.municipality_id']} />
                             </div>
-                            <div>
+                            <div className="space-y-2 lg:col-span-1">
                                 <Label>
                                     Barangay{' '}
                                     <span className="text-red-500" aria-label="required">
@@ -297,7 +300,7 @@ export default function FarmerFormDialog({ provinces, municipalities, barangays,
                                 <InputError message={errors['farmer.barangay_id']} />
                             </div>
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 lg:col-span-1">
                             <Label htmlFor="street" className="text-sm font-medium text-gray-700">
                                 Street Address{' '}
                                 <span className="text-red-500" aria-label="required">
@@ -317,7 +320,7 @@ export default function FarmerFormDialog({ provinces, municipalities, barangays,
                             <InputError message={errors['farmer.street']} id="street-error" />
                         </div>
                         <div className="flex justify-end space-x-3">
-                            <Button variant="outline" type='button' onClick={() => setOpen(false)}>
+                            <Button variant="outline" type="button" onClick={() => setOpen(false)}>
                                 Cancel
                             </Button>
                             <Button

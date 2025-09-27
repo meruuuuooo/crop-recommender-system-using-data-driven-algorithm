@@ -3,7 +3,7 @@ import ChartPieSimple from '@/components/chart-pie-simple';
 import MetricsSummary from '@/components/metrics-summary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
+// import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
@@ -79,11 +79,33 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     <MetricsSummary metrics={metrics} />
                 </div>
 
+                {/* Additional Content Area */}
+                {/* <Card className="relative overflow-hidden rounded-xl">
+                    <div className="px-6">
+                        <h3 className="mb-2 text-sm font-semibold">Quick Actions</h3>
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <a href="/management/farmer" className="rounded-lg border border-border p-4 transition-colors hover:bg-accent">
+                                <h4 className="font-medium">Manage Farmers</h4>
+                                <p className="mt-1 text-sm text-muted-foreground">Add, edit, or view farmer information</p>
+                            </a>
+                            <a href="/management/farm" className="rounded-lg border border-border p-4 transition-colors hover:bg-accent">
+                                <h4 className="font-medium">Manage Farms</h4>
+                                <p className="mt-1 text-sm text-muted-foreground">Register and manage farm properties</p>
+                            </a>
+                            <a href="/recommendation/crop" className="rounded-lg border border-border p-4 transition-colors hover:bg-accent">
+                                <h4 className="font-medium">Crop Recommendations</h4>
+                                <p className="mt-1 text-sm text-muted-foreground">Get crop recommendations for farms</p>
+                            </a>
+                        </div>
+                    </div>
+                    <PlaceholderPattern className="absolute inset-0 -z-10 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+                </Card> */}
+
                 {/* Charts Grid */}
                 <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <ActivityChart data={activityTrend} />
                     <ChartPieSimple data={topRecommendedCrops} />
-                    <Card className='rounded-xl'>
+                    <Card className="rounded-xl">
                         <CardHeader>
                             <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
                             <p className="text-sm text-gray-600">List of crops supported by the recommendation system</p>
@@ -113,7 +135,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     </Card>
                 </div>
 
-                <Card role="region" className='rounded-xl' aria-labelledby="recent-results-heading">
+                <Card role="region" className="rounded-xl" aria-labelledby="recent-results-heading">
                     <CardHeader>
                         <CardTitle id="recent-results-heading" className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
                             Recent Recommendation Results
@@ -185,28 +207,6 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                             </div>
                         )}
                     </CardContent>
-                </Card>
-
-                {/* Additional Content Area */}
-                <Card className='rounded-xl relative overflow-hidden'>
-                    <div className="p-6">
-                        <h3 className="mb-4 text-lg font-semibold">Quick Actions</h3>
-                        <div className="grid gap-4 md:grid-cols-3">
-                            <a href="/management/farmer" className="rounded-lg border border-border p-4 transition-colors hover:bg-accent">
-                                <h4 className="font-medium">Manage Farmers</h4>
-                                <p className="mt-1 text-sm text-muted-foreground">Add, edit, or view farmer information</p>
-                            </a>
-                            <a href="/management/farm" className="rounded-lg border border-border p-4 transition-colors hover:bg-accent">
-                                <h4 className="font-medium">Manage Farms</h4>
-                                <p className="mt-1 text-sm text-muted-foreground">Register and manage farm properties</p>
-                            </a>
-                            <a href="/recommendation/crop" className="rounded-lg border border-border p-4 transition-colors hover:bg-accent">
-                                <h4 className="font-medium">Crop Recommendations</h4>
-                                <p className="mt-1 text-sm text-muted-foreground">Get crop recommendations for farms</p>
-                            </a>
-                        </div>
-                    </div>
-                    <PlaceholderPattern className="absolute inset-0 -z-10 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
                 </Card>
             </div>
         </AppLayout>

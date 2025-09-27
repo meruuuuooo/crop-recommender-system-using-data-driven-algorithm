@@ -143,7 +143,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
     };
 
     return(
-        <Card className="border-[#D6E3D4]">
+        <Card className="rounded-xl">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#619154]/10">
@@ -167,7 +167,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                 <div className="mb-3 grid grid-cols-12 gap-2">
                                     {months.map((month) => (
                                         <div key={month} className="text-center">
-                                            <div className="rounded-lg bg-gray-50 py-2 text-xs font-semibold text-gray-700">
+                                            <div className="rounded-lg !bg-[#d7eec8] py-2 text-xs font-semibold text-gray-700">
                                                 {month}
                                             </div>
                                         </div>
@@ -331,8 +331,8 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Crop Calendar" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
+                <Card className="flex flex-col gap-6 rounded-xl bg-white p-8 dark:border-sidebar-border">
                     {/* Header Section */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <HeadingSmall title="Crop Calendar" description="Visual timeline showing planting seasons for all crops" />
@@ -389,7 +389,7 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                             </p>
                         </div>
                     )}
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

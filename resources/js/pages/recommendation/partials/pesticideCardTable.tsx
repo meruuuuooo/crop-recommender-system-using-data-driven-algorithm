@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Pesticide } from '@/types/pesticide';
@@ -36,6 +37,12 @@ interface PaginationInfo {
 
 interface PesticideTableProps {
     pesticides: Pesticide[];
+    peste?: {
+        pests: string[];
+        weeds: string[];
+        diseases: string[];
+    };
+    cropOptions: string[];
     onView?: (pesticide: Pesticide) => void;
     onSearch?: (search: string) => void;
     onFilterSearch?: (filterType: string, value: string) => void;
@@ -56,6 +63,8 @@ interface PesticideTableProps {
 
 export default function PesticideTable({
     pesticides,
+    peste,
+    cropOptions,
     onView,
     onSearch,
     onFilterSearch,
@@ -71,7 +80,7 @@ export default function PesticideTable({
     const [diseaseSearch, setDiseaseSearch] = useState(filters?.disease_search || '');
     const [toxicitySearch, setToxicitySearch] = useState(filters?.toxicity_search || '');
     const [pesticideSearch, setPesticideSearch] = useState(filters?.pesticide_search || '');
-    const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(true);
 
     useEffect(() => {
         setSearch(searchValue);
@@ -267,13 +276,27 @@ export default function PesticideTable({
             default:
                 return formulation || 'N/A';
         }
-    }
+    };
+
+        const type_of_pesticide_options = [
+            'HERBICIDE',
+            'INSECTICIDE',
+            'MOLLUSCICIDE',
+            'FUNGICIDE',
+            'RODENTICIDE',
+            'FUMIGANT',
+            'MITICIDE',
+            'NEMATICIDE',
+            'PGR',
+            'IGR',
+            'DISINFECTANT',
+        ];
 
 
     return (
         <TooltipProvider>
-            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="pesticides-table-heading">
-                <CardHeader className="pb-4">
+            <Card className="rounded-sm" role="region" aria-labelledby="pesticides-table-heading">
+                <CardHeader>
                     <div className="flex flex-col gap-4">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                             <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
@@ -287,7 +310,7 @@ export default function PesticideTable({
                                         placeholder="Search by product name, company, active ingredient..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="border-[#D6E3D4] pl-10 focus:border-[#619154] focus:ring-[#619154]"
+                                        className="pl-10 focus:border-[#619154] focus:ring-[#619154]"
                                         aria-describedby="search-hint"
                                     />
                                 </div>
@@ -295,13 +318,17 @@ export default function PesticideTable({
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setShowFilters(!showFilters)}
-                                    className="border-[#D6E3D4] hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                    className="hover:border-[#619154] hover:bg-[#F8FAF8]"
                                 >
                                     <Filter className="mr-2 h-4 w-4" />
                                     Filters
                                     {hasActiveFilters() && (
                                         <Badge variant="secondary" className="ml-2 h-5 w-5 rounded-full p-0 text-xs">
-                                            {[search, cropSearch, pestSearch, weedSearch, diseaseSearch, toxicitySearch, pesticideSearch].filter(Boolean).length}
+                                            {
+                                                [search, cropSearch, pestSearch, weedSearch, diseaseSearch, toxicitySearch, pesticideSearch].filter(
+                                                    Boolean,
+                                                ).length
+                                            }
                                         </Badge>
                                     )}
                                 </Button>
@@ -314,7 +341,7 @@ export default function PesticideTable({
                         </div>
 
                         {showFilters && (
-                            <Card className="border-[#D6E3D4] bg-[#F8FAF8]">
+                            <Card className="rounded-sm bg-[#F8FAF8]">
                                 <CardHeader className="pb-4">
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-lg">Advanced Filters</CardTitle>
@@ -338,12 +365,13 @@ export default function PesticideTable({
                                                 <Sprout className="h-4 w-4 text-[#619154]" />
                                                 Crops
                                             </Label>
-                                            <Input
-                                                id="crop-search"
-                                                placeholder="Search by crop type..."
+                                            <SearchableSelect
+                                                options={cropOptions.map((option) => ({ label: option, value: option }))}
+                                                placeholder="Search by crop..."
                                                 value={cropSearch}
-                                                onChange={(e) => setCropSearch(e.target.value)}
-                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                                onValueChange={(value) => setCropSearch(value)}
+                                                clearable
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
 
@@ -352,12 +380,13 @@ export default function PesticideTable({
                                                 <Bug className="h-4 w-4 text-orange-600" />
                                                 Pests
                                             </Label>
-                                            <Input
-                                                id="pest-search"
+                                            <SearchableSelect
+                                                options={(peste?.pests ?? []).map((pest) => ({ label: pest, value: pest }))}
                                                 placeholder="Search by pest type..."
                                                 value={pestSearch}
-                                                onChange={(e) => setPestSearch(e.target.value)}
-                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                                onValueChange={(value) => setPestSearch(value)}
+                                                clearable
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
 
@@ -366,12 +395,13 @@ export default function PesticideTable({
                                                 <Leaf className="h-4 w-4 text-green-600" />
                                                 Weeds
                                             </Label>
-                                            <Input
-                                                id="weed-search"
+                                            <SearchableSelect
+                                                options={(peste?.weeds ?? []).map((weed) => ({ label: weed, value: weed }))}
                                                 placeholder="Search by weed type..."
                                                 value={weedSearch}
-                                                onChange={(e) => setWeedSearch(e.target.value)}
-                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                                onValueChange={(value) => setWeedSearch(value)}
+                                                clearable
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
 
@@ -380,12 +410,13 @@ export default function PesticideTable({
                                                 <AlertTriangle className="h-4 w-4 text-red-600" />
                                                 Diseases
                                             </Label>
-                                            <Input
-                                                id="disease-search"
+                                            <SearchableSelect
+                                                options={(peste?.diseases ?? []).map((disease) => ({ label: disease, value: disease }))}
                                                 placeholder="Search by disease type..."
                                                 value={diseaseSearch}
-                                                onChange={(e) => setDiseaseSearch(e.target.value)}
-                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                                onValueChange={(value) => setDiseaseSearch(value)}
+                                                clearable
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
 
@@ -399,7 +430,7 @@ export default function PesticideTable({
                                                 placeholder="Search by toxicity (1-4, where 1=most toxic, 4=least toxic)..."
                                                 value={toxicitySearch}
                                                 onChange={(e) => setToxicitySearch(e.target.value)}
-                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
                                         <div className="space-y-2">
@@ -407,12 +438,13 @@ export default function PesticideTable({
                                                 <Shield className="h-4 w-4 text-yellow-600" />
                                                 Type of Pesticide
                                             </Label>
-                                            <Input
-                                                id="toxicity-search"
-                                                placeholder="Search by pesticide type (insecticide, herbicide, fungicide, etc.)..."
+                                            <SearchableSelect
+                                                options={type_of_pesticide_options.map((option) => ({ label: option, value: option }))}
+                                                placeholder="Search by type of pesticide..."
                                                 value={pesticideSearch}
-                                                onChange={(e) => setPesticideSearch(e.target.value)}
-                                                className="border-[#D6E3D4] focus:border-[#619154] focus:ring-[#619154]"
+                                                onValueChange={(value) => setPesticideSearch(value)}
+                                                clearable
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
                                         </div>
                                     </div>
@@ -437,7 +469,7 @@ export default function PesticideTable({
                                     variant="outline"
                                     size="sm"
                                     onClick={clearAllFilters}
-                                    className="mt-4 border-[#D6E3D4] hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                    className="mt-4 hover:border-[#619154] hover:bg-[#F8FAF8]"
                                 >
                                     Clear all filters
                                 </Button>
@@ -597,7 +629,7 @@ export default function PesticideTable({
                                                                     size="sm"
                                                                     variant="outline"
                                                                     onClick={() => onView(pesticide)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    className="h-8 w-8 p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
                                                                     aria-label={`View details for ${pesticide.product_name}`}
                                                                 >
                                                                     <Eye className="h-4 w-4 text-[#619154]" />
@@ -618,7 +650,7 @@ export default function PesticideTable({
                     )}
 
                     {pagination && pagination.totalPages > 1 && onPageChange && (
-                        <div className="border-t border-[#D6E3D4] px-6 py-4">
+                        <div className="border-t border-[#005a23] px-6 pt-6">
                             <PaginationData currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={onPageChange} />
                         </div>
                     )}

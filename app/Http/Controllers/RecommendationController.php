@@ -72,19 +72,18 @@ class RecommendationController extends Controller
                 $reco->soil->soil_type ?? null
             );
 
-            $farmerName = trim($reco->farmer->firstname.' '.$reco->farmer->lastname);
+            $farmerName = trim($reco->farmer->firstname . ' ' . $reco->farmer->lastname);
 
             $pdf = Pdf::loadView('pdf.recommendation', [
                 'recommendation' => $reco,
                 'fertilizer_recommendations' => $fertilizer_recommendations,
             ])->setPaper('a4', 'portrait');
 
-            $fileName = 'Crop_Recommendation_'.preg_replace('/\s+/', '_', $farmerName).'_'.now()->format('Ymd_His').'.pdf';
+            $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
 
             return $pdf->download($fileName)->withHeaders([
                 'Content-Type' => 'application/pdf',
             ])->setStatusCode(200);
-
         } catch (\Exception $e) {
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.'])->withStatus(500);
         }
@@ -419,7 +418,7 @@ class RecommendationController extends Controller
                 'recommendationResult' => $recommendedCrops,
             ]);
         } catch (\Exception $e) {
-            Log::error('Crop recommendation error: '.$e->getMessage());
+            Log::error('Crop recommendation error: ' . $e->getMessage());
 
             return back()->withErrors(['api_error' => $e->getMessage()]);
         }
@@ -471,7 +470,7 @@ class RecommendationController extends Controller
 
             return $pdf->stream();
         } catch (\Exception $e) {
-            Log::error('PDF Generation Error: '.$e->getMessage());
+            Log::error('PDF Generation Error: ' . $e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
         }
@@ -491,7 +490,7 @@ class RecommendationController extends Controller
                 $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
 
                 if ($response->body()) {
-                    $errorMessage .= ' Response: '.$response->body();
+                    $errorMessage .= ' Response: ' . $response->body();
                 }
 
                 throw new \Exception($errorMessage);
@@ -507,7 +506,7 @@ class RecommendationController extends Controller
     public function fertilizer(Request $request)
     {
         $search = $request->get('search', '');
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 5);
 
         // Get fertilizer products for the table
         $query = Fertilizer::query();
@@ -557,11 +556,13 @@ class RecommendationController extends Controller
         ];
 
         // If we have form data from request parameters and no session recommendations, generate them
-        if (!$fertilizerRecommendations &&
+        if (
+            !$fertilizerRecommendations &&
             $selectedFilters['crop_type'] &&
             $selectedFilters['nitrogen_level'] &&
             $selectedFilters['phosphorus_level'] &&
-            $selectedFilters['potassium_level']) {
+            $selectedFilters['potassium_level']
+        ) {
 
             $nLevel = $this->mapNutrientLevel($selectedFilters['nitrogen_level']);
             $pLevel = $this->mapNutrientLevel($selectedFilters['phosphorus_level']);
@@ -684,7 +685,7 @@ class RecommendationController extends Controller
         $diseaseSearch = $request->get('disease_search', '');
         $toxicitySearch = $request->get('toxicity_search', '');
         $pesticideSearch = $request->get('pesticide_search', '');
-        $perPage = $request->get('per_page', 12);
+        $perPage = $request->get('per_page', 5);
 
         $query = Pesticide::query();
 
@@ -724,8 +725,275 @@ class RecommendationController extends Controller
 
         $pesticides = $query->paginate($perPage)->withQueryString();
 
+        $unique_crops = [
+            'Abaca',
+            'Ampalaya',
+            'Asparagus',
+            'Avocado',
+            'Banana',
+            'Beans',
+            'Bell pepper',
+            'Bitter gourd',
+            'Broccoli',
+            'Cabbage',
+            'Cacao',
+            'Calamansi',
+            'Cantaloupe',
+            'Carrot',
+            'Cassava',
+            'Cauliflower',
+            'Cavendish Banana',
+            'Celery',
+            'Chili',
+            'Chinese Cabbage',
+            'Chrysanthemum',
+            'Citrus',
+            'Cocoa',
+            'Coconut',
+            'Coconut oil',
+            'Coffee',
+            'Corn',
+            'Cotton',
+            'Cowpea',
+            'Crucifers',
+            'Cucumber',
+            'Cucurbits',
+            'Cutflower',
+            'Durian',
+            'Eggplant',
+            'Fruit trees',
+            'Garlic',
+            'Ginger',
+            'Grapes',
+            'Green peas',
+            'Lanzones',
+            'Leeks',
+            'Legumes',
+            'Lettuce',
+            'Mandarin',
+            'Mango',
+            'Melon',
+            'Mungbean',
+            'Mustard',
+            'Nuts',
+            'Okra',
+            'Oil palm',
+            'Onion',
+            'Orange',
+            'Orchids',
+            'Ornamentals',
+            'Palm oil',
+            'Papaya',
+            'Peanut',
+            'Peas',
+            'Pechay',
+            'Pepper',
+            'Perennial fruits',
+            'Pineapple',
+            'Pomelo',
+            'Potato',
+            'Ramie',
+            'Rice',
+            'Roses',
+            'Rubber',
+            'Rubber tree',
+            'Shallots',
+            'Sitao',
+            'Snap Beans',
+            'Sorghum',
+            'Soybean',
+            'Squash',
+            'Stored grain',
+            'Strawberry',
+            'Stringbeans',
+            'Sugarcane',
+            'Sweet peas',
+            'Sweet pepper',
+            'Sweet potato',
+            'Tobacco',
+            'Tomato',
+            'Turf',
+            'Turf grass',
+            'Vegetables',
+            'Watermelon',
+            'Wheat',
+            'White potato',
+            'Wongbok',
+        ];
+
+        $pests = [
+            '28 spotted beetle',
+            '28-spotted lady beetle',
+            'Aphids',
+            'Armyworm',
+            'Black bug',
+            'Cutworm',
+            'Fall armyworm',
+            'Fruitfly',
+            'Green leafhopper',
+            'Leaffolder',
+            'Leafhoppers',
+            'Mites',
+            'Podborer',
+            'Rice bug',
+            'Rust-red grain beetle',
+            'Soil insects',
+            'Squash bug',
+            'Thrips',
+        ];
+
+        $weeds = [
+            'Bamyard grass',
+            'Barnyard grass',
+            'Bermuda grass',
+            'Broadleaves',
+            'Button weed',
+            'Carabao grass',
+            'Cogon',
+            'Crabgrasses',
+            'Crowfoot grass',
+            'Fern',
+            'Goosegrass',
+            'Grasses',
+            'Itchgrass',
+            'Nutsedge',
+            'Paragrass',
+            'Sedges',
+            'Weeds',
+        ];
+
+        $diseases = [
+            'Alternaria leaf spot',
+            'Anthracnose',
+            'Bacterial blight',
+            'Bacterial canker',
+            'Bacterial heart rot',
+            'Bacterial leaf blight',
+            'Bacterial leaf streak',
+            'Bacterial spot',
+            'Bacterial wilt',
+            'Banded leaf and sheath blight',
+            'Basal rot',
+            'Bean rust',
+            'Berry disease',
+            'Black leaf streak',
+            'Black rot',
+            'Black sigatoka',
+            'Black spot',
+            'Black stripe',
+            'Blast sheath blight',
+            'Blight',
+            'Botrytis leaf blight',
+            'Botrytis rot',
+            'Brown bark rot',
+            'Brown eye spot',
+            'Brown leaf spot',
+            'Brown spots',
+            'Bulb rot',
+            'Butt molds',
+            'Butt rot',
+            'Canker',
+            'Carrot blight',
+            'Ceratocystis rot',
+            'Cercospora leaf spot',
+            'Chocolate spots',
+            'Coffee berry disease',
+            'Coffee rust',
+            'Corn downy mildew',
+            'Corn rust',
+            'Crown rot',
+            'Damping-off',
+            'Dead arm disease',
+            'Diamond fruit spot',
+            'Diplodia rot',
+            'Dirty panicle disease',
+            'Downy mildew',
+            'Ear rot',
+            'Early blight',
+            'Finger rot',
+            'Freckle disease',
+            'Frog eye leaf spot',
+            'Frogeye disease',
+            'Fruit rot',
+            'Fungal crown mold',
+            'Fungal heart rot',
+            'Fusarium wilt',
+            'Gray leaf spot',
+            'Greasy spot',
+            'Gummy stem blight',
+            'Heart rot',
+            'Helminthosporium leaf spot',
+            'Late blight',
+            'Leaf blight',
+            'Leaf rust',
+            'Leaf spot',
+            'Melanose',
+            'Mildew',
+            'Moko disease',
+            'Neck rot',
+            'Node blast',
+            'Northern corn leaf blight',
+            'Nut rot',
+            'Panama disease',
+            'Panicle blast',
+            'Panicle blight',
+            'Phoma blight',
+            'Phomopsis blight',
+            'Phytophthora fruit rot',
+            'Phytophthora heart rot',
+            'Phytophthora rot',
+            'Pineapple disease',
+            'Pink disease',
+            'Pink rot',
+            'Pod rot',
+            'Powdery mildew',
+            'Rhizoctania sheath blight',
+            'Rice blast',
+            'Ringspot',
+            'Root disease',
+            'Root rot',
+            'Rot',
+            'Rust',
+            'Scab',
+            'Seeding blight',
+            'Septoria fruit rot',
+            'Septoria leaf spot',
+            'Sheath blight',
+            'Sheath rot',
+            'Shot hole disease',
+            'Sigatoka',
+            'Southern leaf blight',
+            'Spear rot',
+            'Stem and leaf blight',
+            'Stem blight',
+            'Stem end rot',
+            'Stem rot',
+            'Strawberry leafspot',
+            'Sugarcane smut',
+            'Tungro virus',
+            'Twister disease',
+            'Vine rot',
+            'Wet-bud rot',
+            'White leaf spot',
+            'White rust',
+            'White spot',
+            'Wilt',
+            'Yellow sigatoka',
+        ];
+
+
+        $crops = $unique_crops;
+
+        $peste = [
+            'pests' => $pests,
+            'weeds' => $weeds,
+            'diseases' => $diseases,
+        ];
+
         return Inertia::render('recommendation/pesticide', [
             'pesticides' => $pesticides,
+            'crops' => $crops,
+            'peste' => $peste,
             'filters' => [
                 'search' => $search,
                 'crop_search' => $cropSearch,

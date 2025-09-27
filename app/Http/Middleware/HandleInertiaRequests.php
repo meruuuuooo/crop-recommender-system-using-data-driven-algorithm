@@ -6,6 +6,10 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
+use App\Models\Province;
+use App\Models\Municipality;
+use App\Models\Barangay;
+use App\Models\Crop;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -51,6 +55,10 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'provinces' => Province::all(['id', 'name']),
+            'municipalities' => Municipality::all(['id', 'name', 'province_id']),
+            'barangays' => Barangay::all(['id', 'name', 'municipality_id']),
+            'crops' => Crop::all(['id', 'name']),
         ];
     }
 }

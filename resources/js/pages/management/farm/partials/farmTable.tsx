@@ -1,18 +1,16 @@
 import { PaginationData } from '@/components/paginationData';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import type { Farm, PaginatedFarms } from '@/types/farm';
+import type { Farm, FarmIndexProps, PaginatedFarms } from '@/types/farm';
 import { router } from '@inertiajs/react';
-import { Calendar, Edit, Eye, MapPin, Search, Tractor, User } from 'lucide-react';
+import { Calendar, MapPin, Search, Tractor, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import EditFarmFormDialog from './editFarmFormDialog';
 
 interface FarmTableProps {
     farms: PaginatedFarms;
@@ -20,14 +18,13 @@ interface FarmTableProps {
         search?: string;
         per_page?: number;
     };
-    onEdit?: (farm: Farm) => void;
+    farmers: FarmIndexProps['farmers'];
     onView?: (farm: Farm) => void;
-    onDelete?: (farm: Farm) => void;
 }
 
-export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableProps) {
+export default function FarmTable({ farms, filters, farmers, onView }: FarmTableProps) {
     const [search, setSearch] = useState(filters.search || '');
-    const [perPage, setPerPage] = useState(filters.per_page || 10);
+    const [perPage, setPerPage] = useState(filters.per_page || 6);
 
     // Update search and navigate to new URL
     const handleSearchChange = (value: string) => {
@@ -115,13 +112,13 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
 
     const getFarmerName = (farm: Farm) => {
         if (!farm.farmer) return 'Unknown Farmer';
-        return `${farm.farmer.firstname} ${farm.farmer.middlename ? farm.farmer.middlename + ' ' : ''}${farm.farmer.lastname}`;
+        return `${farm.farmer.firstname} ${farm.farmer.lastname}`;
     };
 
     return (
         <TooltipProvider>
-            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farms-table-heading">
-                <CardHeader className="pb-4">
+            <Card className="rounded-sm" aria-labelledby="farms-table-heading">
+                <CardHeader className="flex items-end justify-between gap-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
@@ -134,7 +131,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                     placeholder="Search by farm name, owner, crops, or location..."
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
-                                    className="border-[#D6E3D4] pl-10 focus:border-[#619154] focus:ring-[#619154]"
+                                    className="pl-10 focus:border-[#619154] focus:ring-[#619154]"
                                     aria-describedby="search-hint"
                                 />
                             </div>
@@ -147,6 +144,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="6">6</SelectItem>
                                         <SelectItem value="10">10</SelectItem>
                                         <SelectItem value="25">25</SelectItem>
                                         <SelectItem value="50">50</SelectItem>
@@ -158,14 +156,6 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                 Showing <span className="font-medium">{farms.from || 0}</span>-<span className="font-medium">{farms.to || 0}</span> of{' '}
                                 <span className="font-medium">{farms.total}</span> farms
                             </div>
-                        </div>
-                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                            <Link href={route('management.farm.create')}>
-                                <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Farm
-                                </Button>
-                            </Link>
                         </div>
                     </div>
                 </CardHeader>
@@ -195,13 +185,20 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                 </TableHeader>
                                 <TableBody>
                                     {farms.data.map((farm, index) => (
-                                        <TableRow key={farm.id} className="transition-colors hover:bg-[#F8FAF8]" aria-rowindex={index + 2}>
+                                        <TableRow
+                                            key={farm.id}
+                                            aria-rowindex={index + 2}
+                                            className="cursor-pointer transition-colors hover:bg-[#F0F4F0]"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onView?.(farm);
+                                            }}
+                                        >
                                             <TableCell className="font-medium">
                                                 <div className="space-y-1">
-                                                    <div className="text-sm font-semibold text-gray-900">{farm.name}</div>
                                                     <div className="flex items-center gap-1 text-xs text-gray-500">
                                                         <Tractor className="h-3 w-3" />
-                                                        Farm ID: {farm.id}
+                                                        <div className="text-sm font-semibold text-gray-900">{farm.name}</div>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -247,42 +244,16 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    {onView && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => onView(farm)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                    aria-label={`View details for ${farm.name}`}
-                                                                >
-                                                                    <Eye className="h-4 w-4 text-[#619154]" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>View farm details</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
-                                                    {onEdit && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => onEdit(farm)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                    aria-label={`Edit ${farm.name}`}
-                                                                >
-                                                                    <Edit className="h-4 w-4 text-[#619154]" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Edit farm</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div onClick={(e) => e.stopPropagation()}>
+                                                                <EditFarmFormDialog farm={farm} farmers={farmers} />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Edit farm</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

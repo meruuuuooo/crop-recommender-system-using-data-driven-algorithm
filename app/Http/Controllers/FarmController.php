@@ -13,7 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Crop;
-
+use Illuminate\Support\Facades\DB;
 
 class FarmController extends Controller
 {
@@ -23,7 +23,7 @@ class FarmController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 6);
 
         $farms = Farm::with([
             'location.province',
@@ -57,12 +57,15 @@ class FarmController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
+        $farmers = Farmer::orderBy('created_at', 'desc')->get(['id', 'lastname', 'firstname', 'middlename']);
+
         return Inertia::render('management/farm/index', [
             'farms' => $farms,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
             ],
+            'farmers' => $farmers,
         ]);
     }
 
@@ -95,24 +98,32 @@ class FarmController extends Controller
     {
         $validated = $request->validated();
 
-        $location = Location::create([
-            'province_id' => $validated['province_id'],
-            'municipality_id' => $validated['municipality_id'],
-            'barangay_id' => $validated['barangay_id'],
-        ]);
+        DB::beginTransaction();
+        try {
+            $location = Location::create([
+                'province_id' => $validated['province_id'],
+                'municipality_id' => $validated['municipality_id'],
+                'barangay_id' => $validated['barangay_id'],
+                'street' => $validated['street'] ?? null,
+            ]);
 
-        $farmer_id = Farmer::find($validated['farmer_id']);
+            $farmer_id = Farmer::find($validated['farmer_id']);
 
-        Farm::create([
-            'name' => $validated['name'],
-            'total_area' => $validated['total_area'],
-            'cropping_system' => $validated['cropping_system'],
-            'prev_crops' => $validated['prev_crops'],
-            'farmer_id' => $farmer_id->id,
-            'location_id' => $location->id,
-        ]);
+            Farm::create([
+                'name' => $validated['name'],
+                'total_area' => $validated['total_area'],
+                'cropping_system' => $validated['cropping_system'],
+                'prev_crops' => $validated['prev_crops'],
+                'farmer_id' => $farmer_id->id,
+                'location_id' => $location->id,
+            ]);
 
-        return redirect()->route('management.farm.create')->with('success', 'Farm created successfully.');
+            DB::commit();
+            return redirect()->route('management.farm.index')->with('success', 'Farm created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'An error occurred while creating the farm. Please try again.']);
+        }
     }
 
     /**

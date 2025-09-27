@@ -10,16 +10,24 @@ import { Edit } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 import { toast } from 'sonner';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { usePage } from '@inertiajs/react';
+import { type LocationProps } from '@/types/farmer';
 
 interface FarmerIndexPropsExtended extends EditFarmerProps {
     farmer: EditFarmerProps['farmer'];
-    provinces: EditFarmerProps['provinces'];
-    municipalities: EditFarmerProps['municipalities'];
-    barangays: EditFarmerProps['barangays'];
     asMenuItem?: boolean;
 }
 
-export default function EditFarmerFormDialog({ farmer, provinces, municipalities, barangays, asMenuItem }: FarmerIndexPropsExtended) {
+interface Location extends LocationProps {
+    provinces: LocationProps['provinces'];
+    municipalities: LocationProps['municipalities'];
+    barangays: LocationProps['barangays'];
+}
+
+export default function EditFarmerFormDialog({ farmer, asMenuItem }: FarmerIndexPropsExtended) {
+    const { provinces, municipalities, barangays } = usePage().props as unknown as Location;
+    
+    
     const [open, setOpen] = useState(false);
     const { data, setData, put, processing, errors } = useForm({
         firstname: farmer.firstname || '',
@@ -62,7 +70,7 @@ export default function EditFarmerFormDialog({ farmer, provinces, municipalities
                         Edit
                     </DropdownMenuItem>
                 ) : (
-                    <Button size="sm" variant="outline" className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]">
+                    <Button size="sm" variant="outline" className="h-8 w-8 cursor-pointer border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]">
                         <Edit className="h-4 w-4 text-[#619154]" />
                     </Button>
                 )}

@@ -96,8 +96,8 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
 
     return (
         <TooltipProvider>
-            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="fertilizers-table-heading">
-                <CardHeader className="pb-4">
+            <Card className="rounded-sm" role="region" aria-labelledby="fertilizers-table-heading">
+                <CardHeader>
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
@@ -257,7 +257,7 @@ export default function FertilizerTable({ fertilizers, onView, onSearch, searchV
                     )}
 
                     {pagination && pagination.totalPages > 1 && onPageChange && (
-                        <div className="border-t border-[#D6E3D4] px-6 py-4">
+                        <div className="border-t border-[#005a23] px-6 pt-6">
                             <PaginationData currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={onPageChange} />
                         </div>
                     )}

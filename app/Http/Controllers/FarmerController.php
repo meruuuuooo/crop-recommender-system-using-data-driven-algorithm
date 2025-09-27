@@ -26,7 +26,7 @@ class FarmerController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 5);
+        $perPage = $request->get('per_page', 6);
 
         $farmers = Farmer::with([
             'location.province',

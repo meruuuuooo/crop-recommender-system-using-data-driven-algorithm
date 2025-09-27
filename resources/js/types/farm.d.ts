@@ -5,6 +5,7 @@ export type { Farm, Farmer, Location, Province, Municipality, Barangay };
 export type PaginatedFarms = PaginatedResponse<Farm>;
 
 export type FarmIndexProps = {
+    farmers: Farmer[];
     farms: PaginatedFarms;
     filters: {
         search?: string;
@@ -18,6 +19,13 @@ export type FarmShowProps = {
 
 export type CreateFarmProps = {
     farmers: Farmer[];
+    provinces: Province[];
+    municipalities: Municipality[];
+    barangays: Barangay[];
+    crops: Crop[];
+};
+
+export type LocationProps = {
     provinces: Province[];
     municipalities: Municipality[];
     barangays: Barangay[];
