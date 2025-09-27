@@ -7,25 +7,24 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { type Farmer, type PaginatedFarmers } from '@/types/farmer';
-import { Link, router } from '@inertiajs/react';
-import { Calendar, Edit, Eye, MapPin, Phone, Plus, Search, User, Users } from 'lucide-react';
+import { router } from '@inertiajs/react';
+import { Calendar, Eye, MapPin, Phone, Search, User, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import EditFarmerFormDialog from './editFarmerFormDialog';
+import { type CreateFarmerProps, type Farmer, type FarmerIndexProps } from '@/types/farmer';
 
-interface FarmerTableProps {
-    farmers: PaginatedFarmers;
-    filters: {
-        search?: string;
-        per_page?: number;
-    };
-    onEdit?: (farmer: Farmer) => void;
-    onView?: (farmer: Farmer) => void;
-    onDelete?: (farmer: Farmer) => void;
+export interface FarmerTableProps {
+    farmers: FarmerIndexProps['farmers'];
+    filters: FarmerIndexProps['filters'];
+    provinces: CreateFarmerProps['provinces'];
+    municipalities: CreateFarmerProps['municipalities'];
+    barangays: CreateFarmerProps['barangays'];
+    onView: (farmer: Farmer) => void;
 }
 
-export default function FarmerTable({ farmers, filters, onEdit, onView }: FarmerTableProps) {
+export default function FarmerTable({ farmers, filters, provinces, municipalities, barangays, onView }: FarmerTableProps) {
     const [search, setSearch] = useState(filters.search || '');
-    const [perPage, setPerPage] = useState(filters.per_page || 10);
+    const [perPage, setPerPage] = useState(filters.per_page || 5);
 
     // Update search and navigate to new URL
     const handleSearchChange = (value: string) => {
@@ -116,10 +115,10 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
 
     return (
         <TooltipProvider>
-            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farmers-table-heading">
-                <CardHeader className="pb-4">
+            <Card role="region" aria-labelledby="farmers-table-heading" className="rounded-sm">
+                <CardHeader className="flex items-end justify-between gap-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                        <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
                                 <Label htmlFor="farmer-search" className="sr-only">
                                     Search farmers
@@ -130,7 +129,7 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                     placeholder="Search by name, contact, or address..."
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
-                                    className="border-[#D6E3D4] pl-10 focus:border-[#619154] focus:ring-[#619154]"
+                                    className="pl-10 focus:border-[#619154] focus:ring-[#619154]"
                                     aria-describedby="search-hint"
                                 />
                             </div>
@@ -143,7 +142,7 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="10">10</SelectItem>
+                                        <SelectItem value="5">5</SelectItem>
                                         <SelectItem value="25">25</SelectItem>
                                         <SelectItem value="50">50</SelectItem>
                                         <SelectItem value="100">100</SelectItem>
@@ -154,14 +153,6 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                 Showing <span className="font-medium">{farmers.from || 0}</span>-
                                 <span className="font-medium">{farmers.to || 0}</span> of <span className="font-medium">{farmers.total}</span> farmers
                             </div>
-                        </div>
-                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                            <Link href={route('management.farmer.create')}>
-                                <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
-                                    <Plus className="mr-2 h-4 w-4" />
-                                    Add Farmer
-                                </Button>
-                            </Link>
                         </div>
                     </div>
                 </CardHeader>
@@ -249,24 +240,20 @@ export default function FarmerTable({ farmers, filters, onEdit, onView }: Farmer
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     )}
-                                                    {onEdit && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => onEdit(farmer)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                    aria-label={`Edit ${getFullName(farmer)}`}
-                                                                >
-                                                                    <Edit className="h-4 w-4 text-[#619154]" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Edit farmer</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
+
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <EditFarmerFormDialog
+                                                                farmer={farmer}
+                                                                provinces={provinces}
+                                                                municipalities={municipalities}
+                                                                barangays={barangays}
+                                                            />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Edit farmer</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

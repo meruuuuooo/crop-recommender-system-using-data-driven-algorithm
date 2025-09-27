@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Management\FarmerFarmRequest;
 use App\Http\Requests\Management\FarmerRequest;
 use App\Models\Barangay;
 use App\Models\Farmer;
@@ -13,6 +14,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Farm;
+use App\Models\Crop;
+use Exception;
+use Illuminate\Support\Facades\DB;
 
 class FarmerController extends Controller
 {
@@ -22,7 +26,7 @@ class FarmerController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 5);
 
         $farmers = Farmer::with([
             'location.province',
@@ -51,56 +55,91 @@ class FarmerController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
+        $province = Province::all();
+        $municipality = Municipality::all();
+        $barangay = Barangay::all();
+
+        $crops = Crop::all(['id', 'name']);
+
         return Inertia::render('management/farmer/index', [
             'farmers' => $farmers,
             'filters' => [
                 'search' => $search,
                 'per_page' => $perPage,
             ],
+            'provinces' => $province,
+            'municipalities' => $municipality,
+            'barangays' => $barangay,
+            'crops' => $crops,
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
+    // public function create()
+    // {
 
-        $province = Province::all();
-        $municipality = Municipality::all();
-        $barangay = Barangay::all();
+    //     $province = Province::all();
+    //     $municipality = Municipality::all();
+    //     $barangay = Barangay::all();
 
-        return Inertia::render('management/farmer/create', [
-            'provinces' => $province,
-            'municipalities' => $municipality,
-            'barangays' => $barangay,
-        ]);
-    }
+    //     return Inertia::render('management/farmer/create', [
+    //         'provinces' => $province,
+    //         'municipalities' => $municipality,
+    //         'barangays' => $barangay,
+    //     ]);
+    // }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(FarmerRequest $request): RedirectResponse
+    public function store(FarmerFarmRequest $request): RedirectResponse
     {
-        $request = $request->validated();
-        $location = Location::create([
-            'province_id' => $request['province_id'],
-            'municipality_id' => $request['municipality_id'],
-            'barangay_id' => $request['barangay_id'],
-            'street' => $request['street'],
-        ]);
-        $user_id = Auth::user()->id;
-        Farmer::create([
-            'firstname' => $request['firstname'],
-            'middlename' => $request['middlename'],
-            'lastname' => $request['lastname'],
-            'contact_number' => $request['contact_number'],
-            'farming_experience' => $request['farming_experience'],
-            'registration_date' => now(),
-            'location_id' => $location->id,
-            'user_id' => $user_id,
-        ]);
-        return redirect()->route('management.farm.create')->with('success', 'Farmer created successfully.');
+        $validated = $request->validated();
+
+        DB::beginTransaction();
+        try {
+            $farmerLocation = Location::create([
+                'province_id' => $validated['farmer']['province_id'],
+                'municipality_id' => $validated['farmer']['municipality_id'],
+                'barangay_id' => $validated['farmer']['barangay_id'],
+                'street' => $validated['farmer']['street'] ?? null,
+            ]);
+
+            $farmer = Farmer::create([
+                'firstname' => $validated['farmer']['firstname'],
+                'middlename' => $validated['farmer']['middlename'] ?? null,
+                'lastname' => $validated['farmer']['lastname'],
+                'contact_number' => $validated['farmer']['contact_number'],
+                'farming_experience' => $validated['farmer']['farming_experience'],
+                'location_id' => $farmerLocation->id,
+                'user_id' => Auth::id(),
+                'registration_date' => now(), // Set registration date to current date
+            ]);
+
+            $farmLocation = Location::create([
+                'province_id' => $validated['farm']['province_id'],
+                'municipality_id' => $validated['farm']['municipality_id'],
+                'barangay_id' => $validated['farm']['barangay_id'],
+                'street' => $validated['farm']['street'] ?? null,
+            ]);
+
+            Farm::create([
+                'name' => $validated['farm']['name'],
+                'total_area' => $validated['farm']['total_area'] ?? null,
+                'cropping_system' => $validated['farm']['cropping_system'] ?? null,
+                'prev_crops' => $validated['farm']['prev_crops'] ?? null,
+                'location_id' => $farmLocation->id,
+                'farmer_id' => $farmer->id,
+            ]);
+
+            DB::commit();
+            return redirect()->route('management.farmer.index')->with('success', 'Farmer created successfully.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['general' => 'Failed to create farmer and farm: ' . $e->getMessage()])->withInput();
+        }
     }
 
     /**

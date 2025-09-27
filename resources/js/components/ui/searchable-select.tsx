@@ -21,6 +21,7 @@ interface SearchableSelectProps {
   clearable?: boolean
   loading?: boolean
   emptyMessage?: string
+  portalContainer?: HTMLElement | null // NEW: allow parent to specify portal container
 }
 
 export function SearchableSelect({
@@ -34,6 +35,7 @@ export function SearchableSelect({
   clearable = false,
   loading = false,
   emptyMessage = "No results found.",
+  portalContainer = undefined, // NEW: default undefined
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
@@ -121,7 +123,7 @@ export function SearchableSelect({
           </div>
         </button>
       </PopoverPrimitive.Trigger>
-      <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Portal container={portalContainer}>
         <PopoverPrimitive.Content
           className={cn(
             "z-50 min-w-[var(--radix-popover-trigger-width)] rounded-md border bg-white p-1 shadow-md",

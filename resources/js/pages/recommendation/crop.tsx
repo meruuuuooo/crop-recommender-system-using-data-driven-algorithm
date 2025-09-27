@@ -503,7 +503,7 @@ export default function Crop({
                                     <Input
                                         id="temperature"
                                         name="temperature"
-                                        className="border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                        className="text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
                                         value={data.temperature}
                                         onChange={(e) => setData('temperature', e.target.value)}
                                         required
@@ -526,7 +526,7 @@ export default function Crop({
                                     <Input
                                         id="rainfall"
                                         name="rainfall"
-                                        className="border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                        className=" text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
                                         value={data.rainfall}
                                         onChange={(e) => setData('rainfall', e.target.value)}
                                         required
@@ -548,7 +548,7 @@ export default function Crop({
                                     <Input
                                         id="humidity"
                                         name="humidity"
-                                        className="border-[#D6E3D4] text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                        className=" text-[#619154] placeholder:text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
                                         value={data.humidity}
                                         onChange={(e) => setData('humidity', e.target.value)}
                                         required

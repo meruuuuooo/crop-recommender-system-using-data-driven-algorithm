@@ -26,7 +26,6 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
     const filteredBarangays = barangays.filter((barangay) => String(barangay.municipality_id) === data.municipality_id);
 
     const submit: FormEventHandler = (e) => {
-
         e.preventDefault();
 
         post(route('management.farm.store'), {
@@ -57,7 +56,7 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
     };
 
     const croppingSystems = [
-        { 'Moiocropping': 'Moiocropping' },
+        { Moiocropping: 'Moiocropping' },
         { 'Mixed Cropping': 'Mixed Cropping' },
         { 'Inter Cropping': 'Inter Cropping' },
         { 'Crop Rotation': 'Crop Rotation' },
@@ -66,8 +65,6 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
         { 'Alley Cropping': 'Alley Cropping' },
         { 'Strip Cropping': 'Strip Cropping' },
     ];
-
-
 
     return (
         <div className="w-full sm:p-4 lg:p-6" role="main">
@@ -105,8 +102,7 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
 
                         <div className="space-y-2">
                             <Label htmlFor="totalarea" className="text-sm font-medium text-gray-700">
-                                Total Area (hectares){' '}
-                                <span className="text-gray-500 text-xs"> (Optional)</span>
+                                Total Area (hectares) <span className="text-xs text-gray-500"> (Optional)</span>
                             </Label>
                             <Input
                                 id="totalarea"
@@ -125,7 +121,7 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                             </div>
                             <InputError message={errors.total_area} id="total-area-error" />
                         </div>
-                                                <div className="space-y-2">
+                        <div className="space-y-2">
                             <Label htmlFor="cropping_system" className="text-sm font-medium text-gray-700">
                                 Cropping System{' '}
                                 <span className="text-red-500" aria-label="required">
@@ -184,8 +180,13 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                                     }}
                                 >
                                     <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
-                                        <SelectValue placeholder={data.cropping_system === 'Moiocropping' ? "Select one previous crop" : "Select previous crops"}>
-                                            {data.prev_crops || (data.cropping_system === 'Moiocropping' ? "Select one previous crop" : "Select previous crops")}
+                                        <SelectValue
+                                            placeholder={
+                                                data.cropping_system === 'Moiocropping' ? 'Select one previous crop' : 'Select previous crops'
+                                            }
+                                        >
+                                            {data.prev_crops ||
+                                                (data.cropping_system === 'Moiocropping' ? 'Select one previous crop' : 'Select previous crops')}
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
@@ -205,7 +206,7 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                                             e.stopPropagation();
                                             setData('prev_crops', '');
                                         }}
-                                        className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 focus:outline-none text-xs px-1"
+                                        className="absolute top-1/2 right-8 -translate-y-1/2 transform px-1 text-xs text-gray-400 hover:text-red-600 focus:outline-none"
                                         aria-label="Clear all crops"
                                     >
                                         ✕
@@ -221,8 +222,6 @@ export default function CreateFarmForm({ farmers, provinces, municipalities, bar
                             <InputError message={errors.prev_crops} id="prev-crops-error" />
                         </div>
                     </div>
-
-
                 </div>
 
                 {/* Farmer Assignment Section */}

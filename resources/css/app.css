@@ -77,7 +77,7 @@
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
   --border: rgba(0, 90, 35);
-  --input: rgb(159, 213, 122);
+  --input: #005a23;
   --ring: rgba(0, 90, 35);
   --chart-1: #7bf0a9;
   --chart-2: #00c950;
