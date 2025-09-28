@@ -7,6 +7,7 @@ import { Head } from '@inertiajs/react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import AppLayout from '@/layouts/app-layout';
+import { Card } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -269,10 +270,7 @@ const columns: ColumnDef<SoilTestRow>[] = [
     },
 ];
 
-export default function Report1({ farms, filters }: Report1Props) {
-    console.log(farms);
-    console.log(filters);
-
+export default function Report1({ farms }: Report1Props) {
     // Transform the data for the table
     const transformedData: SoilTestRow[] = farms.data.flatMap((farm: FarmWithSoils) => {
         if (!farm.soils || farm.soils.length === 0) return [];
@@ -303,8 +301,8 @@ export default function Report1({ farms, filters }: Report1Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports - Soil Test Results" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-8">
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
+                <Card className="flex flex-col gap-4 rounded-xl bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <HeadingSmall
                             title="Soil Test Results Report"
@@ -324,7 +322,7 @@ export default function Report1({ farms, filters }: Report1Props) {
                         initialPageSize={10}
                         pageSizeOptions={[10, 25, 50, 100]}
                     />
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

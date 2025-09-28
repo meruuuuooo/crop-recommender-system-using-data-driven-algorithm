@@ -9,6 +9,7 @@ import { type ColumnDef } from '@tanstack/react-table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { router } from '@inertiajs/react';
 import { format } from 'date-fns';
+import { Card } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -230,8 +231,8 @@ export default function Report4({ recommendations, provinces, municipalities, fi
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports - Crop Recommendations by Location" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-8">
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
+                <Card className="flex flex-col gap-4 rounded-sm bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
                     <div className="flex flex-col gap-4">
                         <HeadingSmall
                             title="Crop Recommendations by Location"
@@ -296,7 +297,7 @@ export default function Report4({ recommendations, provinces, municipalities, fi
                         initialPageSize={10}
                         pageSizeOptions={[10, 25, 50, 100]}
                     />
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

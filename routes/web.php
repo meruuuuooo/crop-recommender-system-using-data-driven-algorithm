@@ -61,6 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');
         Route::get('/pesticide/show/{pesticide}', [RecommendationController::class, 'showPesticide'])->name('pesticide.show');
+        Route::get('/pesticide/download/{pesticide}', [RecommendationController::class, 'downloadPesticide'])->name('downloadPesticide');
     });
 
     Route::prefix('reports')->name('reports.')->group(function () {

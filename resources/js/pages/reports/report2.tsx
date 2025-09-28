@@ -7,6 +7,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import { Card } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -243,8 +244,8 @@ export default function Report2({ farms, filters }: Report2Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports - Climate Data" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-8">
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto  p-4">
+                <Card className="flex flex-col gap-4 rounded-xl border bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <HeadingSmall
                             title="Climate Data Report"
@@ -278,7 +279,7 @@ export default function Report2({ farms, filters }: Report2Props) {
                         initialPageSize={10}
                         pageSizeOptions={[10, 25, 50, 100]}
                     />
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

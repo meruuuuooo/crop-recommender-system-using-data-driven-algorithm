@@ -8,6 +8,7 @@ import { Head } from '@inertiajs/react';
 import { type ColumnDef } from '@tanstack/react-table';
 import { router } from '@inertiajs/react';
 import { SearchableSelect } from '@/components/ui/searchable-select';
+import { Card } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -204,8 +205,8 @@ export default function Report3({ farms, farmers, filters }: Report3Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports - Farms by Owner" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-8">
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
+                <Card className="flex flex-col gap-4 rounded-xl bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <HeadingSmall
                             title="Farms by Owner Report"
@@ -243,7 +244,7 @@ export default function Report3({ farms, farmers, filters }: Report3Props) {
                         initialPageSize={10}
                         pageSizeOptions={[10, 25, 50, 100]}
                     />
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

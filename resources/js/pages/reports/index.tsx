@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
+import { Card } from '@/components/ui/card';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -38,7 +39,7 @@ export default function Index() {
         switch (report.component) {
             case 'Report1':
                 return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <Card className="rounded-lg bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                         <div className="mb-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Soil Test Results Report
@@ -61,12 +62,12 @@ export default function Index() {
                                 </Button>
                             </Link>
                         </div>
-                    </div>
+                    </Card>
                 );
 
             case 'Report2':
                 return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <Card className="rounded-lg  bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                         <div className="mb-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Climate Data Report
@@ -89,12 +90,12 @@ export default function Index() {
                                 </Button>
                             </Link>
                         </div>
-                    </div>
+                    </Card>
                 );
 
             case 'Report3':
                 return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <Card className="rounded-lg bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                         <div className="mb-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Farms by Owner Report
@@ -117,12 +118,12 @@ export default function Index() {
                                 </Button>
                             </Link>
                         </div>
-                    </div>
+                    </Card>
                 );
 
             case 'Report4':
                 return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <Card className="rounded-lg b bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                         <div className="mb-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Crop Recommendations by Location
@@ -145,12 +146,12 @@ export default function Index() {
                                 </Button>
                             </Link>
                         </div>
-                    </div>
+                    </Card>
                 );
 
             case 'Report5':
                 return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <Card className="rounded-lg bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                         <div className="mb-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Detailed Crop Recommendations
@@ -173,12 +174,12 @@ export default function Index() {
                                 </Button>
                             </Link>
                         </div>
-                    </div>
+                    </Card>
                 );
 
             case 'Report7':
                 return (
-                    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                    <Card className="rounded-lg bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
                         <div className="mb-4">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Farms with Specific Soil Types and Recommended Crops
@@ -201,7 +202,7 @@ export default function Index() {
                                 </Button>
                             </Link>
                         </div>
-                    </div>
+                    </Card>
                 );
 
             default:
@@ -216,8 +217,8 @@ export default function Index() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8">
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
+                <Card className="flex flex-col rounded-xl gap-6 bg-white p-8 dark:border-sidebar-border">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <HeadingSmall title="Reports" description="List of all reports available in the system." />
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -265,7 +266,7 @@ export default function Index() {
                             </p>
                         </div>
                     )}
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

@@ -981,7 +981,6 @@ class RecommendationController extends Controller
             'Yellow sigatoka',
         ];
 
-
         $crops = $unique_crops;
 
         $peste = [
@@ -1005,6 +1004,22 @@ class RecommendationController extends Controller
                 'per_page' => $perPage,
             ],
         ]);
+    }
+
+
+    public function downloadPesticide(Pesticide $pesticide)
+    {
+        try {
+            $pdf = Pdf::loadView('pdf.recommendationPesticide', [
+                'pesticide' => $pesticide,
+            ])->setPaper('a4', 'portrait');
+
+            return $pdf->download('Pesticide_' . preg_replace('/\s+/', '_', $pesticide->product_name) . '.pdf');
+        } catch (\Exception $e) {
+            Log::error('Pesticide PDF Generation Error: ' . $e->getMessage());
+
+            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
+        }
     }
 
     public function showPesticide(Request $request, $pesticide)

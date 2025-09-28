@@ -1,8 +1,9 @@
 import { DataTable } from '@/components/data-table';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import HeadingSmall from '@/components/heading-small';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
@@ -90,39 +91,25 @@ type FarmRow = {
 // Define table columns
 const columns: ColumnDef<FarmRow>[] = [
     {
-        accessorKey: "farmName",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Farm Name" />
-        ),
-        cell: ({ row }) => (
-            <div className="font-medium text-gray-900 dark:text-gray-100">
-                {row.getValue("farmName")}
-            </div>
-        ),
+        accessorKey: 'farmName',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Farm Name" />,
+        cell: ({ row }) => <div className="font-medium text-gray-900 dark:text-gray-100">{row.getValue('farmName')}</div>,
     },
     {
-        accessorKey: "farmerName",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Farm Owner" />
-        ),
-        cell: ({ row }) => (
-            <div className="text-sm text-gray-700 dark:text-gray-300">
-                {row.getValue("farmerName")}
-            </div>
-        ),
+        accessorKey: 'farmerName',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Farm Owner" />,
+        cell: ({ row }) => <div className="text-sm text-gray-700 dark:text-gray-300">{row.getValue('farmerName')}</div>,
     },
     {
-        accessorKey: "soilType",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Soil Type" />
-        ),
+        accessorKey: 'soilType',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Soil Type" />,
         cell: ({ row }) => {
-            const soilType = row.getValue("soilType") as string;
+            const soilType = row.getValue('soilType') as string;
             const getSoilTypeBadge = (type: string) => {
-                if (type.toLowerCase().includes('clay')) return "default";
-                if (type.toLowerCase().includes('sandy')) return "secondary";
-                if (type.toLowerCase().includes('loam')) return "outline";
-                return "secondary";
+                if (type.toLowerCase().includes('clay')) return 'default';
+                if (type.toLowerCase().includes('sandy')) return 'secondary';
+                if (type.toLowerCase().includes('loam')) return 'outline';
+                return 'secondary';
             };
             return (
                 <Badge variant={getSoilTypeBadge(soilType)} className="capitalize">
@@ -132,16 +119,14 @@ const columns: ColumnDef<FarmRow>[] = [
         },
     },
     {
-        accessorKey: "phLevel",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="pH Level" />
-        ),
+        accessorKey: 'phLevel',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="pH Level" />,
         cell: ({ row }) => {
-            const ph = parseFloat(row.getValue("phLevel") as string);
+            const ph = parseFloat(row.getValue('phLevel') as string);
             const getPhBadge = (ph: number) => {
-                if (ph < 6.0) return { variant: "destructive" as const, label: "Acidic" };
-                if (ph > 8.0) return { variant: "default" as const, label: "Alkaline" };
-                return { variant: "default" as const, label: "Neutral" };
+                if (ph < 6.0) return { variant: 'destructive' as const, label: 'Acidic' };
+                if (ph > 8.0) return { variant: 'default' as const, label: 'Alkaline' };
+                return { variant: 'default' as const, label: 'Neutral' };
             };
             const badge = getPhBadge(ph);
             return (
@@ -155,30 +140,22 @@ const columns: ColumnDef<FarmRow>[] = [
         },
     },
     {
-        accessorKey: "lastTestDate",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Last Test Date" />
-        ),
+        accessorKey: 'lastTestDate',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Last Test Date" />,
         cell: ({ row }) => {
-            const date = row.getValue("lastTestDate") as string;
-            return (
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {new Date(date).toLocaleDateString()}
-                </div>
-            );
+            const date = row.getValue('lastTestDate') as string;
+            return <div className="text-sm text-gray-600 dark:text-gray-400">{new Date(date).toLocaleDateString()}</div>;
         },
     },
     {
-        accessorKey: "recommendedCrops",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Recommended Crops" />
-        ),
+        accessorKey: 'recommendedCrops',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Recommended Crops" />,
         cell: ({ row }) => {
-            const crops = row.getValue("recommendedCrops") as string;
-            const totalRecommendations = row.getValue("totalRecommendations") as number;
+            const crops = row.getValue('recommendedCrops') as string;
+            const totalRecommendations = row.getValue('totalRecommendations') as number;
             return (
                 <div className="space-y-1">
-                    <div className="text-sm text-gray-700 dark:text-gray-300 max-w-xs">
+                    <div className="max-w-xs text-sm text-gray-700 dark:text-gray-300">
                         <div className="truncate" title={crops}>
                             {crops || 'No recommendations'}
                         </div>
@@ -198,7 +175,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
     // Transform the data for the table
     const transformedData: FarmRow[] = farms.data.map((farm: Farm) => {
         const latestSoil = farm.soils[0]; // Assuming sorted by test_date desc
-        const cropNames = farm.recommendations.map(rec => rec.crop.name).join(', ');
+        const cropNames = farm.recommendations.map((rec) => rec.crop.name).join(', ');
 
         return {
             id: farm.id.toString(),
@@ -216,7 +193,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
     const soilTypeStats: { [key: string]: number } = {};
     const phRanges = { acidic: 0, neutral: 0, alkaline: 0 };
 
-    transformedData.forEach(farm => {
+    transformedData.forEach((farm) => {
         soilTypeStats[farm.soilType] = (soilTypeStats[farm.soilType] || 0) + 1;
         const ph = parseFloat(farm.phLevel);
         if (ph < 6.0) phRanges.acidic++;
@@ -234,8 +211,8 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Reports - Farms by Soil Types" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-8">
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
+                <Card className="flex flex-col gap-4 rounded-sm bg-white p-8 dark:border-sidebar-border dark:bg-gray-900">
                     <div className="flex flex-col gap-4">
                         <HeadingSmall
                             title="Farms with Specific Soil Types and Recommended Crops"
@@ -246,10 +223,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
                         <div className="flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium">Filter by Soil Type:</span>
-                                <Select
-                                    value={filters.soil_type || 'all'}
-                                    onValueChange={handleSoilTypeChange}
-                                >
+                                <Select value={filters.soil_type || 'all'} onValueChange={handleSoilTypeChange}>
                                     <SelectTrigger className="w-48">
                                         <SelectValue placeholder="Select soil type" />
                                     </SelectTrigger>
@@ -266,31 +240,23 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
                         </div>
 
                         {/* Summary Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
+                            <Card className="rounded-lg p-4 dark:border-gray-700">
                                 <div className="text-sm text-gray-600 dark:text-gray-400">Total Farms</div>
-                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                    {transformedData.length}
-                                </div>
-                            </div>
-                            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{transformedData.length}</div>
+                            </Card>
+                            <Card className="rounded-lg p-4 dark:border-gray-700">
                                 <div className="text-sm text-gray-600 dark:text-gray-400">Acidic Soil</div>
-                                <div className="text-2xl font-bold text-red-600">
-                                    {phRanges.acidic}
-                                </div>
-                            </div>
-                            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div className="text-2xl font-bold text-red-600">{phRanges.acidic}</div>
+                            </Card>
+                            <Card className="rounded-lg p-4 dark:border-gray-700">
                                 <div className="text-sm text-gray-600 dark:text-gray-400">Neutral Soil</div>
-                                <div className="text-2xl font-bold text-green-600">
-                                    {phRanges.neutral}
-                                </div>
-                            </div>
-                            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div className="text-2xl font-bold text-green-600">{phRanges.neutral}</div>
+                            </Card>
+                            <Card className="rounded-lg p-4 dark:border-gray-700">
                                 <div className="text-sm text-gray-600 dark:text-gray-400">Alkaline Soil</div>
-                                <div className="text-2xl font-bold text-blue-600">
-                                    {phRanges.alkaline}
-                                </div>
-                            </div>
+                                <div className="text-2xl font-bold text-blue-600">{phRanges.alkaline}</div>
+                            </Card>
                         </div>
 
                         {/* Top Soil Types */}
@@ -298,13 +264,13 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium">Soil Types:</span>
                                 {Object.entries(soilTypeStats)
-                                    .sort(([,a], [,b]) => b - a)
+                                    .sort(([, a], [, b]) => b - a)
                                     .slice(0, 5)
                                     .map(([type, count]) => (
-                                    <Badge key={type} variant="outline" className="text-xs capitalize">
-                                        {type} ({count})
-                                    </Badge>
-                                ))}
+                                        <Badge key={type} variant="outline" className="text-xs capitalize">
+                                            {type} ({count})
+                                        </Badge>
+                                    ))}
                             </div>
                         </div>
                     </div>
@@ -318,7 +284,7 @@ export default function Report7({ farms, soilTypes, filters }: Report7Props) {
                         initialPageSize={15}
                         pageSizeOptions={[15, 25, 50, 100]}
                     />
-                </div>
+                </Card>
             </div>
         </AppLayout>
     );

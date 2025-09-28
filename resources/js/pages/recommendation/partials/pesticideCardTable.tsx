@@ -8,6 +8,8 @@ import { SearchableSelect } from '@/components/ui/searchable-select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Pesticide } from '@/types/pesticide';
+import { Biohazard, Download } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 import {
     // Activity,
@@ -25,6 +27,7 @@ import {
     X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface PaginationInfo {
     currentPage: number;
@@ -59,6 +62,7 @@ interface PesticideTableProps {
     };
     pagination?: PaginationInfo;
     onPageChange?: (page: number) => void;
+    loading?: boolean;
 }
 
 export default function PesticideTable({
@@ -83,6 +87,86 @@ export default function PesticideTable({
     const [showFilters, setShowFilters] = useState(true);
 
     useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (search.trim() === '') return;
+
+            if (onSearch && search !== searchValue) {
+                if (!Swal.isVisible()) {
+                    Swal.fire({
+                        title: 'Searching...',
+                        text: 'Please wait while we fetch results.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                    });
+                }
+                onSearch(search);
+            }
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
+    }, [search, onSearch, searchValue]);
+
+    // Filters debounce
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (!cropSearch && !pestSearch && !weedSearch && !diseaseSearch && !toxicitySearch && !pesticideSearch) return;
+
+            const changed =
+                cropSearch !== (filters?.crop_search || '') ||
+                pestSearch !== (filters?.pest_search || '') ||
+                weedSearch !== (filters?.weed_search || '') ||
+                diseaseSearch !== (filters?.disease_search || '') ||
+                toxicitySearch !== (filters?.toxicity_search || '') ||
+                pesticideSearch !== (filters?.pesticide_search || '');
+
+            if (onFilterSearch && changed) {
+                if (!Swal.isVisible()) {
+                    Swal.fire({
+                        title: 'Filtering...',
+                        text: 'Applying filters, please wait.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                    });
+                }
+
+                onFilterSearch('crop_search', cropSearch);
+                onFilterSearch('pest_search', pestSearch);
+                onFilterSearch('weed_search', weedSearch);
+                onFilterSearch('disease_search', diseaseSearch);
+                onFilterSearch('toxicity_search', toxicitySearch);
+                onFilterSearch('pesticide_search', pesticideSearch);
+            }
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
+    }, [
+        cropSearch,
+        pestSearch,
+        weedSearch,
+        diseaseSearch,
+        toxicitySearch,
+        pesticideSearch,
+        onFilterSearch,
+        filters?.crop_search,
+        filters?.pest_search,
+        filters?.weed_search,
+        filters?.disease_search,
+        filters?.toxicity_search,
+        filters?.pesticide_search,
+    ]);
+
+    // Close Swal when results are ready (any dataset update)
+    useEffect(() => {
+        if (Swal.isVisible()) {
+            Swal.close();
+        }
+    }, [pesticides]);
+
+    useEffect(() => {
         setSearch(searchValue);
     }, [searchValue]);
 
@@ -103,7 +187,7 @@ export default function PesticideTable({
             if (onSearch && search !== searchValue) {
                 onSearch(search);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [search, onSearch, searchValue]);
 
@@ -112,7 +196,7 @@ export default function PesticideTable({
             if (onFilterSearch && cropSearch !== (filters?.crop_search || '')) {
                 onFilterSearch('crop_search', cropSearch);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [cropSearch, onFilterSearch, filters?.crop_search]);
 
@@ -121,7 +205,7 @@ export default function PesticideTable({
             if (onFilterSearch && pestSearch !== (filters?.pest_search || '')) {
                 onFilterSearch('pest_search', pestSearch);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [pestSearch, onFilterSearch, filters?.pest_search]);
 
@@ -130,7 +214,7 @@ export default function PesticideTable({
             if (onFilterSearch && weedSearch !== (filters?.weed_search || '')) {
                 onFilterSearch('weed_search', weedSearch);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [weedSearch, onFilterSearch, filters?.weed_search]);
 
@@ -139,7 +223,7 @@ export default function PesticideTable({
             if (onFilterSearch && diseaseSearch !== (filters?.disease_search || '')) {
                 onFilterSearch('disease_search', diseaseSearch);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [diseaseSearch, onFilterSearch, filters?.disease_search]);
 
@@ -148,7 +232,7 @@ export default function PesticideTable({
             if (onFilterSearch && toxicitySearch !== (filters?.toxicity_search || '')) {
                 onFilterSearch('toxicity_search', toxicitySearch);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [toxicitySearch, onFilterSearch, filters?.toxicity_search]);
 
@@ -157,7 +241,7 @@ export default function PesticideTable({
             if (onFilterSearch && pesticideSearch !== (filters?.pesticide_search || '')) {
                 onFilterSearch('pesticide_search', pesticideSearch);
             }
-        }, 500);
+        }, 1000);
         return () => clearTimeout(timeoutId);
     }, [pesticideSearch, onFilterSearch, filters?.pesticide_search]);
 
@@ -233,24 +317,6 @@ export default function PesticideTable({
         return concentration.includes('%') ? concentration : `${concentration}%`;
     };
 
-    const clearAllFilters = () => {
-        setSearch('');
-        setCropSearch('');
-        setPestSearch('');
-        setWeedSearch('');
-        setDiseaseSearch('');
-        setToxicitySearch('');
-
-        if (onSearch) onSearch('');
-        if (onFilterSearch) {
-            onFilterSearch('crop_search', '');
-            onFilterSearch('pest_search', '');
-            onFilterSearch('weed_search', '');
-            onFilterSearch('disease_search', '');
-            onFilterSearch('toxicity_search', '');
-        }
-    };
-
     const hasActiveFilters = () => {
         return search || cropSearch || pestSearch || weedSearch || diseaseSearch || toxicitySearch;
     };
@@ -278,20 +344,66 @@ export default function PesticideTable({
         }
     };
 
-        const type_of_pesticide_options = [
-            'HERBICIDE',
-            'INSECTICIDE',
-            'MOLLUSCICIDE',
-            'FUNGICIDE',
-            'RODENTICIDE',
-            'FUMIGANT',
-            'MITICIDE',
-            'NEMATICIDE',
-            'PGR',
-            'IGR',
-            'DISINFECTANT',
-        ];
+    const type_of_pesticide_options = [
+        'HERBICIDE',
+        'INSECTICIDE',
+        'MOLLUSCICIDE',
+        'FUNGICIDE',
+        'RODENTICIDE',
+        'FUMIGANT',
+        'MITICIDE',
+        'NEMATICIDE',
+        'PGR',
+        'IGR',
+        'DISINFECTANT',
+    ];
 
+    const toxicity_options = [
+        { label: '1 - Highly Toxic', value: '1' },
+        { label: '2 - Moderately Toxic', value: '2' },
+        { label: '3 - Slightly Toxic', value: '3' },
+        { label: '4 - Practically Non-Toxic', value: '4' },
+    ];
+
+    const onDownload = (pesticide: Pesticide) => {
+        toast.promise(
+            new Promise((resolve) => {
+                window.open(route('recommendation.downloadPesticide', pesticide.id), '_blank');
+                setTimeout(() => {
+                    resolve('Download successful');
+                }, 2000);
+            }),
+            {
+                loading: 'Downloading...',
+                success: 'Download successful',
+                error: 'Download failed',
+            },
+        );
+    };
+
+    const handleClear = () => {
+        setSearch('');
+        setCropSearch('');
+        setPestSearch('');
+        setWeedSearch('');
+        setDiseaseSearch('');
+        setToxicitySearch('');
+        setPesticideSearch('');
+
+        // Call parent reset
+        if (onSearch) onSearch('');
+        if (onFilterSearch) {
+            onFilterSearch('crop_search', '');
+            onFilterSearch('pest_search', '');
+            onFilterSearch('weed_search', '');
+            onFilterSearch('disease_search', '');
+            onFilterSearch('toxicity_search', '');
+            onFilterSearch('pesticide_search', '');
+        }
+
+        // Close any SweetAlert still open
+        Swal.close();
+    };
 
     return (
         <TooltipProvider>
@@ -342,14 +454,14 @@ export default function PesticideTable({
 
                         {showFilters && (
                             <Card className="rounded-sm bg-[#F8FAF8]">
-                                <CardHeader className="pb-4">
+                                <CardHeader>
                                     <div className="flex items-center justify-between">
                                         <CardTitle className="text-lg">Advanced Filters</CardTitle>
                                         {hasActiveFilters() && (
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={clearAllFilters}
+                                                onClick={handleClear}
                                                 className="text-red-600 hover:bg-red-50 hover:text-red-700"
                                             >
                                                 <X className="mr-1 h-4 w-4" />
@@ -373,6 +485,46 @@ export default function PesticideTable({
                                                 clearable
                                                 className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
+                                            <div className="text-xs text-gray-500">
+                                                <p>Search for crops by name.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
+                                                <Biohazard className="h-4 w-4 text-yellow-600" />
+                                                Type of Pesticide
+                                            </Label>
+                                            <SearchableSelect
+                                                options={type_of_pesticide_options.map((option) => ({ label: option, value: option }))}
+                                                placeholder="Search by type of pesticide..."
+                                                value={pesticideSearch}
+                                                onValueChange={(value) => setPesticideSearch(value)}
+                                                clearable
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
+                                            />
+                                            <div className="text-xs text-gray-500">
+                                                <p>Search for pesticides by type.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
+                                                <Shield className="h-4 w-4 text-yellow-600" />
+                                                Toxicity Category
+                                            </Label>
+                                            <SearchableSelect
+                                                options={toxicity_options}
+                                                placeholder="Search by toxicity category..."
+                                                value={toxicitySearch}
+                                                onValueChange={(value) => setToxicitySearch(value)}
+                                                clearable
+                                                searchable={false}
+                                                className="focus:border-[#619154] focus:ring-[#619154]"
+                                            />
+                                            <div className="text-xs text-gray-500">
+                                                <p>WHO Toxicity Classification.</p>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-2">
@@ -388,6 +540,9 @@ export default function PesticideTable({
                                                 clearable
                                                 className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
+                                            <div className="text-xs text-gray-500">
+                                                <p>Search for pests by name.</p>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-2">
@@ -403,6 +558,9 @@ export default function PesticideTable({
                                                 clearable
                                                 className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
+                                            <div className="text-xs text-gray-500">
+                                                <p>Search for weeds by name.</p>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-2">
@@ -418,34 +576,9 @@ export default function PesticideTable({
                                                 clearable
                                                 className="focus:border-[#619154] focus:ring-[#619154]"
                                             />
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Shield className="h-4 w-4 text-yellow-600" />
-                                                Toxicity Category
-                                            </Label>
-                                            <Input
-                                                id="toxicity-search"
-                                                placeholder="Search by toxicity (1-4, where 1=most toxic, 4=least toxic)..."
-                                                value={toxicitySearch}
-                                                onChange={(e) => setToxicitySearch(e.target.value)}
-                                                className="focus:border-[#619154] focus:ring-[#619154]"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Shield className="h-4 w-4 text-yellow-600" />
-                                                Type of Pesticide
-                                            </Label>
-                                            <SearchableSelect
-                                                options={type_of_pesticide_options.map((option) => ({ label: option, value: option }))}
-                                                placeholder="Search by type of pesticide..."
-                                                value={pesticideSearch}
-                                                onValueChange={(value) => setPesticideSearch(value)}
-                                                clearable
-                                                className="focus:border-[#619154] focus:ring-[#619154]"
-                                            />
+                                            <div className="text-xs text-gray-500">
+                                                <p>Search for diseases by name.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </CardContent>
@@ -465,12 +598,7 @@ export default function PesticideTable({
                                     : 'There are no pesticides registered in the system yet.'}
                             </p>
                             {hasActiveFilters() && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={clearAllFilters}
-                                    className="mt-4 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                >
+                                <Button variant="outline" size="sm" onClick={handleClear} className="mt-4 hover:border-[#619154] hover:bg-[#F8FAF8]">
                                     Clear all filters
                                 </Button>
                             )}
@@ -637,6 +765,24 @@ export default function PesticideTable({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>View pesticide details</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    )}
+                                                    {onDownload && (
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    onClick={() => onDownload(pesticide)}
+                                                                    className="h-8 w-8 p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    aria-label={`Download details for ${pesticide.product_name}`}
+                                                                >
+                                                                    <Download className="h-4 w-4 text-[#619154]" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Download pesticide details</p>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     )}

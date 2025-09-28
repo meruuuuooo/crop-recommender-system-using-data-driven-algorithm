@@ -36,7 +36,7 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
 
     return (
         <div className="w-full space-y-4">
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader className="pb-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -64,7 +64,7 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
                 </CardHeader>
             </Card>
 
-            <Card className="border-[#D6E3D4]">
+            <Card className=" rounded-sm">
                 <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Personal Information</CardTitle>
                 </CardHeader>
@@ -77,7 +77,7 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
                 </CardContent>
             </Card>
 
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Contact & Experience</CardTitle>
                 </CardHeader>
@@ -89,7 +89,7 @@ export default function ViewFarmerCard({ farmer }: { farmer: Farmer }) {
                 </CardContent>
             </Card>
 
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Address Information</CardTitle>
                 </CardHeader>

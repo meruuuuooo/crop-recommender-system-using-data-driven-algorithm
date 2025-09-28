@@ -51,9 +51,9 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
     );
 
     return (
-        <div className="w-full space-y-4 sm:p-4 lg:p-6">
+        <div className="w-full space-y-4">
             {/* Header Section */}
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader className="pb-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
@@ -73,7 +73,7 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
             </Card>
 
             {/* Farm Information Section */}
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Farm Information</CardTitle>
                 </CardHeader>
@@ -88,7 +88,7 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
             </Card>
 
             {/* Owner Information Section */}
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Owner Information</CardTitle>
                 </CardHeader>
@@ -101,7 +101,7 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
             </Card>
 
             {/* Location Information Section */}
-            <Card className="border-[#D6E3D4]">
+            <Card className="rounded-sm">
                 <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Location Information</CardTitle>
                 </CardHeader>
@@ -119,8 +119,8 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
             </Card>
 
             {/* System Information Section */}
-            <Card className="border-[#D6E3D4]">
-                <CardHeader>
+            <Card className="rounded-sm">
+                <CardHeader>    
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">System Information</CardTitle>
                 </CardHeader>
                 <CardContent>

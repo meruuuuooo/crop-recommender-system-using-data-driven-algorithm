@@ -21,7 +21,8 @@ interface SearchableSelectProps {
   clearable?: boolean
   loading?: boolean
   emptyMessage?: string
-  portalContainer?: HTMLElement | null // NEW: allow parent to specify portal container
+  portalContainer?: HTMLElement | null
+  searchable?: boolean // NEW!
 }
 
 export function SearchableSelect({
@@ -35,22 +36,23 @@ export function SearchableSelect({
   clearable = false,
   loading = false,
   emptyMessage = "No results found.",
-  portalContainer = undefined, // NEW: default undefined
+  portalContainer = undefined,
+  searchable = true, // NEW: default true
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
   const [highlightedIndex, setHighlightedIndex] = React.useState(0)
 
   const filteredOptions = React.useMemo(() => {
+    if (!searchable) return options
     if (!search) return options
     return options.filter((option) =>
       option.label.toLowerCase().includes(search.toLowerCase())
     )
-  }, [options, search])
+  }, [options, search, searchable])
 
   const selectedOption = options.find((option) => option.value === value)
 
-  // Reset highlighted index when options change
   React.useEffect(() => {
     setHighlightedIndex(0)
   }, [filteredOptions])
@@ -137,16 +139,18 @@ export function SearchableSelect({
           sideOffset={4}
           onKeyDown={handleKeyDown}
         >
-          <div className="flex items-center border-b border-gray-200 px-3 pb-2">
-            <SearchIcon className="mr-2 h-4 w-4 opacity-50" />
-            <Input
-              className="border-0 p-0 placeholder:text-gray-500 focus:ring-0 focus-visible:ring-0"
-              placeholder={searchPlaceholder}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              autoFocus
-            />
-          </div>
+          {searchable && (
+            <div className="flex items-center border-b border-gray-200 px-3 pb-2">
+              <SearchIcon className="mr-2 h-4 w-4 opacity-50" />
+              <Input
+                className="border-0 p-0 placeholder:text-gray-500 focus:ring-0 focus-visible:ring-0"
+                placeholder={searchPlaceholder}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                autoFocus
+              />
+            </div>
+          )}
           <div className="max-h-60 overflow-auto p-1">
             {filteredOptions.length === 0 ? (
               <div className="py-2 px-2 text-sm text-gray-500">{emptyMessage}</div>
