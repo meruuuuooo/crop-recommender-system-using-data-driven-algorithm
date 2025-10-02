@@ -43,7 +43,6 @@ export default function CreateFarmFormDialog() {
         farm: {
             name: '',
             total_area: '',
-            cropping_system: '',
             prev_crops: '',
             province_id: '',
             municipality_id: '',
@@ -88,17 +87,6 @@ export default function CreateFarmFormDialog() {
             },
         });
     };
-
-    const croppingSystems = [
-        { Monocropping: 'Monocropping' },
-        { MixedCropping: 'Mixed Cropping' },
-        { InterCropping: 'Inter Cropping' },
-        { CropRotation: 'Crop Rotation' },
-        { RelayCropping: 'Relay Cropping' },
-        { SequentialCropping: 'Sequential Cropping' },
-        { AlleyCropping: 'Alley Cropping' },
-        { StripCropping: 'Strip Cropping' },
-    ];
 
     return (
         <Dialog open={open} onOpenChange={setOpen} modal={true}>
@@ -390,40 +378,6 @@ export default function CreateFarmFormDialog() {
                                 <InputError message={errors['farm.total_area']} id="total-area-error" />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="cropping_system" className="text-sm font-medium text-gray-700">
-                                    Cropping System{' '}
-                                    <span className="text-red-500" aria-label="required">
-                                        *
-                                    </span>
-                                </Label>
-                                <Select
-                                    onValueChange={(value) => {
-                                        setData('farm.cropping_system', value);
-                                        if (value === 'Monocropping' && data.farm.prev_crops && data.farm.prev_crops.includes(', ')) {
-                                            setData('farm.prev_crops', '');
-                                        }
-                                    }}
-                                >
-                                    <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
-                                        <SelectValue placeholder="Select Cropping System" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {croppingSystems.map((system) => {
-                                            const key = Object.keys(system)[0];
-                                            return (
-                                                <SelectItem key={key} value={key}>
-                                                    {system[key as keyof typeof system]}
-                                                </SelectItem>
-                                            );
-                                        })}
-                                    </SelectContent>
-                                </Select>
-                                <div id="cropping-system-help" className="text-xs text-gray-500">
-                                    Choose the cropping system used on the farm
-                                </div>
-                                <InputError message={errors['farm.cropping_system']} id="cropping-system-error" />
-                            </div>
-                            <div className="space-y-2">
                                 <Label htmlFor="prevcrops" className="text-sm font-medium text-gray-700">
                                     Previous Crops <span className="text-xs text-gray-500">(Optional)</span>
                                 </Label>
@@ -431,30 +385,17 @@ export default function CreateFarmFormDialog() {
                                     <Select
                                         onValueChange={(value) => {
                                             if (value) {
-                                                if (data.farm.cropping_system === 'Monocropping') {
-                                                    setData('farm.prev_crops', value);
-                                                } else {
-                                                    const currentCrops = data.farm.prev_crops ? data.farm.prev_crops.split(', ') : [];
-                                                    if (!currentCrops.includes(value)) {
-                                                        const newCrops = [...currentCrops, value].join(', ');
-                                                        setData('farm.prev_crops', newCrops);
-                                                    }
+                                                const currentCrops = data.farm.prev_crops ? data.farm.prev_crops.split(', ') : [];
+                                                if (!currentCrops.includes(value)) {
+                                                    const newCrops = [...currentCrops, value].join(', ');
+                                                    setData('farm.prev_crops', newCrops);
                                                 }
                                             }
                                         }}
                                     >
                                         <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
-                                            <SelectValue
-                                                placeholder={
-                                                    data.farm.cropping_system === 'Monocropping'
-                                                        ? 'Select one previous crop'
-                                                        : 'Select previous crops'
-                                                }
-                                            >
-                                                {data.farm.prev_crops ||
-                                                    (data.farm.cropping_system === 'Monocropping'
-                                                        ? 'Select one previous crop'
-                                                        : 'Select previous crops')}
+                                            <SelectValue placeholder="Select previous crops">
+                                                {data.farm.prev_crops || 'Select previous crops'}
                                             </SelectValue>
                                         </SelectTrigger>
                                         <SelectContent>
@@ -480,9 +421,7 @@ export default function CreateFarmFormDialog() {
                                     )}
                                 </div>
                                 <div id="prev-crops-help" className="text-xs text-gray-500">
-                                    {data.farm.cropping_system === 'Monocropping'
-                                        ? 'Select one crop that was previously grown on this farm.'
-                                        : 'Select crops that were previously grown on this farm. You can select multiple crops.'}
+                                    Select crops that were previously grown on this farm. You can select multiple crops.
                                 </div>
                                 <InputError message={errors['farm.prev_crops']} id="prev-crops-error" />
                             </div>
@@ -562,7 +501,6 @@ export default function CreateFarmFormDialog() {
                                 disabled={
                                     processing ||
                                     !data.farm.name ||
-                                    !data.farm.cropping_system ||
                                     !data.farm.province_id ||
                                     !data.farm.municipality_id ||
                                     !data.farm.barangay_id

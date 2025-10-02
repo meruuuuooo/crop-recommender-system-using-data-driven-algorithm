@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->float('total_area')->nullable();
-            $table->string('cropping_system')->nullable();
             $table->string('prev_crops')->nullable();
             $table->foreignId('farmer_id')->constrained()->onDelete('cascade');
             $table->foreignId('location_id')->constrained()->onDelete('cascade');

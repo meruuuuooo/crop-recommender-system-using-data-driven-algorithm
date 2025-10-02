@@ -365,6 +365,8 @@ export default function PesticideTable({
         { label: '4 - Practically Non-Toxic', value: '4' },
     ];
 
+    
+
     const onDownload = (pesticide: Pesticide) => {
         toast.promise(
             new Promise((resolve) => {

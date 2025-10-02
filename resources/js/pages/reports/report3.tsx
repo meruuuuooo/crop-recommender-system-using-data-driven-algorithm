@@ -26,7 +26,6 @@ interface FarmWithLocation {
     id: number;
     name: string;
     total_area: number;
-    cropping_system?: string;
     prev_crops?: string;
     farmer?: {
         id: number;
@@ -76,7 +75,6 @@ type FarmRow = {
     farmerName: string;
     location: string;
     totalArea: number;
-    croppingSystem: string;
     previousCrops: string;
 };
 
@@ -141,17 +139,6 @@ const columns: ColumnDef<FarmRow>[] = [
         },
     },
     {
-        accessorKey: "croppingSystem",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Cropping System" />
-        ),
-        cell: ({ row }) => (
-            <Badge variant="outline" className="capitalize">
-                {row.getValue("croppingSystem") || 'Not specified'}
-            </Badge>
-        ),
-    },
-    {
         accessorKey: "previousCrops",
         header: ({ column }) => (
             <DataTableColumnHeader column={column} title="Previous Crops" />
@@ -197,7 +184,6 @@ export default function Report3({ farms, farmers, filters }: Report3Props) {
             farmerName,
             location,
             totalArea: farm.total_area || 0,
-            croppingSystem: farm.cropping_system || '',
             previousCrops: farm.prev_crops || '',
         };
     });

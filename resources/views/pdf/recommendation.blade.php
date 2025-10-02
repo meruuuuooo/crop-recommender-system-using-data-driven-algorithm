@@ -305,13 +305,11 @@
         <tr>
             <th>Farm Name</th>
             <th>Total Area</th>
-            <th>Cropping System</th>
             <th>Previous Crops</th>
         </tr>
         <tr>
             <td>{{ $recommendation->farm->name }}</td>
             <td>{{ $recommendation->farm->total_area }} hectares</td>
-            <td>{{ $recommendation->farm->cropping_system ?? 'N/A' }}</td>
             <td>{{ $recommendation->farm->prev_crops ?? 'First Planting' }}</td>
         </tr>
     </table>

@@ -108,7 +108,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     <Card className="rounded-xl">
                         <CardHeader>
                             <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
-                            <p className="text-sm text-gray-600">List of crops supported by the recommendation system</p>
+                            <p className="text-sm text-gray-600">List of crops supported by the recommendation model</p>
                         </CardHeader>
                         <CardContent>
                             {supportedCrops.length === 0 ? (

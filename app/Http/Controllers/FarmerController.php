@@ -128,7 +128,6 @@ class FarmerController extends Controller
             Farm::create([
                 'name' => $validated['farm']['name'],
                 'total_area' => $validated['farm']['total_area'] ?? null,
-                'cropping_system' => $validated['farm']['cropping_system'] ?? null,
                 'prev_crops' => $validated['farm']['prev_crops'] ?? null,
                 'location_id' => $farmLocation->id,
                 'farmer_id' => $farmer->id,

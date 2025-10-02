@@ -25,7 +25,6 @@ class FarmerFarmRequest extends FormRequest
             // Farm fields
             'farm.name' => ['required', 'string', 'max:30'],
             'farm.total_area' => ['nullable', 'numeric'],
-            'farm.cropping_system' => ['required', 'string', 'max:30'],
             'farm.prev_crops' => ['nullable', 'string'],
             'farm.street' => ['nullable', 'string', 'max:60'],
             'farm.province_id' => ['required', 'exists:provinces,id'],

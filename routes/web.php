@@ -80,6 +80,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'categories' => \App\Models\Category::has('crops')->orderBy('name')->get(),
         ]);
     })->name('crop.calendar');
+
+
+
 });
 
 require __DIR__.'/settings.php';

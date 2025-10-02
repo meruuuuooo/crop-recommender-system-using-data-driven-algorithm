@@ -12,7 +12,6 @@ class Farm extends Model
     protected $fillable = [
         'name',
         'total_area',
-        'cropping_system',
         'prev_crops',
         'farmer_id',
         'location_id'

@@ -28,7 +28,6 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
     const { data, setData, put, processing, errors, reset } = useForm({
         name: farm?.name || '',
         total_area: farm?.total_area?.toString() || '',
-        cropping_system: farm?.cropping_system || '',
         prev_crops: farm?.prev_crops || '',
         farmer_id: farm?.farmer?.id?.toString() || '',
         province_id: farm?.location?.province?.id?.toString() || '',
@@ -58,17 +57,6 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
         });
     };
 
-    const croppingSystems = [
-        { Monocropping: 'Monocropping' },
-        { MixedCropping: 'Mixed Cropping' },
-        { InterCropping: 'Inter Cropping' },
-        { CropRotation: 'Crop Rotation' },
-        { RelayCropping: 'Relay Cropping' },
-        { SequentialCropping: 'Sequential Cropping' },
-        { AlleyCropping: 'Alley Cropping' },
-        { StripCropping: 'Strip Cropping' },
-    ];
-
     return (
         <Dialog open={open} onOpenChange={setOpen} modal={true}>
             <DialogTrigger asChild>
@@ -81,7 +69,7 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
                     <DialogTitle className="text-lg font-semibold text-gray-900">Farm Information</DialogTitle>
                     <DialogDescription className="text-sm text-gray-500">Fill in the details about the farmer’s farm.</DialogDescription>
                 </DialogHeader>
-                <form onSubmit={submit} id="farm-form" className="space-y-6">
+                <form onSubmit={submit} id="edit-farm-form" className="space-y-6">
                     <div className="grid grid-cols-2 gap-6 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Label htmlFor="farmname" className="text-sm font-medium text-gray-700">
@@ -150,45 +138,6 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
                             <InputError message={errors.farmer_id} id="farmer-error" />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="cropping_system" className="text-sm font-medium text-gray-700">
-                                Cropping System{' '}
-                                <span className="text-red-500" aria-label="required">
-                                    *
-                                </span>
-                            </Label>
-                            <Select
-                                onValueChange={(value) => {
-                                    setData('cropping_system', value);
-                                    // If switching to Monocropping and multiple crops are selected, clear them
-                                    if (value === 'Moiocropping' && data.prev_crops && data.prev_crops.includes(', ')) {
-                                        setData('prev_crops', '');
-                                    }
-                                }}
-                                value={data.cropping_system || ''}
-                                name="cropping_system"
-                                aria-describedby={errors.cropping_system ? 'cropping-system-error' : 'cropping-system-help'}
-                                aria-invalid={errors.cropping_system ? 'true' : 'false'}
-                            >
-                                <SelectTrigger className="w-full border border-[#D6E3D4] text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
-                                    <SelectValue placeholder={data.cropping_system || 'Select Cropping System'} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {croppingSystems.map((system) => {
-                                        const key = Object.keys(system)[0];
-                                        return (
-                                            <SelectItem key={key} value={key}>
-                                                {system[key as keyof typeof system]}
-                                            </SelectItem>
-                                        );
-                                    })}
-                                </SelectContent>
-                            </Select>
-                            <div id="cropping-system-help" className="text-xs text-gray-500">
-                                Choose the cropping system used on the farm
-                            </div>
-                            <InputError message={errors['cropping_system']} id="cropping-system-error" />
-                        </div>
-                        <div className="space-y-2">
                             <Label htmlFor="prevcrops" className="text-sm font-medium text-gray-700">
                                 Previous Crops <span className="text-xs text-gray-500">(Optional)</span>
                             </Label>
@@ -196,32 +145,17 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
                                 <Select
                                     onValueChange={(value) => {
                                         if (value) {
-                                            // If switching to Monocropping and multiple crops are selected, clear them
-                                            if (data.cropping_system === 'Moiocropping' && data.prev_crops && data.prev_crops.includes(', ')) {
-                                                setData('prev_crops', '');
-                                            }
-                                            // If Monocropping is selected, only allow one crop
-                                            if (data.cropping_system === 'Moiocropping') {
-                                                setData('prev_crops', value);
-                                            } else {
-                                                // For other cropping systems, allow multiple crops
-                                                const currentCrops = data.prev_crops ? data.prev_crops.split(', ') : [];
-                                                if (!currentCrops.includes(value)) {
-                                                    const newCrops = [...currentCrops, value].join(', ');
-                                                    setData('prev_crops', newCrops);
-                                                }
+                                            const currentCrops = data.prev_crops ? data.prev_crops.split(', ') : [];
+                                            if (!currentCrops.includes(value)) {
+                                                const newCrops = [...currentCrops, value].join(', ');
+                                                setData('prev_crops', newCrops);
                                             }
                                         }
                                     }}
                                 >
                                     <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154]">
-                                        <SelectValue
-                                            placeholder={
-                                                data.cropping_system === 'Moiocropping' ? 'Select one previous crop' : 'Select previous crops'
-                                            }
-                                        >
-                                            {data.prev_crops ||
-                                                (data.cropping_system === 'Moiocropping' ? 'Select one previous crop' : 'Select previous crops')}
+                                        <SelectValue placeholder="Select previous crops">
+                                            {data.prev_crops || 'Select previous crops'}
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
@@ -249,9 +183,7 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
                                 )}
                             </div>
                             <div id="prev-crops-help" className="text-xs text-gray-500">
-                                {data.cropping_system === 'Monocropping'
-                                    ? 'Select one crop that was previously grown on this farm.'
-                                    : 'Select crops that were previously grown on this farm. You can select multiple crops.'}
+                                Select crops that were previously grown on this farm. You can select multiple crops.
                             </div>
                             <InputError message={errors['prev_crops']} id="prev-crops-error" />
                         </div>
@@ -338,11 +270,11 @@ export default function EditFarmFormDialog({ farmers, farm }: { farmers: EditFar
                         <Button
                             type="submit"
                             disabled={
-                                processing || !data.name || !data.cropping_system || !data.province_id || !data.municipality_id || !data.barangay_id
+                                processing || !data.name || !data.province_id || !data.municipality_id || !data.barangay_id
                             }
                             className="bg-[#619154] text-white hover:bg-[#4F7A43]"
                         >
-                            {processing ? 'Saving...' : 'Save'}
+                            {processing ? 'Updating...' : 'Update'}
                         </Button>
                     </div>
                 </form>

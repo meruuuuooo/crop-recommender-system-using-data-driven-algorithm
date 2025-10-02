@@ -81,7 +81,6 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <InfoField label="Farm Name" value={farm.name} />
                         <InfoField label="Total Area" value={farmSize} />
-                        <InfoField label="Cropping System" value={farm.cropping_system} />
                         <InfoField label="Previous Crops" value={farm.prev_crops} fullWidth />
                     </div>
                 </CardContent>
@@ -120,7 +119,7 @@ export default function ViewFarmCard({ farm }: viewFarmProps) {
 
             {/* System Information Section */}
             <Card className="rounded-sm">
-                <CardHeader>    
+                <CardHeader>
                     <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">System Information</CardTitle>
                 </CardHeader>
                 <CardContent>

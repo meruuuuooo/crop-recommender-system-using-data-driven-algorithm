@@ -112,7 +112,6 @@ class FarmController extends Controller
             Farm::create([
                 'name' => $validated['name'],
                 'total_area' => $validated['total_area'],
-                'cropping_system' => $validated['cropping_system'],
                 'prev_crops' => $validated['prev_crops'],
                 'farmer_id' => $farmer_id->id,
                 'location_id' => $location->id,
@@ -192,7 +191,6 @@ class FarmController extends Controller
         $farm->update([
             'name' => $validated['name'],
             'total_area' => $validated['total_area'],
-            'cropping_system' => $validated['cropping_system'],
             'prev_crops' => $validated['prev_crops'],
             'farmer_id' => $farmer_id->id,
             'location_id' => $location->id,
