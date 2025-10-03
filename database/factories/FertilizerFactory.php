@@ -17,13 +17,13 @@ class FertilizerFactory extends Factory
     public function definition(): array
     {
         return [
-            'company' => $this->faker->company,
-            'product_name' => $this->faker->word,
-            'type_of_product' => $this->faker->word,
-            'guaranteed_analysis' => $this->faker->sentence,
-            'target_crops' => $this->faker->word,
-            'registration_number' => $this->faker->unique()->numerify('REG-#####'),
-            'expiry_date' => $this->faker->dateTimeBetween('now', '+2 years'),
+            'company' => fake()->company(),
+            'product_name' => fake()->words(2, true),
+            'type_of_product' => fake()->randomElement(['Organic', 'Inorganic', 'Compound', 'Liquid', 'Granular']),
+            'guaranteed_analysis' => fake()->randomElement(['N-P-K 14-14-14', 'N-P-K 16-16-16', 'N-P-K 18-18-18', 'Urea 46-0-0']),
+            'target_crops' => implode(', ', fake()->randomElements(['Rice', 'Corn', 'Vegetables', 'Fruits', 'All crops'], 3)),
+            'registration_number' => fake()->unique()->numerify('REG-#####'),
+            'expiry_date' => fake()->dateTimeBetween('now', '+2 years')->format('Y-m-d'),
         ];
     }
 }

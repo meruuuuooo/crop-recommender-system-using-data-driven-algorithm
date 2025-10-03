@@ -1,11 +1,11 @@
 import HeadingSmall from '@/components/heading-small';
-import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
-import FarmTable from './partials/farmTable';
 import type { Farm, FarmIndexProps } from '@/types/farm';
+import { Head, router } from '@inertiajs/react';
+import FarmTable from './partials/farmTable';
+import CreateFarmFormDialog from './partials/createFarmFormDialog';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -14,39 +14,34 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-export default function Farm({ farms, filters }: FarmIndexProps) {
+interface FarmProps extends FarmIndexProps {
+    farmers: FarmIndexProps['farmers'];
+    farms: FarmIndexProps['farms'];
+    filters: FarmIndexProps['filters'];
+}
 
+export default function Farm({ farms, filters, farmers }: FarmProps) {
     const handleView = (farm: Farm) => {
-        router.get(route('management.farm.show', farm.id))
-    };
-
-    const handleEdit = (farm: Farm) => {
-        router.get(route('management.farm.edit', farm.id))
+        router.get(route('management.farm.show', farm.id));
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Farm" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
-                <div className="flex flex-col gap-6 rounded-sm border border-sidebar-border/70 bg-white p-8 dark:border-sidebar-border">
+            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
+                <Card className="flex flex-col gap-6 rounded-xl bg-white p-6 dark:border-sidebar-border">
                     {/* Header Section */}
                     <div className="flex items-center justify-between">
                         <HeadingSmall title="Farm Management" description="Manage farm details and information." />
-                        <Link href={route('management.farm.create')}>
-                            <Button className="cursor-pointer bg-[#619154] text-white hover:bg-[#4F7A43]">
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Farm
-                            </Button>
-                        </Link>
+                        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                                <CreateFarmFormDialog farmers={farmers} />
+                            </div>
+                        </div>
                     </div>
 
-                    <FarmTable
-                        farms={farms}
-                        filters={filters}
-                        onView={handleView} 
-                        onEdit={handleEdit}
-                    />
-                </div>
+                    <FarmTable farms={farms} filters={filters} farmers={farmers} onView={handleView}/>
+                </Card>
             </div>
         </AppLayout>
     );

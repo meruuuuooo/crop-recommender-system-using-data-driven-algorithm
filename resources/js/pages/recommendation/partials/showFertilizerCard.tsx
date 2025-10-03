@@ -74,7 +74,7 @@ export default function ShowFertilizerCard({ fertilizer }: ShowFertilizerCardPro
         }
     };
 
-    const expiryStatus = getExpiryStatus(fertilizer.expiry_date);
+    const expiryStatus = getExpiryStatus(fertilizer.expiry_date || '');
 
     return (
         <div className="mx-auto w-full space-y-6">
@@ -99,7 +99,7 @@ export default function ShowFertilizerCard({ fertilizer }: ShowFertilizerCardPro
                             </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
-                            <Badge variant="secondary" className={getProductTypeColor(fertilizer.type_of_product)}>
+                            <Badge variant="secondary" className={getProductTypeColor(fertilizer.type_of_product || '')}>
                                 <Package className="mr-1 h-3 w-3" />
                                 {fertilizer.type_of_product || 'Unknown Type'}
                             </Badge>
@@ -163,8 +163,8 @@ export default function ShowFertilizerCard({ fertilizer }: ShowFertilizerCardPro
                                     <div>
                                         <div className="font-medium text-gray-700">Expiry Date</div>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[#619154]">{formatDate(fertilizer.expiry_date)}</span>
-                                            {isExpiringSoon(fertilizer.expiry_date) && (
+                                            <span className="text-[#619154]">{fertilizer.expiry_date ? formatDate(fertilizer.expiry_date) : 'No expiry date'}</span>
+                                            {fertilizer.expiry_date && isExpiringSoon(fertilizer.expiry_date) && (
                                                 <Badge variant="destructive" className="text-xs">
                                                     {isExpired(fertilizer.expiry_date) ? 'Expired' : 'Expiring Soon'}
                                                 </Badge>
@@ -245,7 +245,7 @@ export default function ShowFertilizerCard({ fertilizer }: ShowFertilizerCardPro
                     </div>
 
                     {/* Usage Warning */}
-                    {(isExpired(fertilizer.expiry_date) || isExpiringSoon(fertilizer.expiry_date)) && (
+                    {fertilizer.expiry_date && (isExpired(fertilizer.expiry_date) || isExpiringSoon(fertilizer.expiry_date)) && (
                         <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                             <div className="flex items-start gap-3">
                                 <AlertTriangle className="mt-0.5 h-5 w-5 text-yellow-600" />

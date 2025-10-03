@@ -1,6 +1,8 @@
 <?php
 
 namespace Database\Factories;
+use App\Models\Category;
+use App\Models\Crop;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,16 +16,17 @@ class CropFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    protected $model = Crop::class;
+
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,
-            'description' => $this->faker->sentence,
-            'season' => $this->faker->randomElement(['wet', 'dry']),
-            'varieties' => $this->faker->sentence,
-            'category_id' => rand(1, 5),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'category_id' => Category::factory(),
+            'name' => $this->faker->word(),
+            'time_of_planting' => $this->faker->monthName(),
+            'maturity' => $this->faker->numberBetween(60, 120) . ' days',
+            'ph_preference' => $this->faker->randomElement(['Acidic', 'Neutral', 'Alkaline']),
+            'soil_requirement' => $this->faker->sentence(),
         ];
     }
 }

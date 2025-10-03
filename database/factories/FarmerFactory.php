@@ -17,14 +17,14 @@ class FarmerFactory extends Factory
     public function definition(): array
     {
         return [
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
-            'middle_name' => fake()->optional()->lastName(),
+            'firstname' => fake()->firstName(),
+            'middlename' => fake()->optional()->lastName(),
+            'lastname' => fake()->lastName(),
             'contact_number' => fake()->phoneNumber(),
             'farming_experience' => fake()->numberBetween(1, 30), // years of experience
-            'registration_date' => now(),
-            'location_id' => 1,
-            'user_id' => 1,
+            'registration_date' => fake()->date(),
+            'location_id' => \App\Models\Location::factory(),
+            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

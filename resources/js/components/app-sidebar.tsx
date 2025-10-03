@@ -1,10 +1,9 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMainCollapsible } from '@/components/nav-main-collapsible';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Calendar, File, Folder, LayoutGrid, ScrollText, FlaskConical, Snail, Sparkles, Sprout, Tractor, User } from 'lucide-react';
+import { Calendar, File, LayoutGrid, ScrollText, FlaskConical, Snail, Sparkles, Sprout, Tractor, User } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -52,35 +51,30 @@ const mainNavItems: NavItem[] = [
                 href: '/management/farm',
                 icon: Tractor,
             },
-            {
-                title: 'Crop',
-                href: '/management/crop',
-                icon: Sprout,
-            },
+            // {
+            //     title: 'Crop',
+            //     href: '/management/crop',
+            //     icon: Sprout,
+            // },
         ],
     },
     {
-        title: 'Calendar',
-        href: '/calendar',
+        title: 'Crop Calendar',
+        href: '/crop/calendar',
         icon: Calendar,
     },
     {
         title: 'Reports',
         href: '/reports',
         icon: ScrollText,
-    },
-];
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        items: [
+            {
+                title: 'All Reports',
+                href: '/reports',
+                icon: ScrollText,
+            },
+        ]
     },
 ];
 
@@ -104,7 +98,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

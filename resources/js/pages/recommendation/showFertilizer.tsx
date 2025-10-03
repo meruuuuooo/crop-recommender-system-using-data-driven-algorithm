@@ -1,14 +1,14 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import type { Fertilizer } from '@/types/fertilizer';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 
 import {
-    ArrowLeft,
+    // ArrowLeft,
     Building,
     Calendar,
     FileText,
@@ -19,7 +19,7 @@ import {
     Info,
     Timer,
     Scale,
-    FileDown,
+    // FileDown,
     Package,
     Beaker,
     Leaf
@@ -32,7 +32,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
             href: '/recommendation/fertilizer',
         },
         {
-            title: fertilizer.product_name,
+            title: fertilizer.product_name || 'Unknown Product',
             href: `/recommendation/fertilizer/show/${fertilizer.id}`,
         },
     ];
@@ -81,61 +81,61 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
         return expiry < today;
     };
 
-    const handleExportPDF = () => {
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(`
-                <html>
-                    <head>
-                        <title>${fertilizer.product_name} - Fertilizer Details</title>
-                        <style>
-                            body { font-family: Arial, sans-serif; margin: 20px; }
-                            .header { border-bottom: 2px solid #619154; padding-bottom: 10px; margin-bottom: 20px; }
-                            .section { margin-bottom: 20px; }
-                            .label { font-weight: bold; }
-                            .badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
-                            .organic { background-color: #f0fdf4; color: #166534; }
-                            .inorganic { background-color: #eff6ff; color: #1d4ed8; }
-                            .bio { background-color: #faf5ff; color: #7c3aed; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>${fertilizer.product_name}</h1>
-                            <p><strong>Company:</strong> ${fertilizer.company}</p>
-                            <p><strong>Registration Number:</strong> ${fertilizer.registration_number}</p>
-                            <span class="badge ${fertilizer.type_of_product?.toLowerCase()}">${fertilizer.type_of_product}</span>
-                        </div>
+    // const handleExportPDF = () => {
+    //     const printWindow = window.open('', '_blank');
+    //     if (printWindow) {
+    //         printWindow.document.write(`
+    //             <html>
+    //                 <head>
+    //                     <title>${fertilizer.product_name} - Fertilizer Details</title>
+    //                     <style>
+    //                         body { font-family: Arial, sans-serif; margin: 20px; }
+    //                         .header { border-bottom: 2px solid #619154; padding-bottom: 10px; margin-bottom: 20px; }
+    //                         .section { margin-bottom: 20px; }
+    //                         .label { font-weight: bold; }
+    //                         .badge { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    //                         .organic { background-color: #f0fdf4; color: #166534; }
+    //                         .inorganic { background-color: #eff6ff; color: #1d4ed8; }
+    //                         .bio { background-color: #faf5ff; color: #7c3aed; }
+    //                     </style>
+    //                 </head>
+    //                 <body>
+    //                     <div class="header">
+    //                         <h1>${fertilizer.product_name}</h1>
+    //                         <p><strong>Company:</strong> ${fertilizer.company}</p>
+    //                         <p><strong>Registration Number:</strong> ${fertilizer.registration_number}</p>
+    //                         <span class="badge ${fertilizer.type_of_product?.toLowerCase()}">${fertilizer.type_of_product}</span>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Product Information</h2>
-                            <p><strong>Type:</strong> ${fertilizer.type_of_product}</p>
-                            <p><strong>Guaranteed Analysis:</strong> ${fertilizer.guaranteed_analysis || 'Not specified'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Product Information</h2>
+    //                         <p><strong>Type:</strong> ${fertilizer.type_of_product}</p>
+    //                         <p><strong>Guaranteed Analysis:</strong> ${fertilizer.guaranteed_analysis || 'Not specified'}</p>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Target Crops</h2>
-                            <p>${fertilizer.target_crops || 'Not specified'}</p>
-                        </div>
+    //                     <div class="section">
+    //                         <h2>Target Crops</h2>
+    //                         <p>${fertilizer.target_crops || 'Not specified'}</p>
+    //                     </div>
 
-                        <div class="section">
-                            <h2>Registration Information</h2>
-                            <p><strong>Expiry Date:</strong> ${timeStampToDate(fertilizer.expiry_date)}</p>
-                        </div>
-                    </body>
-                </html>
-            `);
-            printWindow.document.close();
-            printWindow.print();
-        }
-    };
+    //                     <div class="section">
+    //                         <h2>Registration Information</h2>
+    //                         <p><strong>Expiry Date:</strong> ${fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</p>
+    //                     </div>
+    //                 </body>
+    //             </html>
+    //         `);
+    //         printWindow.document.close();
+    //         printWindow.print();
+    //     }
+    // };
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={`${fertilizer.product_name} - Fertilizer Details`} />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-8" style={{ backgroundColor: '#E6F4EA' }}>
-                <div className="flex flex-col gap-6">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
+                <div className="flex flex-col gap-4">
                     {/* Header */}
-                    <div className="flex items-center justify-between">
+                    {/* <div className="flex items-center justify-between">
                         <Link
                             href={route('recommendation.fertilizer')}
                             className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-[#619154] transition-colors"
@@ -155,7 +155,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                 Export PDF
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Main Content */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -181,17 +181,17 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                         <div className="flex flex-col gap-2">
                                             <Badge
                                                 variant="outline"
-                                                className={`${getProductTypeColor(fertilizer.type_of_product)}`}
+                                                className={`${getProductTypeColor(fertilizer.type_of_product || '')}`}
                                             >
                                                 <Package className="h-3 w-3 mr-1" />
-                                                {fertilizer.type_of_product}
+                                                {fertilizer.type_of_product || 'Unknown Type'}
                                             </Badge>
-                                            {isExpired(fertilizer.expiry_date) ? (
+                                            {fertilizer.expiry_date && isExpired(fertilizer.expiry_date) ? (
                                                 <Badge variant="destructive">
                                                     <AlertTriangle className="h-3 w-3 mr-1" />
                                                     Expired
                                                 </Badge>
-                                            ) : isExpiringSoon(fertilizer.expiry_date) ? (
+                                            ) : fertilizer.expiry_date && isExpiringSoon(fertilizer.expiry_date) ? (
                                                 <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
                                                     <AlertTriangle className="h-3 w-3 mr-1" />
                                                     Expiring Soon
@@ -212,12 +212,12 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                                 <Package className="h-4 w-4 text-[#619154]" />
                                                 Product Type
                                             </h4>
-                                            <p className="text-gray-700 mb-2">{fertilizer.type_of_product}</p>
+                                            <p className="text-gray-700 mb-2">{fertilizer.type_of_product || 'Unknown Type'}</p>
                                             <Badge
                                                 variant="outline"
-                                                className={`${getProductTypeColor(fertilizer.type_of_product)}`}
+                                                className={`${getProductTypeColor(fertilizer.type_of_product || '')}`}
                                             >
-                                                {fertilizer.type_of_product}
+                                                {fertilizer.type_of_product || 'Unknown Type'}
                                             </Badge>
                                         </div>
                                         <div>
@@ -232,7 +232,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                                 </div>
                                                 <div className="flex justify-between">
                                                     <span className="text-gray-600">Expiry Date:</span>
-                                                    <span className="text-gray-900">{timeStampToDate(fertilizer.expiry_date)}</span>
+                                                    <span className="text-gray-900">{fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -319,10 +319,10 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                             <h4 className="font-semibold text-gray-900 mb-2">Product Type</h4>
                                             <Badge
                                                 variant="outline"
-                                                className={`${getProductTypeColor(fertilizer.type_of_product)}`}
+                                                className={`${getProductTypeColor(fertilizer.type_of_product || '')}`}
                                             >
                                                 <Package className="h-3 w-3 mr-1" />
-                                                {fertilizer.type_of_product}
+                                                {fertilizer.type_of_product || 'Unknown Type'}
                                             </Badge>
                                         </div>
 
@@ -367,8 +367,8 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                     <div className="space-y-4">
                                         <div>
                                             <h4 className="font-semibold text-gray-900 mb-2">Expiry Date</h4>
-                                            <p className="text-gray-700 mb-2">{timeStampToDate(fertilizer.expiry_date)}</p>
-                                            {isExpired(fertilizer.expiry_date) ? (
+                                            <p className="text-gray-700 mb-2">{fertilizer.expiry_date ? timeStampToDate(fertilizer.expiry_date) : 'No expiry date available'}</p>
+                                            {fertilizer.expiry_date && isExpired(fertilizer.expiry_date) ? (
                                                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                                                     <div className="flex items-center gap-2 text-red-700 mb-1">
                                                         <AlertTriangle className="h-4 w-4" />
@@ -378,7 +378,7 @@ export default function ShowFertilizer({ fertilizer }: { fertilizer: Fertilizer 
                                                         This product is no longer authorized for use.
                                                     </p>
                                                 </div>
-                                            ) : isExpiringSoon(fertilizer.expiry_date) ? (
+                                            ) : fertilizer.expiry_date && isExpiringSoon(fertilizer.expiry_date) ? (
                                                 <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                                                     <div className="flex items-center gap-2 text-yellow-700 mb-1">
                                                         <Timer className="h-4 w-4" />

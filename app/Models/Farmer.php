@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class farmer extends Model
+class Farmer extends Model
 {
-
     use HasFactory;
+
     protected $fillable = [
-        'first_name',
-        'middle_name',
-        'last_name',
+        'firstname',
+        'middlename',
+        'lastname',
         'contact_number',
         'farming_experience',
         'registration_date',
@@ -38,5 +38,10 @@ class farmer extends Model
     public function recommendations()
     {
         return $this->hasMany(Recommendation::class);
+    }
+
+    public function soils()
+    {
+        return $this->hasManyThrough(Soil::class, Farm::class);
     }
 }

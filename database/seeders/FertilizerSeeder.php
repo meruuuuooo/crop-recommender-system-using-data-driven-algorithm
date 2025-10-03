@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Fertilizer;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Fertilizer;
 
 class FertilizerSeeder extends Seeder
 {
@@ -16,8 +15,9 @@ class FertilizerSeeder extends Seeder
     {
         $csvFile = Storage::disk('public')->path('csv/fertilizer.csv');
 
-        if (!file_exists($csvFile)){
-            $this->command->error('CSV file not found: ' . $csvFile);
+        if (! file_exists($csvFile)) {
+            $this->command->error('CSV file not found: '.$csvFile);
+
             return;
         }
 
@@ -25,14 +25,14 @@ class FertilizerSeeder extends Seeder
 
         $header = fgetcsv($file);
 
-        while (($row = fgetcsv($file)) !== false){
-            Fertilizer::factory()->create([
-                'company' => $row[1],
-                'product_name' => $row[2],
-                'type_of_product' => $row[3],
-                'guaranteed_analysis' => $row[4],
-                'target_crops' => $row[5],
-                'registration_number' => $row[6],
+        while (($row = fgetcsv($file)) !== false) {
+            Fertilizer::create([
+                'company' => $row[1] ?? 'Unknown Company',
+                'product_name' => $row[2] ?? 'Unknown Product',
+                'type_of_product' => $row[3] ?? 'Unknown Type',
+                'guaranteed_analysis' => $row[4] ?? 'N/A',
+                'target_crops' => $row[5] ?? 'All crops',
+                'registration_number' => $row[6] ?? 'N/A',
                 'expiry_date' => $row[7],
             ]);
         }

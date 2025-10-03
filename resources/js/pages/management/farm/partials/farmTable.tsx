@@ -1,16 +1,16 @@
+import { PaginationData } from '@/components/paginationData';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Calendar, Edit, Eye, MapPin, Search, Tractor, User } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import type { Farm, FarmIndexProps, PaginatedFarms } from '@/types/farm';
 import { router } from '@inertiajs/react';
-import type { Farm, PaginatedFarms } from '@/types/farm';
-import { PaginationData } from '@/components/paginationData';
+import { Calendar, MapPin, Search, Tractor, User } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import EditFarmFormDialog from './editFarmFormDialog';
 
 interface FarmTableProps {
     farms: PaginatedFarms;
@@ -18,14 +18,13 @@ interface FarmTableProps {
         search?: string;
         per_page?: number;
     };
-    onEdit?: (farm: Farm) => void;
+    farmers: FarmIndexProps['farmers'];
     onView?: (farm: Farm) => void;
-    onDelete?: (farm: Farm) => void;
 }
 
-export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableProps) {
+export default function FarmTable({ farms, filters, farmers, onView }: FarmTableProps) {
     const [search, setSearch] = useState(filters.search || '');
-    const [perPage, setPerPage] = useState(filters.per_page || 10);
+    const [perPage, setPerPage] = useState(filters.per_page || 6);
 
     // Update search and navigate to new URL
     const handleSearchChange = (value: string) => {
@@ -35,43 +34,57 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
     // Debounced search effect
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            router.get(route('management.farm.index'), {
-                search: search,
-                per_page: perPage,
-                page: 1 // Reset to first page when searching
-            }, {
-                preserveState: true,
-                preserveScroll: true,
-            });
+            router.get(
+                route('management.farm.index'),
+                {
+                    search: search,
+                    per_page: perPage,
+                    page: 1, // Reset to first page when searching
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                },
+            );
         }, 300);
 
         return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [search]);    // Handle per page change
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);
+
+    // Handle per page change
     const handlePerPageChange = (value: string) => {
         const newPerPage = parseInt(value);
         setPerPage(newPerPage);
 
-        router.get(route('management.farm.index'), {
-            search,
-            per_page: newPerPage,
-            page: 1 // Reset to first page when changing per page
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('management.farm.index'),
+            {
+                search,
+                per_page: newPerPage,
+                page: 1, // Reset to first page when changing per page
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     // Handle pagination
     const handlePageChange = (page: number) => {
-        router.get(route('management.farm.index'), {
-            search,
-            per_page: perPage,
-            page
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            route('management.farm.index'),
+            {
+                search,
+                per_page: perPage,
+                page,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     // Sync local state with props when they change
@@ -79,15 +92,6 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
         setSearch(filters.search || '');
         setPerPage(filters.per_page || 10);
     }, [filters.search, filters.per_page]);
-
-    const timeStampToDate = (timestamp: string) => {
-        const date = new Date(timestamp);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-        });
-    };
 
     const truncateText = (text: string, maxLength: number = 50) => {
         if (!text) return 'N/A';
@@ -108,21 +112,14 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
 
     const getFarmerName = (farm: Farm) => {
         if (!farm.farmer) return 'Unknown Farmer';
-        return `${farm.farmer.first_name} ${farm.farmer.middle_name ? farm.farmer.middle_name + ' ' : ''}${farm.farmer.last_name}`;
+        return `${farm.farmer.firstname} ${farm.farmer.lastname}`;
     };
 
     return (
         <TooltipProvider>
-            <Card className="border-[#D6E3D4]" role="region" aria-labelledby="farms-table-heading">
-                <CardHeader className="pb-4">
+            <Card className="rounded-sm" aria-labelledby="farms-table-heading">
+                <CardHeader className="flex items-end justify-between gap-4">
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <CardTitle id="farms-table-heading" className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                                <Tractor className="h-5 w-5 text-[#619154]" aria-hidden="true" />
-                                Farms Directory
-                            </CardTitle>
-                            <p className="mt-1 text-sm text-gray-600">Manage and view all registered farms in the system</p>
-                        </div>
                         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
                             <div className="relative w-full sm:w-80">
                                 <Label htmlFor="farm-search" className="sr-only">
@@ -134,7 +131,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                     placeholder="Search by farm name, owner, crops, or location..."
                                     value={search}
                                     onChange={(e) => handleSearchChange(e.target.value)}
-                                    className="border-[#D6E3D4] pl-10 focus:border-[#619154] focus:ring-[#619154]"
+                                    className="pl-10 focus:border-[#619154] focus:ring-[#619154]"
                                     aria-describedby="search-hint"
                                 />
                             </div>
@@ -147,6 +144,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent>
+                                        <SelectItem value="6">6</SelectItem>
                                         <SelectItem value="10">10</SelectItem>
                                         <SelectItem value="25">25</SelectItem>
                                         <SelectItem value="50">50</SelectItem>
@@ -175,26 +173,32 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className='bg-[#619154]'>
+                                <TableHeader className="bg-[#619154]">
                                     <TableRow>
                                         <TableHead className="w-[200px] font-semibold text-white">Farm Details</TableHead>
                                         <TableHead className="w-[150px] font-semibold text-white">Owner</TableHead>
                                         <TableHead className="w-[120px] font-semibold text-white">Area (ha)</TableHead>
                                         <TableHead className="w-[180px] font-semibold text-white">Previous Crops</TableHead>
                                         <TableHead className="w-[250px] font-semibold text-white">Location</TableHead>
-                                        <TableHead className="w-[120px] font-semibold text-white">Created</TableHead>
                                         <TableHead className="w-[80px] font-semibold text-white">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {farms.data.map((farm, index) => (
-                                        <TableRow key={farm.id} className="transition-colors hover:bg-[#F8FAF8]" aria-rowindex={index + 2}>
+                                        <TableRow
+                                            key={farm.id}
+                                            aria-rowindex={index + 2}
+                                            className="cursor-pointer transition-colors hover:bg-[#F0F4F0]"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onView?.(farm);
+                                            }}
+                                        >
                                             <TableCell className="font-medium">
                                                 <div className="space-y-1">
-                                                    <div className="text-sm font-semibold text-gray-900">{farm.name}</div>
                                                     <div className="flex items-center gap-1 text-xs text-gray-500">
                                                         <Tractor className="h-3 w-3" />
-                                                        Farm ID: {farm.id}
+                                                        <div className="text-sm font-semibold text-gray-900">{farm.name}</div>
                                                     </div>
                                                 </div>
                                             </TableCell>
@@ -205,7 +209,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                                                <Badge variant="outline" className="border-blue-200 bg-blue-50 text-xs text-blue-700">
                                                     <Calendar className="mr-1 h-3 w-3" />
                                                     {farm.total_area || 'N/A'}
                                                 </Badge>
@@ -230,9 +234,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                                     <TooltipTrigger asChild>
                                                         <div className="flex cursor-help items-center gap-2">
                                                             <MapPin className="h-4 w-4 flex-shrink-0 text-gray-400" />
-                                                            <span className="text-sm text-gray-700">
-                                                                {truncateText(getFarmAddress(farm), 30)}
-                                                            </span>
+                                                            <span className="text-sm text-gray-700">{truncateText(getFarmAddress(farm), 30)}</span>
                                                         </div>
                                                     </TooltipTrigger>
                                                     <TooltipContent>
@@ -241,46 +243,17 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
                                                 </Tooltip>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="text-xs text-gray-700">{timeStampToDate(farm.created_at)}</div>
-                                            </TableCell>
-                                            <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    {onView && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => onView(farm)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                    aria-label={`View details for ${farm.name}`}
-                                                                >
-                                                                    <Eye className="h-4 w-4 text-[#619154]" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>View farm details</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
-                                                    {onEdit && (
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => onEdit(farm)}
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                                                    aria-label={`Edit ${farm.name}`}
-                                                                >
-                                                                    <Edit className="h-4 w-4 text-[#619154]" />
-                                                                </Button>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <p>Edit farm</p>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    )}
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div onClick={(e) => e.stopPropagation()}>
+                                                                <EditFarmFormDialog farm={farm} farmers={farmers} />
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Edit farm</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
@@ -292,11 +265,7 @@ export default function FarmTable({ farms, filters, onEdit, onView }: FarmTableP
 
                     {farms.last_page > 1 && (
                         <div className="border-t border-[#D6E3D4] px-6 py-4">
-                            <PaginationData
-                                currentPage={farms.current_page}
-                                totalPages={farms.last_page}
-                                onPageChange={handlePageChange}
-                            />
+                            <PaginationData currentPage={farms.current_page} totalPages={farms.last_page} onPageChange={handlePageChange} />
                         </div>
                     )}
                 </CardContent>

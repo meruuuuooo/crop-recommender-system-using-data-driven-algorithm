@@ -11,56 +11,39 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('fertilizers', function (Blueprint $table) {
             $table->id();
-            $table->string('company')->nullable();
+            $table->string('company');
             $table->string('product_name');
-            $table->string('type_of_product')->nullable();
-            $table->text('guaranteed_analysis')->nullable();
-            $table->text('target_crops')->nullable();
-            $table->string('registration_number')->nullable();
-            $table->string('expiry_date')->nullable();
+            $table->string('type_of_product');
+            $table->string('guaranteed_analysis');
+            $table->string('target_crops');
+            $table->string('registration_number');
+            $table->string('expiry_date');
             $table->timestamps();
         });
 
         Schema::create('pesticides', function (Blueprint $table) {
             $table->id();
-            $table->string('company')->nullable();
-            $table->string('active_ingredient')->nullable();
+            $table->string('company');
+            $table->string('active_ingredient');
             $table->string('product_name');
-            $table->string('concentration')->nullable();
-            $table->string('formulation_type')->nullable();
-            $table->text('uses')->nullable();
-            $table->string('toxicity_category')->nullable();
-            $table->string('registration_number')->nullable();
-            $table->string('expiry_date')->nullable();
-            $table->string('mode_of_entry')->nullable();
-            $table->text('crops')->nullable();
-            $table->text('pests')->nullable();
-            $table->text('weeds')->nullable();
-            $table->text('diseases')->nullable();
-            $table->longText('recommended_rate')->nullable();
-            $table->text('MRL')->nullable();
-            $table->text('PHI')->nullable();
-            $table->longText('re_entry_period')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('fertilizer_recommendations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('fertilizer_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('crop_id')->constrained()->cascadeOnDelete();
-            $table->string('usage_rate')->nullable();
-            $table->text('notes')->nullable();
-            $table->timestamps();
-        });
-
-        Schema::create('pesticide_recommendations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('pesticide_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('crop_id')->constrained()->cascadeOnDelete();
-            $table->string('usage_rate')->nullable();
-            $table->text('notes')->nullable();
+            $table->string('concentration');
+            $table->string('formulation_type');
+            $table->string('uses');
+            $table->string('toxicity_category');
+            $table->string('registration_number');
+            $table->string('expiry_date');
+            $table->string('mode_of_entry');
+            $table->string('crops');
+            $table->string('pests');
+            $table->string('weeds');
+            $table->string('diseases');
+            $table->longText('recommended_rate');
+            $table->text('MRL');
+            $table->text('PHI');
+            $table->longText('re_entry_period');
             $table->timestamps();
         });
     }
@@ -70,8 +53,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pesticide_recommendations');
-        Schema::dropIfExists('fertilizer_recommendations');
         Schema::dropIfExists('pesticides');
         Schema::dropIfExists('fertilizers');
     }

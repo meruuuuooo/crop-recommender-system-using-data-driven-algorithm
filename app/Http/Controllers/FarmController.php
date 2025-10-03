@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Management\FarmRequest;
+use App\Models\Barangay;
 use App\Models\Farm;
 use App\Models\Farmer;
 use App\Models\Location;
-use App\Models\Province;
 use App\Models\Municipality;
-use App\Models\Barangay;
-use App\Http\Controllers\Controller;
+use App\Models\Province;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Crop;
+use Illuminate\Support\Facades\DB;
 
 class FarmController extends Controller
 {
@@ -20,46 +23,49 @@ class FarmController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page', 6);
 
         $farms = Farm::with([
             'location.province',
             'location.municipality',
             'location.barangay',
             'farmer' => function ($query) {
-                $query->select('id', 'last_name', 'first_name', 'middle_name', 'contact_number');
-            }
+                $query->select('id', 'lastname', 'firstname', 'middlename', 'contact_number');
+            },
         ])
-        ->when($search, function ($query, $search) {
-            return $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('prev_crops', 'like', "%{$search}%")
-                  ->orWhereHas('farmer', function ($q) use ($search) {
-                      $q->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('middle_name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.province', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.municipality', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location.barangay', function ($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
-            });
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate($perPage)
-        ->withQueryString();
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('prev_crops', 'like', "%{$search}%")
+                        ->orWhereHas('farmer', function ($q) use ($search) {
+                            $q->where('firstname', 'like', "%{$search}%")
+                                ->orWhere('lastname', 'like', "%{$search}%")
+                                ->orWhere('middlename', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.province', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.municipality', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('location.barangay', function ($q) use ($search) {
+                            $q->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        $farmers = Farmer::orderBy('created_at', 'desc')->get(['id', 'lastname', 'firstname', 'middlename']);
 
         return Inertia::render('management/farm/index', [
             'farms' => $farms,
             'filters' => [
                 'search' => $search,
-                'per_page' => $perPage
-            ]
+                'per_page' => $perPage,
+            ],
+            'farmers' => $farmers,
         ]);
     }
 
@@ -74,46 +80,49 @@ class FarmController extends Controller
         $barangay = Barangay::all();
         $farmer = Farmer::all();
 
+        $crops = Crop::all(['id', 'name']);
+
         return Inertia::render('management/farm/create', [
             'provinces' => $province,
             'municipalities' => $municipality,
             'barangays' => $barangay,
             'farmers' => $farmer,
+            'crops' => $crops,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(FarmRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'total_area' => 'required|numeric|min:0',
-            'prev_crops' => 'nullable|string|max:255',
-            'farmer_id' => 'required|exists:farmers,id',
-            'province_id' => 'required|exists:provinces,id',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id',
-        ]);
+        $validated = $request->validated();
 
-        $location = Location::create([
-            'province_id' => $request->province_id,
-            'municipality_id' => $request->municipality_id,
-            'barangay_id' => $request->barangay_id,
-        ]);
+        DB::beginTransaction();
+        try {
+            $location = Location::create([
+                'province_id' => $validated['province_id'],
+                'municipality_id' => $validated['municipality_id'],
+                'barangay_id' => $validated['barangay_id'],
+                'street' => $validated['street'] ?? null,
+            ]);
 
-        $farm = Farm::create([
-            'name' => $request->name,
-            'total_area' => $request->total_area,
-            'prev_crops' => $request->prev_crops,
-            'farmer_id' => $request->farmer_id,
-            'location_id' => $location->id,
-        ]);
+            $farmer_id = Farmer::find($validated['farmer_id']);
 
-        $farm->save();
+            Farm::create([
+                'name' => $validated['name'],
+                'total_area' => $validated['total_area'],
+                'prev_crops' => $validated['prev_crops'],
+                'farmer_id' => $farmer_id->id,
+                'location_id' => $location->id,
+            ]);
 
-        return redirect()->route('management.farm.create')->with('success', 'Farm created successfully.');
+            DB::commit();
+            return redirect()->route('management.farm.index')->with('success', 'Farm created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'An error occurred while creating the farm. Please try again.']);
+        }
     }
 
     /**
@@ -126,8 +135,8 @@ class FarmController extends Controller
             'location.municipality',
             'location.barangay',
             'farmer' => function ($query) {
-                $query->select('id', 'last_name', 'first_name', 'middle_name', 'contact_number');
-            }
+                $query->select('id', 'lastname', 'firstname', 'middlename', 'contact_number');
+            },
         ])->findOrFail($farm->id);
 
         return Inertia::render('management/farm/view', [
@@ -149,8 +158,10 @@ class FarmController extends Controller
             'location.province',
             'location.municipality',
             'location.barangay',
-            'farmer'
+            'farmer',
         ]);
+
+        $crops = Crop::all(['id', 'name']);
 
         return Inertia::render('management/farm/edit', [
             'farm' => $farm,
@@ -158,37 +169,32 @@ class FarmController extends Controller
             'municipalities' => $municipalities,
             'barangays' => $barangays,
             'farmers' => $farmers,
+            'crops' => $crops,
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Farm $farm)
+    public function update(FarmRequest $request, Farm $farm): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'total_area' => 'required|numeric|min:0',
-            'prev_crops' => 'nullable|string|max:255',
-            'farmer_id' => 'required|exists:farmers,id',
-            'province_id' => 'required|exists:provinces,id',
-            'municipality_id' => 'required|exists:municipalities,id',
-            'barangay_id' => 'required|exists:barangays,id',
-        ]);
+        $validated = $request->validated();
 
         $location = Location::create([
-            'province_id' => $request->province_id,
-            'municipality_id' => $request->municipality_id,
-            'barangay_id' => $request->barangay_id,
+            'province_id' => $validated['province_id'],
+            'municipality_id' => $validated['municipality_id'],
+            'barangay_id' => $validated['barangay_id'],
         ]);
+
+        $farmer_id = Farmer::find($validated['farmer_id']);
+
         $farm->update([
-            'name' => $request->name,
-            'total_area' => $request->total_area,
-            'prev_crops' => $request->prev_crops,
-            'farmer_id' => $request->farmer_id,
+            'name' => $validated['name'],
+            'total_area' => $validated['total_area'],
+            'prev_crops' => $validated['prev_crops'],
+            'farmer_id' => $farmer_id->id,
             'location_id' => $location->id,
         ]);
-        $farm->save();
 
         return redirect()->route('management.farm.index')->with('success', 'Farm updated successfully.');
     }
@@ -200,4 +206,11 @@ class FarmController extends Controller
     {
         //
     }
+
+
+
+
+
+
+
 }

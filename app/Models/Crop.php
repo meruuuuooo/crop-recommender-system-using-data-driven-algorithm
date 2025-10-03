@@ -7,38 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Crop extends Model
 {
-    use HasFactory;
-    protected $fillable = [
-        'name',
-        'season',
-        'description',
-        'varieties',
-        'category_id',
-    ];
+    // use HasFactory;
 
-    public function nutrients()
-    {
-        return $this->hasOne(CropNutrient::class);
-    }
+    protected $fillable = [
+        'category_id',
+        'name',
+        'planting_season_primary',
+        'harvesting_period',
+        'growth_duration_days',
+        'ph_preference',
+        'soil_requirement',
+    ];
 
     public function recommendations()
     {
         return $this->hasMany(Recommendation::class);
-    }
-
-    public function fertilizerRecommendations()
-    {
-        return $this->hasMany(FertilizerRecommendation::class);
-    }
-
-    public function pesticideRecommendations()
-    {
-        return $this->hasMany(PesticideRecommendation::class);
-    }
-
-    public function cropCalendar()
-    {
-        return $this->hasMany(CropCalendar::class);
     }
 
     public function category()

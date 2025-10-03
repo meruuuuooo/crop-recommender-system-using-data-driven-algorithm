@@ -17,11 +17,11 @@ class FarmFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word(),
-            'total_area' => fake()->numberBetween(1, 1000), // in hectares
-            'prev_crops' => fake()->sentence(),
-            'farmer_id' => 1, // Assuming a default farmer ID
-            'location_id' => 1, // Assuming a default location ID
+            'name' => fake()->words(2, true).' Farm',
+            'total_area' => fake()->randomFloat(2, 0.5, 100), // in hectares
+            'prev_crops' => implode(', ', fake()->randomElements(['Rice', 'Corn', 'Tomato', 'Cabbage', 'Eggplant'], 2)),
+            'farmer_id' => \App\Models\Farmer::factory(),
+            'location_id' => \App\Models\Location::factory(),
         ];
     }
 }

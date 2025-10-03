@@ -17,9 +17,4 @@ class Fertilizer extends Model
         'registration_number',
         'expiry_date'
     ];
-
-    public function recommendations()
-    {
-        return $this->hasMany(FertilizerRecommendation::class);
-    }
 }

@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class CropRecommendationRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'farmer_id' => 'required|exists:farmers,id',
+            'farm_id' => 'required|exists:farms,id',
+            'soilType' => 'required|string|in:Clay,Loamy,Peaty,Saline,Sandy',
+            'nitrogen_level' => 'required|string|in:low,medium,high',
+            'potassium_level' => 'required|string|in:low,medium,high',
+            'phosphorus_level' => 'required|string|in:low,medium,high',
+            'ph_level' => 'required|numeric|min:0|max:14',
+            'temperature' => 'required|numeric',
+            'rainfall' => 'required|numeric',
+            'humidity' => 'required|numeric',
+        ];
+    }
+
+
+    /**
+     * Get custom error messages for validation rules.
+     */
+    public function messages(): array
+    {
+        return [
+            'farmer_id.required' => 'Please select a farmer.',
+            'farmer_id.exists' => 'The selected farmer is invalid.',
+            'farm_id.required' => 'Please select a farm.',
+            'farm_id.exists' => 'The selected farm is invalid.',
+            'soilType.required' => 'Please select a soil type.',
+            'soilType.in' => 'Please select a valid soil type.',
+            'nitrogen_level.required' => 'Please select nitrogen level.',
+            'potassium_level.required' => 'Please select potassium level.',
+            'phosphorus_level.required' => 'Please select phosphorus level.',
+            'ph_level.required' => 'Please enter pH level.',
+            'ph_level.min' => 'pH level must be between 0 and 14.',
+            'ph_level.max' => 'pH level must be between 0 and 14.',
+            'temperature.required' => 'Please enter temperature.',
+            'rainfall.required' => 'Please enter rainfall amount.',
+            'humidity.required' => 'Please enter humidity level.',
+        ];
+    }
+}

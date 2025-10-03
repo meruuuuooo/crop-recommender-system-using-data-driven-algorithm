@@ -17,7 +17,11 @@ class ClimateFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'farm_id' => \App\Models\Farm::factory(),
+            'temperature' => fake()->randomFloat(1, 20.0, 35.0), // Celsius
+            'rainfall' => fake()->randomFloat(2, 0, 500), // mm
+            'humidity' => fake()->randomFloat(1, 40.0, 95.0), // percentage
+            'climate_record_date' => fake()->date(),
         ];
     }
 }
