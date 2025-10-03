@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import type { Fertilizer, PaginationDataProps } from '@/types/fertilizer';
 import { Head, router, useForm } from '@inertiajs/react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Printer } from 'lucide-react';
 import FertilizerTable from './partials/fertilizerTable';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -196,6 +196,29 @@ export default function Fertilizer({
             search: filters.search,
             per_page: filters.per_page,
         });
+    };
+
+    const handlePrintPdf = () => {
+        if (!data.crop_type || !data.nitrogen_level || !data.phosphorus_level || !data.potassium_level) {
+            return;
+        }
+
+        const params = new URLSearchParams({
+            crop_type: data.crop_type,
+            nitrogen_level: data.nitrogen_level,
+            phosphorus_level: data.phosphorus_level,
+            potassium_level: data.potassium_level,
+        });
+
+        if (data.growth_stage) {
+            params.append('growth_stage', data.growth_stage);
+        }
+
+        if (data.soil_type) {
+            params.append('soil_type', data.soil_type);
+        }
+
+        window.open(route('recommendation.downloadFertilizerRatePdf') + '?' + params.toString(), '_blank');
     };
 
     return (
@@ -447,7 +470,17 @@ export default function Fertilizer({
                     fertilizerRecommendations.phosphorus &&
                     fertilizerRecommendations.potassium && (
                         <Card className="rounded-xl p-6">
-                            <h3 className="mb-4 text-lg font-semibold text-gray-900">Fertilizer Rate Recommendations</h3>
+                            <div className="mb-4 flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-900">Fertilizer Rate Recommendations</h3>
+                                <Button
+                                    onClick={handlePrintPdf}
+                                    variant="outline"
+                                    className="flex items-center gap-2 border-[#619154] text-[#619154] hover:bg-[#619154] hover:text-white"
+                                >
+                                    <Printer className="h-4 w-4" />
+                                    Download PDF
+                                </Button>
+                            </div>
                             <div className="grid gap-6 md:grid-cols-3">
                                 {/* Nitrogen Recommendations */}
                                 <div className="space-y-3">

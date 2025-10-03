@@ -39,16 +39,23 @@ interface DashboardProps {
         farmer: { lastname: string } | null;
         confidence_score: number;
     }>;
-    supportedCrops: Array<{
-        supported_crops: string;
-        total_count: number;
-    }>;
+    modelInfo: {
+        data: {
+            available_crops: string[];
+        available_soil_types: string[];
+        features: string[];
+        model_type: string;
+        n_estimators: number;
+        }
+        success: boolean;
+    }
+
 }
 
-const supportedCropList = (supportedCrops: DashboardProps['supportedCrops']) => {
+const supportedCropList = (supportedCrops: DashboardProps['modelInfo']['data']['available_crops']) => {
     // Ensure supportedCrops is an array before mapping
     if (!Array.isArray(supportedCrops)) {
-        console.log('supportedCrops is not an array:', typeof supportedCrops);
+        console.log('supportedCrops is not an array:', typeof supportedCrops, supportedCrops);
         return null;
     }
 
@@ -59,9 +66,8 @@ const supportedCropList = (supportedCrops: DashboardProps['supportedCrops']) => 
                     <li key={index} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
                         <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-[#619154]" />
-                            <span className="text-sm font-medium text-gray-700">{cropData.supported_crops}</span>
+                            <span className="text-sm font-medium text-gray-700">{cropData}</span>
                         </div>
-                        <span className="text-xs text-gray-500">({cropData.total_count})</span>
                     </li>
                 ))}
             </ul>
@@ -69,7 +75,7 @@ const supportedCropList = (supportedCrops: DashboardProps['supportedCrops']) => 
     );
 };
 
-export default function Dashboard({ metrics, topRecommendedCrops, activityTrend, recentRecommendations, supportedCrops }: DashboardProps) {
+export default function Dashboard({ metrics, topRecommendedCrops, activityTrend, recentRecommendations, modelInfo }: DashboardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
@@ -111,7 +117,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                             <p className="text-sm text-gray-600">List of crops supported by the recommendation model</p>
                         </CardHeader>
                         <CardContent>
-                            {supportedCrops.length === 0 ? (
+                            {modelInfo.data.available_crops.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
                                     <div
                                         className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
@@ -129,7 +135,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                     <p className="text-base">No supported crops data available</p>
                                 </div>
                             ) : (
-                                supportedCropList(supportedCrops)
+                                supportedCropList(modelInfo.data.available_crops)
                             )}
                         </CardContent>
                     </Card>

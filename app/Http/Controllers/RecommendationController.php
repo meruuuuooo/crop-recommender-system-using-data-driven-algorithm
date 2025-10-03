@@ -13,14 +13,21 @@ use App\Models\Fertilizer;
 use App\Models\Pesticide;
 use App\Models\Recommendation;
 use App\Models\Soil;
+use App\Services\CropRecommenderService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class RecommendationController extends Controller
 {
+    protected $cropRecommender;
+
+    public function __construct(CropRecommenderService $cropRecommender)
+    {
+        $this->cropRecommender = $cropRecommender;
+    }
+
     public function crop(Request $request)
     {
         $farmers = Farmer::with('farms.soils')->orderByDesc('id')->get();
@@ -72,14 +79,14 @@ class RecommendationController extends Controller
                 $reco->soil->soil_type ?? null
             );
 
-            $farmerName = trim($reco->farmer->firstname . ' ' . $reco->farmer->lastname);
+            $farmerName = trim($reco->farmer->firstname.' '.$reco->farmer->lastname);
 
             $pdf = Pdf::loadView('pdf.recommendation', [
                 'recommendation' => $reco,
                 'fertilizer_recommendations' => $fertilizer_recommendations,
             ])->setPaper('a4', 'portrait');
 
-            $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
+            $fileName = 'Crop_Recommendation_'.preg_replace('/\s+/', '_', $farmerName).'_'.now()->format('Ymd_His').'.pdf';
 
             return $pdf->download($fileName)->withHeaders([
                 'Content-Type' => 'application/pdf',
@@ -332,21 +339,23 @@ class RecommendationController extends Controller
         $potassium = $this->convertPotassiumToKgHa($validated['potassium_level']);
 
         $apiInput = [
-            'Soil_Type' => $validated['soilType'],
-            'Soil_pH' => (float) $validated['ph_level'],
-            'Temperature' => (float) $validated['temperature'],
-            'Humidity' => (float) $validated['humidity'],
-            'N' => $nitrogen['max'] ?? 0,
-            'P' => $phosphorus['max'] ?? 0,
-            'K' => $potassium['max'] ?? 0,
+            'soil_type' => $validated['soilType'],
+            'soil_ph' => (float) $validated['ph_level'],
+            'temperature' => (float) $validated['temperature'],
+            'humidity' => (float) $validated['humidity'],
+            'nitrogen' => $nitrogen['max'] ?? 0,
+            'phosphorus' => $phosphorus['max'] ?? 0,
+            'potassium' => $potassium['max'] ?? 0,
         ];
 
         try {
-            $recommendations = $this->callCropRecommendationApi($apiInput);
+            $recommendations = $this->cropRecommender->getCropRecommendation($apiInput);
             $recommendedCrops = [];
 
-            // Check if API response has recommendations array
-            if (isset($recommendations['recommendations'])) {
+            // Check if API response was successful and has data
+            if (($recommendations['success'] ?? false) && isset($recommendations['data'])) {
+                $data = $recommendations['data'];
+
                 // Save soil and climate records once (not per recommendation)
                 $soil = Soil::create([
                     'soil_type' => $validated['soilType'],
@@ -354,9 +363,9 @@ class RecommendationController extends Controller
                     'nitrogen_level' => $validated['nitrogen_level'],
                     'phosphorus_level' => $validated['phosphorus_level'],
                     'potassium_level' => $validated['potassium_level'],
-                    'nitrogen' => $apiInput['N'],
-                    'phosphorus' => $apiInput['P'],
-                    'potassium' => $apiInput['K'],
+                    'nitrogen' => $apiInput['nitrogen'],
+                    'phosphorus' => $apiInput['phosphorus'],
+                    'potassium' => $apiInput['potassium'],
                     'farm_id' => $validated['farm_id'],
                     'test_date' => now(),
                 ]);
@@ -369,48 +378,60 @@ class RecommendationController extends Controller
                     'climate_record_date' => now(),
                 ]);
 
-                // Process each crop recommendation
-                foreach ($recommendations['recommendations'] as $rec) {
+                // Get soil level mappings for fertilizer recommendations
+                $nLevel = $this->mapSoilLevel($validated['nitrogen_level']);
+                $pLevel = $this->mapSoilLevel($validated['phosphorus_level']);
+                $kLevel = $this->mapSoilLevel($validated['potassium_level']);
 
-                    $crop = Crop::where('name', $rec['crop'])->first();
+                // Process top recommendations array
+                if (isset($data['top_recommendations']) && is_array($data['top_recommendations'])) {
+                    foreach ($data['top_recommendations'] as $rec) {
+                        $cropName = $rec['crop'] ?? null;
+                        // API returns 'probability' not 'confidence' in top_recommendations
+                        $probability = $rec['probability'] ?? $rec['confidence'] ?? 0;
 
-                    if ($crop) {
-                        // Save recommendation to database
-                        $reco = Recommendation::create([
-                            'farmer_id' => $validated['farmer_id'],
-                            'farm_id' => $validated['farm_id'],
-                            'crop_id' => $crop->id,
-                            'soil_id' => $soil->id,
-                            'climate_id' => $climate->id,
-                            'confidence_score' => $rec['confidence'], // Use decimal value directly
-                            'recommendation_date' => now(),
-                        ]);
+                        if (! $cropName) {
+                            continue;
+                        }
 
-                        // Get soil level mappings for fertilizer recommendations
-                        $nLevel = $this->mapSoilLevel($validated['nitrogen_level']);
-                        $pLevel = $this->mapSoilLevel($validated['phosphorus_level']);
-                        $kLevel = $this->mapSoilLevel($validated['potassium_level']);
+                        $crop = Crop::where('name', $cropName)->first();
 
-                        // Get detailed fertilizer recommendations
-                        $fertilizer_recommendations = $this->getFertilizerRecommendations(
-                            $crop->name,
-                            $nLevel,
-                            $pLevel,
-                            $kLevel,
-                            $validated['soilType']
-                        );
+                        if ($crop) {
+                            // Save recommendation to database
+                            $reco = Recommendation::create([
+                                'farmer_id' => $validated['farmer_id'],
+                                'farm_id' => $validated['farm_id'],
+                                'crop_id' => $crop->id,
+                                'soil_id' => $soil->id,
+                                'climate_id' => $climate->id,
+                                'confidence_score' => $probability, // Store as decimal (0-1)
+                                'recommendation_date' => now(),
+                            ]);
 
-                        // Add to the array for frontend display
-                        $recommendedCrops[] = [
-                            'recommendation_id' => $reco->id,
-                            'farmer_id' => $validated['farmer_id'],
-                            'crop_name' => $crop->name,
-                            'fertilizer_recommendations' => $fertilizer_recommendations,
-                            'confidence_score' => $rec['confidence'] * 100, // Convert to percentage for display
-                        ];
+                            // Get detailed fertilizer recommendations
+                            $fertilizer_recommendations = $this->getFertilizerRecommendations(
+                                $crop->name,
+                                $nLevel,
+                                $pLevel,
+                                $kLevel,
+                                $validated['soilType']
+                            );
+
+                            // Add to the array for frontend display
+                            $recommendedCrops[] = [
+                                'recommendation_id' => $reco->id,
+                                'farmer_id' => $validated['farmer_id'],
+                                'crop_name' => $crop->name,
+                                'fertilizer_recommendations' => $fertilizer_recommendations,
+                                'confidence_score' => $probability * 100, // Convert to percentage for display
+                                'probability' => $probability, // Keep original probability
+                            ];
+                        }
                     }
                 }
             }
+
+            // dd($recommendedCrops);
 
             return Inertia::render('recommendation/crop', [
                 'farmers' => Farmer::with('farms')->get(),
@@ -418,7 +439,7 @@ class RecommendationController extends Controller
                 'recommendationResult' => $recommendedCrops,
             ]);
         } catch (\Exception $e) {
-            Log::error('Crop recommendation error: ' . $e->getMessage());
+            Log::error('Crop recommendation error: '.$e->getMessage());
 
             return back()->withErrors(['api_error' => $e->getMessage()]);
         }
@@ -470,36 +491,9 @@ class RecommendationController extends Controller
 
             return $pdf->stream();
         } catch (\Exception $e) {
-            Log::error('PDF Generation Error: ' . $e->getMessage());
+            Log::error('PDF Generation Error: '.$e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
-        }
-    }
-
-    private function callCropRecommendationApi(array $data)
-    {
-        try {
-            $response = Http::timeout(30)->post('http://127.0.0.1:5000/api/predict/topk?k=1', $data);
-
-            if ($response->successful()) {
-                $predictions = $response->json();
-
-                return $predictions;
-            } else {
-                $statusCode = $response->status();
-                $errorMessage = "Failed to get recommendations from the model. HTTP Status: {$statusCode}";
-
-                if ($response->body()) {
-                    $errorMessage .= ' Response: ' . $response->body();
-                }
-
-                throw new \Exception($errorMessage);
-            }
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            $errorMessage = 'The crop recommendation service is currently unavailable.
-            The Model recommendation service may not be running or there may be network connectivity issues.';
-
-            throw new \Exception($errorMessage);
         }
     }
 
@@ -557,7 +551,7 @@ class RecommendationController extends Controller
 
         // If we have form data from request parameters and no session recommendations, generate them
         if (
-            !$fertilizerRecommendations &&
+            ! $fertilizerRecommendations &&
             $selectedFilters['crop_type'] &&
             $selectedFilters['nitrogen_level'] &&
             $selectedFilters['phosphorus_level'] &&
@@ -593,7 +587,7 @@ class RecommendationController extends Controller
             $cropGrowthStages = $cropData
                 ->pluck('growth_stage')
                 ->filter(function ($stage) {
-                    return !is_null($stage) && $stage !== '' && $stage !== 'N/A';
+                    return ! is_null($stage) && $stage !== '' && $stage !== 'N/A';
                 })
                 ->unique()
                 ->sort()
@@ -603,7 +597,7 @@ class RecommendationController extends Controller
             $cropSoilTypes = $cropData
                 ->pluck('soil_type')
                 ->filter(function ($type) {
-                    return !is_null($type) && $type !== '' && $type !== 'N/A';
+                    return ! is_null($type) && $type !== '' && $type !== 'N/A';
                 })
                 ->unique()
                 ->sort()
@@ -642,7 +636,7 @@ class RecommendationController extends Controller
         $growthStage = $request->get('growth_stage');
 
         $fertilizerRecommendations = [];
-        if (!empty($cropName)) {
+        if (! empty($cropName)) {
             $fertilizerRecommendations = $this->getFertilizerRecommendations(
                 $cropName,
                 $nLevel,
@@ -663,7 +657,7 @@ class RecommendationController extends Controller
                 'nitrogen_level' => $request->get('nitrogen_level'),
                 'phosphorus_level' => $request->get('phosphorus_level'),
                 'potassium_level' => $request->get('potassium_level'),
-            ]
+            ],
         ]);
     }
 
@@ -1006,7 +1000,6 @@ class RecommendationController extends Controller
         ]);
     }
 
-
     public function downloadPesticide(Pesticide $pesticide)
     {
         try {
@@ -1014,9 +1007,9 @@ class RecommendationController extends Controller
                 'pesticide' => $pesticide,
             ])->setPaper('a4', 'portrait');
 
-            return $pdf->download('Pesticide_' . preg_replace('/\s+/', '_', $pesticide->product_name) . '.pdf');
+            return $pdf->download('Pesticide_'.preg_replace('/\s+/', '_', $pesticide->product_name).'.pdf');
         } catch (\Exception $e) {
-            Log::error('Pesticide PDF Generation Error: ' . $e->getMessage());
+            Log::error('Pesticide PDF Generation Error: '.$e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
         }
@@ -1042,5 +1035,66 @@ class RecommendationController extends Controller
             'high' => 'H',
             default => 'L'
         };
+    }
+
+    /**
+     * Download fertilizer rate recommendations as PDF
+     */
+    public function downloadFertilizerRatePdf(Request $request): mixed
+    {
+        try {
+            $cropType = $request->get('crop_type');
+            $nitrogenLevel = $request->get('nitrogen_level');
+            $phosphorusLevel = $request->get('phosphorus_level');
+            $potassiumLevel = $request->get('potassium_level');
+            $growthStage = $request->get('growth_stage');
+            $soilType = $request->get('soil_type');
+
+            // Validate required parameters
+            if (! $cropType || ! $nitrogenLevel || ! $phosphorusLevel || ! $potassiumLevel) {
+                return back()->withErrors(['pdf_error' => 'Missing required parameters for PDF generation.']);
+            }
+
+            // Map nutrient levels
+            $nLevel = $this->mapNutrientLevel($nitrogenLevel);
+            $pLevel = $this->mapNutrientLevel($phosphorusLevel);
+            $kLevel = $this->mapNutrientLevel($potassiumLevel);
+
+            // Get fertilizer recommendations
+            $recommendations = $this->getFertilizerRecommendations(
+                $cropType,
+                $nLevel,
+                $pLevel,
+                $kLevel,
+                $soilType,
+                $growthStage
+            );
+
+            // Prepare filters data for display
+            $filters = [
+                'crop_type' => $cropType,
+                'growth_stage' => $growthStage,
+                'soil_type' => $soilType,
+                'nitrogen_level' => $nitrogenLevel,
+                'phosphorus_level' => $phosphorusLevel,
+                'potassium_level' => $potassiumLevel,
+            ];
+
+            
+            $pdf = Pdf::loadView('pdf.fertilizerRate', [
+                'recommendations' => $recommendations,
+                'filters' => $filters,
+            ])->setPaper('a4', 'portrait');
+
+            $fileName = 'Fertilizer_Rate_'.preg_replace('/\s+/', '_', $cropType).'_'.now()->format('Ymd_His').'.pdf';
+
+            return $pdf->download($fileName)->withHeaders([
+                'Content-Type' => 'application/pdf',
+            ])->setStatusCode(200);
+        } catch (\Exception $e) {
+            Log::error('Fertilizer Rate PDF Generation Error: '.$e->getMessage());
+
+            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.'])->withStatus(500);
+        }
     }
 }

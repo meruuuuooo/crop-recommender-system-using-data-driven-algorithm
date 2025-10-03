@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'crop_recommender' => [
+        'api_url' => env('CROP_RECOMMENDER_API_URL', 'http://localhost:5000/api'),
+        'timeout' => env('CROP_RECOMMENDER_TIMEOUT', 30),
+    ],
+
 ];

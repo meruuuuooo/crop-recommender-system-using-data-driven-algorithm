@@ -10,9 +10,18 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\CropRecommenderService;
 
 class DashboardController extends Controller
 {
+    protected $cropRecommender;
+
+    public function __construct(CropRecommenderService $cropRecommender)
+    {
+        $this->cropRecommender = $cropRecommender;
+    }
+
+
     public function index()
     {
         // Get key metrics
@@ -52,7 +61,9 @@ class DashboardController extends Controller
             ];
         });
 
-        $supportedCrops = $this->getSupportedCropsAPI();
+        $modelInfo = $this->cropRecommender->getModelInfo();
+
+        // dd($modelInfo);
 
         return Inertia::render('dashboard', [
             'metrics' => [
@@ -64,33 +75,7 @@ class DashboardController extends Controller
             'topRecommendedCrops' => $topRecommendedCrops,
             'activityTrend' => $activityTrend,
             'recentRecommendations' => $recentRecommendations,
-            'supportedCrops' => $supportedCrops,
+            'modelInfo' => $modelInfo,
         ]);
     }
-
-    private function getSupportedCropsAPI()
-    {
-        try {
-            $response = Http::timeout(10)->get('http://127.0.0.1:5000/api/crops');
-            if ($response->successful()) {
-                $data = $response->json();
-
-                // Transform the API response to match frontend expectations
-                if (isset($data['supported_crops']) && is_array($data['supported_crops'])) {
-                    return collect($data['supported_crops'])->map(function ($crop) {
-                        return [
-                            'supported_crops' => $crop,
-                            'total_count' => 1, // You could get actual counts from your database if needed
-                        ];
-                    })->toArray();
-                }
-
-                return [];
-            }
-        } catch (\Exception $e) {
-            Log::error('Error fetching supported crops: ' . $e->getMessage());
-        }
-        return [];
-    }
-
 }

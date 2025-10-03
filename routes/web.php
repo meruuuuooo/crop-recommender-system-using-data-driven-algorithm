@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CropController;
+use App\Http\Controllers\CropRecommendationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FarmController;
 use App\Http\Controllers\FarmerController;
@@ -50,6 +51,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     //     Route::put('/{crop}', [CropController::class, 'update'])->name('update');
     // });
 
+    Route::prefix('crop-recommender')->group(function () {
+        Route::post('/recommend', [CropRecommendationController::class, 'recommend']);
+        Route::get('/model-info', [CropRecommendationController::class, 'modelInfo']);
+        Route::get('/soil-types', [CropRecommendationController::class, 'getSoilTypes']);
+        Route::get('/crops', [CropRecommendationController::class, 'getCrops']);
+        Route::get('/health', [CropRecommendationController::class, 'health']);
+    });
+
+    // Recommendation
+
     Route::prefix('recommendation')->name('recommendation.')->group(function () {
         Route::get('/crop', [RecommendationController::class, 'crop'])->name('crop');
         Route::post('/crop', [RecommendationController::class, 'store'])->name('store');
@@ -59,10 +70,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/fertilizer', [RecommendationController::class, 'fertilizer'])->name('fertilizer');
         Route::post('/fertilizer', [RecommendationController::class, 'generateFertilizerRecommendation'])->name('fertilizer.recommend');
         Route::get('/fertilizer/show/{fertilizer}', [RecommendationController::class, 'showFertilizer'])->name('showFertilizer');
+        Route::get('/fertilizer/download', [RecommendationController::class, 'downloadFertilizerRatePdf'])->name('downloadFertilizerRatePdf');
         Route::get('/pesticide', [RecommendationController::class, 'pesticide'])->name('pesticide');
         Route::get('/pesticide/show/{pesticide}', [RecommendationController::class, 'showPesticide'])->name('pesticide.show');
         Route::get('/pesticide/download/{pesticide}', [RecommendationController::class, 'downloadPesticide'])->name('downloadPesticide');
     });
+
+    // Route::get('/api/crops', function(){
+
+    // })
 
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
@@ -80,8 +96,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'categories' => \App\Models\Category::has('crops')->orderBy('name')->get(),
         ]);
     })->name('crop.calendar');
-
-
 
 });
 
