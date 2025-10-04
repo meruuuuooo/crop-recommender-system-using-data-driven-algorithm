@@ -6,11 +6,9 @@ use App\Models\Crop;
 use App\Models\Farm;
 use App\Models\Farmer;
 use App\Models\Recommendation;
+use App\Services\CropRecommenderService;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use App\Services\CropRecommenderService;
 
 class DashboardController extends Controller
 {
@@ -20,7 +18,6 @@ class DashboardController extends Controller
     {
         $this->cropRecommender = $cropRecommender;
     }
-
 
     public function index()
     {
@@ -63,7 +60,20 @@ class DashboardController extends Controller
 
         $modelInfo = $this->cropRecommender->getModelInfo();
 
-        // dd($modelInfo);
+        // Provide default structure if API call failed
+        if (isset($modelInfo['success']) && $modelInfo['success'] === false) {
+            $modelInfo = [
+                'success' => false,
+                'data' => [
+                    'available_crops' => [],
+                    'available_soil_types' => [],
+                    'features' => [],
+                    'model_type' => '',
+                    'n_estimators' => 0,
+                ],
+                'error' => $modelInfo['error'] ?? 'API unavailable',
+            ];
+        }
 
         return Inertia::render('dashboard', [
             'metrics' => [

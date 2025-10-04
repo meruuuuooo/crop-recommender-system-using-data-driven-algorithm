@@ -3,17 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Management\FarmRequest;
-use App\Models\Barangay;
 use App\Models\Farm;
 use App\Models\Farmer;
 use App\Models\Location;
-use App\Models\Municipality;
-use App\Models\Province;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Models\Crop;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class FarmController extends Controller
 {
@@ -72,24 +68,6 @@ class FarmController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-
-        $province = Province::all();
-        $municipality = Municipality::all();
-        $barangay = Barangay::all();
-        $farmer = Farmer::all();
-
-        $crops = Crop::all(['id', 'name']);
-
-        return Inertia::render('management/farm/create', [
-            'provinces' => $province,
-            'municipalities' => $municipality,
-            'barangays' => $barangay,
-            'farmers' => $farmer,
-            'crops' => $crops,
-        ]);
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -118,9 +96,11 @@ class FarmController extends Controller
             ]);
 
             DB::commit();
+
             return redirect()->route('management.farm.index')->with('success', 'Farm created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
+
             return redirect()->back()->withErrors(['error' => 'An error occurred while creating the farm. Please try again.']);
         }
     }
@@ -147,31 +127,6 @@ class FarmController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Farm $farm)
-    {
-        $provinces = Province::all();
-        $municipalities = Municipality::all();
-        $barangays = Barangay::all();
-        $farmers = Farmer::all();
-
-        $farm->load([
-            'location.province',
-            'location.municipality',
-            'location.barangay',
-            'farmer',
-        ]);
-
-        $crops = Crop::all(['id', 'name']);
-
-        return Inertia::render('management/farm/edit', [
-            'farm' => $farm,
-            'provinces' => $provinces,
-            'municipalities' => $municipalities,
-            'barangays' => $barangays,
-            'farmers' => $farmers,
-            'crops' => $crops,
-        ]);
-    }
 
     /**
      * Update the specified resource in storage.
@@ -206,11 +161,4 @@ class FarmController extends Controller
     {
         //
     }
-
-
-
-
-
-
-
 }

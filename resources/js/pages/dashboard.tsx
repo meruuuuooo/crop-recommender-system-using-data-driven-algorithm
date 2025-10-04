@@ -3,14 +3,12 @@ import ChartPieSimple from '@/components/chart-pie-simple';
 import MetricsSummary from '@/components/metrics-summary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 // import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { Eye } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Eye, RefreshCw } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -50,6 +48,7 @@ interface DashboardProps {
         n_estimators: number;
         }
         success: boolean;
+        error?: string;
     }
 
 }
@@ -77,86 +76,10 @@ const supportedCropList = (supportedCrops: DashboardProps['modelInfo']['data']['
     );
 };
 
-const DashboardSkeleton = () => {
-    return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl px-4 py-4">
-                {/* Metrics Summary Skeleton */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
-                    {[...Array(4)].map((_, i) => (
-                        <Card key={i} className="rounded-xl">
-                            <CardHeader className="pb-2">
-                                <Skeleton className="h-4 w-24" />
-                            </CardHeader>
-                            <CardContent>
-                                <Skeleton className="h-8 w-16" />
-                                <Skeleton className="mt-2 h-3 w-20" />
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                {/* Charts Skeleton */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {[...Array(3)].map((_, i) => (
-                        <Card key={i} className="rounded-xl">
-                            <CardHeader>
-                                <Skeleton className="h-6 w-32" />
-                                <Skeleton className="mt-2 h-4 w-48" />
-                            </CardHeader>
-                            <CardContent>
-                                <Skeleton className="h-64 w-full" />
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-
-                {/* Recent Recommendations Skeleton */}
-                <Card className="rounded-xl">
-                    <CardHeader>
-                        <Skeleton className="h-6 w-48" />
-                        <Skeleton className="mt-2 h-4 w-64" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {[...Array(5)].map((_, i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <div className="flex gap-4">
-                                        <Skeleton className="h-4 w-24" />
-                                        <Skeleton className="h-4 w-32" />
-                                        <Skeleton className="h-4 w-28" />
-                                    </div>
-                                    <Skeleton className="h-8 w-16" />
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </AppLayout>
-    );
-};
-
 export default function Dashboard({ metrics, topRecommendedCrops, activityTrend, recentRecommendations, modelInfo }: DashboardProps) {
-    const [isLoading, setIsLoading] = useState(false);
-
-    useEffect(() => {
-        const handleStart = () => setIsLoading(true);
-        const handleFinish = () => setIsLoading(false);
-
-        const removeStartListener = router.on('start', handleStart);
-        const removeFinishListener = router.on('finish', handleFinish);
-
-        return () => {
-            removeStartListener();
-            removeFinishListener();
-        };
-    }, []);
-
-    if (isLoading) {
-        return <DashboardSkeleton />;
-    }
+    const handleReloadAPI = () => {
+        router.reload({ only: ['modelInfo'] });
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -195,11 +118,52 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     <ChartPieSimple data={topRecommendedCrops} />
                     <Card className="rounded-xl">
                         <CardHeader>
-                            <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
-                            <p className="text-sm text-gray-600">List of crops supported by the recommendation model</p>
+                            <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                    <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
+                                    <p className="text-sm text-gray-600">List of crops supported by the recommendation model</p>
+                                </div>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={handleReloadAPI}
+                                            className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                            aria-label="Reload API data"
+                                        >
+                                            <RefreshCw className="h-4 w-4 text-[#619154]" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>Reload API</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
                         </CardHeader>
                         <CardContent>
-                            {modelInfo.data.available_crops.length === 0 ? (
+                            {!modelInfo.success ? (
+                                <div className="py-8 text-center text-amber-600">
+                                    <div
+                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50"
+                                        aria-hidden="true"
+                                    >
+                                        <svg className="h-8 w-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <p className="text-base font-medium">API Service Unavailable</p>
+                                    <p className="mt-1 text-sm text-gray-500">Unable to fetch model information. Please check if the API service is running.</p>
+                                    {modelInfo.error && (
+                                        <p className="mt-2 text-xs text-gray-400">Error: {modelInfo.error}</p>
+                                    )}
+                                </div>
+                            ) : modelInfo.data.available_crops.length === 0 ? (
                                 <div className="py-8 text-center text-gray-500">
                                     <div
                                         className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
