@@ -1040,61 +1040,61 @@ class RecommendationController extends Controller
     /**
      * Download fertilizer rate recommendations as PDF
      */
-    public function downloadFertilizerRatePdf(Request $request): mixed
-    {
-        try {
-            $cropType = $request->get('crop_type');
-            $nitrogenLevel = $request->get('nitrogen_level');
-            $phosphorusLevel = $request->get('phosphorus_level');
-            $potassiumLevel = $request->get('potassium_level');
-            $growthStage = $request->get('growth_stage');
-            $soilType = $request->get('soil_type');
+    // public function downloadFertilizerRatePdf(Request $request): mixed
+    // {
+    //     try {
+    //         $cropType = $request->get('crop_type');
+    //         $nitrogenLevel = $request->get('nitrogen_level');
+    //         $phosphorusLevel = $request->get('phosphorus_level');
+    //         $potassiumLevel = $request->get('potassium_level');
+    //         $growthStage = $request->get('growth_stage');
+    //         $soilType = $request->get('soil_type');
 
-            // Validate required parameters
-            if (! $cropType || ! $nitrogenLevel || ! $phosphorusLevel || ! $potassiumLevel) {
-                return back()->withErrors(['pdf_error' => 'Missing required parameters for PDF generation.']);
-            }
+    //         // Validate required parameters
+    //         if (! $cropType || ! $nitrogenLevel || ! $phosphorusLevel || ! $potassiumLevel) {
+    //             return back()->withErrors(['pdf_error' => 'Missing required parameters for PDF generation.']);
+    //         }
 
-            // Map nutrient levels
-            $nLevel = $this->mapNutrientLevel($nitrogenLevel);
-            $pLevel = $this->mapNutrientLevel($phosphorusLevel);
-            $kLevel = $this->mapNutrientLevel($potassiumLevel);
+    //         // Map nutrient levels
+    //         $nLevel = $this->mapNutrientLevel($nitrogenLevel);
+    //         $pLevel = $this->mapNutrientLevel($phosphorusLevel);
+    //         $kLevel = $this->mapNutrientLevel($potassiumLevel);
 
-            // Get fertilizer recommendations
-            $recommendations = $this->getFertilizerRecommendations(
-                $cropType,
-                $nLevel,
-                $pLevel,
-                $kLevel,
-                $soilType,
-                $growthStage
-            );
+    //         // Get fertilizer recommendations
+    //         $recommendations = $this->getFertilizerRecommendations(
+    //             $cropType,
+    //             $nLevel,
+    //             $pLevel,
+    //             $kLevel,
+    //             $soilType,
+    //             $growthStage
+    //         );
 
-            // Prepare filters data for display
-            $filters = [
-                'crop_type' => $cropType,
-                'growth_stage' => $growthStage,
-                'soil_type' => $soilType,
-                'nitrogen_level' => $nitrogenLevel,
-                'phosphorus_level' => $phosphorusLevel,
-                'potassium_level' => $potassiumLevel,
-            ];
+    //         // Prepare filters data for display
+    //         $filters = [
+    //             'crop_type' => $cropType,
+    //             'growth_stage' => $growthStage,
+    //             'soil_type' => $soilType,
+    //             'nitrogen_level' => $nitrogenLevel,
+    //             'phosphorus_level' => $phosphorusLevel,
+    //             'potassium_level' => $potassiumLevel,
+    //         ];
 
-            
-            $pdf = Pdf::loadView('pdf.fertilizerRate', [
-                'recommendations' => $recommendations,
-                'filters' => $filters,
-            ])->setPaper('a4', 'portrait');
 
-            $fileName = 'Fertilizer_Rate_'.preg_replace('/\s+/', '_', $cropType).'_'.now()->format('Ymd_His').'.pdf';
+    //         $pdf = Pdf::loadView('pdf.fertilizerRate', [
+    //             'recommendations' => $recommendations,
+    //             'filters' => $filters,
+    //         ])->setPaper('a4', 'portrait');
 
-            return $pdf->download($fileName)->withHeaders([
-                'Content-Type' => 'application/pdf',
-            ])->setStatusCode(200);
-        } catch (\Exception $e) {
-            Log::error('Fertilizer Rate PDF Generation Error: '.$e->getMessage());
+    //         $fileName = 'Fertilizer_Rate_'.preg_replace('/\s+/', '_', $cropType).'_'.now()->format('Ymd_His').'.pdf';
 
-            return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.'])->withStatus(500);
-        }
-    }
+    //         return $pdf->download($fileName)->withHeaders([
+    //             'Content-Type' => 'application/pdf',
+    //         ])->setStatusCode(200);
+    //     } catch (\Exception $e) {
+    //         Log::error('Fertilizer Rate PDF Generation Error: '.$e->getMessage());
+
+    //         return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.'])->withStatus(500);
+    //     }
+    // }
 }

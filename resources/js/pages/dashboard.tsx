@@ -3,12 +3,14 @@ import ChartPieSimple from '@/components/chart-pie-simple';
 import MetricsSummary from '@/components/metrics-summary';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 // import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -75,7 +77,87 @@ const supportedCropList = (supportedCrops: DashboardProps['modelInfo']['data']['
     );
 };
 
+const DashboardSkeleton = () => {
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Dashboard" />
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl px-4 py-4">
+                {/* Metrics Summary Skeleton */}
+                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+                    {[...Array(4)].map((_, i) => (
+                        <Card key={i} className="rounded-xl">
+                            <CardHeader className="pb-2">
+                                <Skeleton className="h-4 w-24" />
+                            </CardHeader>
+                            <CardContent>
+                                <Skeleton className="h-8 w-16" />
+                                <Skeleton className="mt-2 h-3 w-20" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Charts Skeleton */}
+                <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {[...Array(3)].map((_, i) => (
+                        <Card key={i} className="rounded-xl">
+                            <CardHeader>
+                                <Skeleton className="h-6 w-32" />
+                                <Skeleton className="mt-2 h-4 w-48" />
+                            </CardHeader>
+                            <CardContent>
+                                <Skeleton className="h-64 w-full" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Recent Recommendations Skeleton */}
+                <Card className="rounded-xl">
+                    <CardHeader>
+                        <Skeleton className="h-6 w-48" />
+                        <Skeleton className="mt-2 h-4 w-64" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="flex items-center justify-between">
+                                    <div className="flex gap-4">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-4 w-32" />
+                                        <Skeleton className="h-4 w-28" />
+                                    </div>
+                                    <Skeleton className="h-8 w-16" />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </AppLayout>
+    );
+};
+
 export default function Dashboard({ metrics, topRecommendedCrops, activityTrend, recentRecommendations, modelInfo }: DashboardProps) {
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const handleStart = () => setIsLoading(true);
+        const handleFinish = () => setIsLoading(false);
+
+        const removeStartListener = router.on('start', handleStart);
+        const removeFinishListener = router.on('finish', handleFinish);
+
+        return () => {
+            removeStartListener();
+            removeFinishListener();
+        };
+    }, []);
+
+    if (isLoading) {
+        return <DashboardSkeleton />;
+    }
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
