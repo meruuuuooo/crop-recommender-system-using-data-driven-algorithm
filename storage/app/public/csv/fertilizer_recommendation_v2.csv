@@ -1,0 +1,448 @@
+recommendationID,crop_name,growth_stage,soil_type,nitrogen_level,nitrogen_rate,phosphorus_level,phosphorus_rate,potassium_level,potassium_rate,unit_of_measure
+1,AMPALAYA/UPO,N/A,N/A,L,90,L,80,L,60,kg/ha
+2,AMPALAYA/UPO,N/A,N/A,M,50,M,50,M,45,kg/ha
+3,AMPALAYA/UPO,N/A,N/A,H,40,H,20,H,30,kg/ha
+4,BATAO,N/A,N/A,L,45,L,60,L,60,kg/ha
+5,BATAO,N/A,N/A,M,40,M,35,M,45,kg/ha
+6,BATAO,N/A,N/A,H,35,H,20,H,30,kg/ha
+7,String beans,N/A,N/A,L,50,L,90,L,50,kg/ha
+8,String beans,N/A,N/A,M,40,M,45,M,40,kg/ha
+9,String beans,N/A,N/A,H,35,H,20,H,30,kg/ha
+10,Saguic beans,N/A,N/A,L,45,L,60,L,60,kg/ha
+11,Saguic beans,N/A,N/A,M,40,M,35,M,45,kg/ha
+12,Saguic beans,N/A,N/A,H,35,H,20,H,30,kg/ha
+13,Lima (Patani) beans,N/A,N/A,L,45,L,60,L,60,kg/ha
+14,Lima (Patani) beans,N/A,N/A,M,40,M,35,M,45,kg/ha
+15,Lima (Patani) beans,N/A,N/A,H,35,H,20,H,30,kg/ha
+16,Vinged beans,Dwarf variety,N/A,L,40,L,40,L,15,kg/ha
+17,Vinged beans,Dwarf variety,N/A,M,30,M,25,M,30,kg/ha
+18,Vinged beans,Dwarf variety,N/A,H,20,H,10,H,30,kg/ha
+19,Vinged beans,Tree type,N/A,L,60,L,30,L,45,kg/ha
+20,Vinged beans,Tree type,N/A,M,40,M,20,M,30,kg/ha
+21,Vinged beans,Tree type,N/A,H,30,H,10,H,20,kg/ha
+22,CHAYOTE,N/A,N/A,L,60,L,80,L,60,kg/ha
+23,CHAYOTE,N/A,N/A,M,50,M,50,M,45,kg/ha
+24,CHAYOTE,N/A,N/A,H,40,H,20,H,30,kg/ha
+25,CUCUMBER,N/A,N/A,L,100,L,100,L,60,kg/ha
+26,CUCUMBER,N/A,N/A,M,80,M,60,M,45,kg/ha
+27,CUCUMBER,N/A,N/A,H,60,H,30,H,30,kg/ha
+28,PARSNIP,N/A,N/A,L,90,L,60,L,60,kg/ha
+29,PARSNIP,N/A,N/A,M,60,M,35,M,45,kg/ha
+30,PARSNIP,N/A,N/A,H,45,H,20,H,30,kg/ha
+31,PATANI,N/A,N/A,L,45,L,60,L,60,kg/ha
+32,PATANI,N/A,N/A,M,40,M,35,M,45,kg/ha
+33,PATANI,N/A,N/A,H,65,H,20,H,30,kg/ha
+34,PATOLA,N/A,N/A,L,90,L,80,L,60,kg/ha
+35,PATOLA,N/A,N/A,M,60,M,50,M,45,kg/ha
+36,PATOLA,N/A,N/A,H,30,H,20,H,30,kg/ha
+37,PEAS,N/A,N/A,L,20,L,40,L,45,kg/ha
+38,PEAS,N/A,N/A,M,10,M,35,M,30,kg/ha
+39,PEAS,N/A,N/A,H,7,H,10,H,20,kg/ha
+40,CARROT,N/A,N/A,L,90,L,90,L,120,kg/ha
+41,CARROT,N/A,N/A,M,80,M,60,M,75,kg/ha
+42,CARROT,N/A,N/A,H,70,H,30,H,30,kg/ha
+43,GARLIC ONION,N/A,N/A,L,90,L,80,L,50,kg/ha
+44,GARLIC ONION,N/A,N/A,M,60,M,50,M,30,kg/ha
+45,GARLIC ONION,N/A,N/A,H,30,H,20,H,20,kg/ha
+46,GINGER,Local,N/A,L,40,L,60,L,120,kg/ha
+47,GINGER,Local,N/A,M,30,M,35,M,75,kg/ha
+48,GINGER,Local,N/A,H,20,H,20,H,30,kg/ha
+49,GINGER,Improved,N/A,L,80,L,60,L,120,kg/ha
+50,GINGER,Improved,N/A,M,70,M,35,M,75,kg/ha
+51,GINGER,Improved,N/A,H,60,H,20,H,30,kg/ha
+52,POTATO,N/A,N/A,L,80,L,60,L,90,kg/ha
+53,POTATO,N/A,N/A,M,70,M,35,M,60,kg/ha
+54,POTATO,N/A,N/A,H,60,H,20,H,30,kg/ha
+55,RADISH/TURNIPS,N/A,N/A,L,90,L,90,L,120,kg/ha
+56,RADISH/TURNIPS,N/A,N/A,M,80,M,60,M,75,kg/ha
+57,RADISH/TURNIPS,N/A,N/A,H,70,H,30,H,30,kg/ha
+58,ASPARAGUS,N/A,N/A,L,90,L,40,L,60,kg/ha
+59,ASPARAGUS,N/A,N/A,M,60,M,25,M,45,kg/ha
+60,ASPARAGUS,N/A,N/A,H,45,H,10,H,30,kg/ha
+61,BROCCOLI,N/A,N/A,L,60,L,60,L,60,kg/ha
+62,BROCCOLI,N/A,N/A,M,50,M,35,M,45,kg/ha
+63,BROCCOLI,N/A,N/A,H,10,H,20,H,30,kg/ha
+64,CABBAGE,Local,N/A,L,150,L,60,L,75,kg/ha
+65,CABBAGE,Local,N/A,M,140,M,35,M,60,kg/ha
+66,CABBAGE,Local,N/A,H,120,H,20,H,30,kg/ha
+67,CABBAGE,Chinese,N/A,L,150,L,60,L,75,kg/ha
+68,CABBAGE,Chinese,N/A,M,140,M,35,M,60,kg/ha
+69,CABBAGE,Chinese,N/A,H,120,H,20,H,30,kg/ha
+70,CAULIFLOWER/CABBAGE (HEAD) LETTUCE (HEAD),N/A,N/A,L,150,L,60,L,60,kg/ha
+71,CAULIFLOWER/CABBAGE (HEAD) LETTUCE (HEAD),N/A,N/A,M,140,M,35,M,45,kg/ha
+72,CAULIFLOWER/CABBAGE (HEAD) LETTUCE (HEAD),N/A,N/A,H,120,H,20,H,30,kg/ha
+73,MUSTARD,N/A,N/A,L,150,L,60,L,75,kg/ha
+74,MUSTARD,N/A,N/A,M,140,M,35,M,60,kg/ha
+75,MUSTARD,N/A,N/A,H,120,H,20,H,30,kg/ha
+76,PECHAY,N/A,N/A,L,150,L,60,L,75,kg/ha
+77,PECHAY,N/A,N/A,M,140,M,35,M,60,kg/ha
+78,PECHAY,N/A,N/A,H,120,H,20,H,30,kg/ha
+79,CELERY,N/A,N/A,L,60,L,90,L,60,kg/ha
+80,CELERY,N/A,N/A,M,50,M,50,M,45,kg/ha
+81,CELERY,N/A,N/A,H,40,H,20,H,30,kg/ha
+82,CHILI,Bell Pepper,N/A,L,90,L,80,L,150,kg/ha
+83,CHILI,Bell Pepper,N/A,M,80,M,50,M,75,kg/ha
+84,CHILI,Bell Pepper,N/A,H,70,H,20,H,30,kg/ha
+85,CHILI,Green (sinigang),N/A,L,120,L,80,L,150,kg/ha
+86,CHILI,Green (sinigang),N/A,M,90,M,50,M,120,kg/ha
+87,CHILI,Green (sinigang),N/A,H,60,H,20,H,60,kg/ha
+88,CHILI,Pepper,N/A,L,90,L,80,L,150,kg/ha
+89,CHILI,Pepper,N/A,M,60,M,50,M,120,kg/ha
+90,CHILI,Pepper,N/A,H,30,H,20,H,60,kg/ha
+91,BLACK PEPPER,N/A,N/A,L,0.04,L,0.04,L,0.03,kg/tree
+92,BLACK PEPPER,N/A,N/A,M,0.02,M,0.03,M,0.02,kg/tree
+93,BLACK PEPPER,N/A,N/A,H,0.01,H,0.01,H,0.01,kg/tree
+94,EGGPLANT,N/A,N/A,L,90,L,80,L,90,kg/ha
+95,EGGPLANT,N/A,N/A,M,80,M,50,M,60,kg/ha
+96,EGGPLANT,N/A,N/A,H,70,H,20,H,30,kg/ha
+97,OKRA,Local,N/A,L,90,L,80,L,90,kg/ha
+98,OKRA,Local,N/A,M,80,M,50,M,60,kg/ha
+99,OKRA,Local,N/A,H,80,H,20,H,30,kg/ha
+100,OKRA,Hybrid,N/A,L,120,L,80,L,90,kg/ha
+101,OKRA,Hybrid,N/A,M,100,M,50,M,60,kg/ha
+102,OKRA,Hybrid,N/A,H,70,H,20,H,30,kg/ha
+103,TOMATO,N/A,N/A,L,90,L,120,L,90,kg/ha
+104,TOMATO,N/A,N/A,M,80,M,75,M,60,kg/ha
+105,TOMATO,N/A,N/A,H,70,H,30,H,30,kg/ha
+106,SQUASH,N/A,N/A,L,90,L,80,L,60,kg/ha
+107,SQUASH,N/A,N/A,M,50,M,50,M,45,kg/ha
+108,SQUASH,N/A,N/A,H,40,H,30,H,30,kg/ha
+109,BASIL,N/A,N/A,L,0.001,L,0.001,L,0.001,kg/ha
+110,BASIL,N/A,N/A,M,0.001,M,0.001,M,0.001,kg/ha
+111,BASIL,N/A,N/A,H,0.001,H,0.001,H,0.001,kg/ha
+112,Mint herb,N/A,N/A,L,80,L,80,L,20,kg/ha
+113,Mint herb,N/A,N/A,M,40,M,80,M,10,kg/ha
+114,Mint herb,N/A,N/A,H,20,H,40,H,7,kg/ha
+115,HYBRID RICE,Wet Season,LIGHT SOILS,L,120,L,70,L,70,kg/ha
+116,HYBRID RICE,Wet Season,LIGHT SOILS,M,90,M,50,M,50,kg/ha
+117,HYBRID RICE,Wet Season,LIGHT SOILS,H,60,H,30,H,30,kg/ha
+118,HYBRID RICE,Dry Season,LIGHT SOILS,L,140,L,70,L,50,kg/ha
+119,HYBRID RICE,Dry Season,LIGHT SOILS,M,110,M,50,M,70,kg/ha
+120,HYBRID RICE,Dry Season,LIGHT SOILS,H,80,H,30,H,30,kg/ha
+121,HYBRID RICE,Wet Season,MED-HEAVY SOILS,L,110,L,70,L,70,kg/ha
+122,HYBRID RICE,Wet Season,MED-HEAVY SOILS,M,80,M,50,M,50,kg/ha
+123,HYBRID RICE,Wet Season,MED-HEAVY SOILS,H,50,H,30,H,30,kg/ha
+124,HYBRID RICE,Dry Season,MED-HEAVY SOILS,L,120,L,70,L,50,kg/ha
+125,HYBRID RICE,Dry Season,MED-HEAVY SOILS,M,90,M,50,M,70,kg/ha
+126,HYBRID RICE,Dry Season,MED-HEAVY SOILS,H,8,H,30,H,30,kg/ha
+127,UPLAND RICE,N/A,Light Soils,L,45,L,60,L,45,kg/ha
+128,UPLAND RICE,N/A,Light Soils,M,40,M,40,M,60,kg/ha
+129,UPLAND RICE,N/A,Light Soils,H,30,H,30,H,50,kg/ha
+130,UPLAND RICE,N/A,Med-Heavy Soils,L,45,L,60,L,8,kg/ha
+131,UPLAND RICE,N/A,Med-Heavy Soils,M,10,M,5,M,45,kg/ha
+132,UPLAND RICE,N/A,Med-Heavy Soils,H,30,H,30,H,30,kg/ha
+133,INBRED RICE,Wet Season,LIGHT SOILS,L,100,L,60,L,60,kg/ha
+134,INBRED RICE,Wet Season,LIGHT SOILS,M,70,M,40,M,40,kg/ha
+135,INBRED RICE,Wet Season,LIGHT SOILS,H,40,H,20,H,20,kg/ha
+136,INBRED RICE,Dry Season,LIGHT SOILS,L,120,L,60,L,60,kg/ha
+137,INBRED RICE,Dry Season,LIGHT SOILS,M,90,M,5,M,40,kg/ha
+138,INBRED RICE,Dry Season,LIGHT SOILS,H,60,H,20,H,20,kg/ha
+139,INBRED RICE,Wet Season,MED-HEAVY SOILS,L,90,L,50,L,8,kg/ha
+140,INBRED RICE,Wet Season,MED-HEAVY SOILS,M,60,M,5,M,40,kg/ha
+141,INBRED RICE,Wet Season,MED-HEAVY SOILS,H,30,H,20,H,8,kg/ha
+142,INBRED RICE,Dry Season,MED-HEAVY SOILS,L,100,L,60,L,8,kg/ha
+143,INBRED RICE,Dry Season,MED-HEAVY SOILS,M,70,M,40,M,40,kg/ha
+144,INBRED RICE,Dry Season,MED-HEAVY SOILS,H,40,H,20,H,8,kg/ha
+145,HYBRID CORN,Yellow,N/A,L,135,L,90,L,90,kg/ha
+146,HYBRID CORN,Yellow,N/A,M,90,M,40,M,45,kg/ha
+147,HYBRID CORN,Yellow,N/A,H,60,H,20,H,30,kg/ha
+148,HYBRID CORN,White,N/A,L,135,L,60,L,60,kg/ha
+149,HYBRID CORN,White,N/A,M,90,M,N/A,M,45,kg/ha
+150,HYBRID CORN,White,N/A,H,60,H,20,H,30,kg/ha
+151,OPV CORN,White,N/A,L,90,L,60,L,60,kg/ha
+152,OPV CORN,White,N/A,M,50,M,N/A,M,45,kg/ha
+153,OPV CORN,White,N/A,H,N/A,H,20,H,30,kg/ha
+154,APPLE,New,N/A,L,0.1,L,0.01,L,0.015,kg/tree
+155,APPLE,New,N/A,M,0.01,M,0.01,M,0.015,kg/tree
+156,APPLE,New,N/A,H,0.01,H,0.01,H,0.015,kg/tree
+157,APPLE,1-3 years,N/A,L,0.1,L,0.1,L,0.3,kg/tree
+158,APPLE,1-3 years,N/A,M,0.05,M,0.04,M,0.15,kg/tree
+159,APPLE,1-3 years,N/A,H,0.03,H,0.01,H,0.05,kg/tree
+160,APPLE,4-6 years,N/A,L,0.2,L,0.2,L,0.45,kg/tree
+161,APPLE,4-6 years,N/A,M,0.1,M,0.09,M,0.3,kg/tree
+162,APPLE,4-6 years,N/A,H,0.06,H,0.05,H,0.3,kg/tree
+163,APPLE,7 up years,N/A,L,0.3,L,0.3,L,0.6,kg/tree
+164,APPLE,7 up years,N/A,M,0.2,M,0.18,M,0.45,kg/tree
+165,APPLE,7 up years,N/A,H,0.1,H,0.1,H,0.3,kg/tree
+166,ATIS,New,N/A,L,0.01,L,0.01,L,0.015,kg/tree
+167,ATIS,New,N/A,M,0.01,M,0.01,M,0.015,kg/tree
+168,ATIS,New,N/A,H,0.01,H,0.01,H,0.015,kg/tree
+169,ATIS,1-3 years,N/A,L,0.1,L,0.1,L,0.3,kg/tree
+170,ATIS,1-3 years,N/A,M,0.05,M,0.04,M,0.15,kg/tree
+171,ATIS,1-3 years,N/A,H,0.03,H,0.01,H,0.05,kg/tree
+172,ATIS,4-6 years,N/A,L,0.2,L,0.2,L,0.45,kg/tree
+173,ATIS,4-6 years,N/A,M,0.1,M,0.09,M,0.3,kg/tree
+174,ATIS,4-6 years,N/A,H,0.06,H,0.05,H,0.15,kg/tree
+175,ATIS,7 up years,N/A,L,0.3,L,0.3,L,0.6,kg/tree
+176,ATIS,7 up years,N/A,M,0.2,M,0.18,M,0.45,kg/tree
+177,ATIS,7 up years,N/A,H,0.1,H,0.1,H,0.3,kg/tree
+178,AVOCADO,New,N/A,L,0.01,L,0.01,L,0.015,kg/tree
+179,AVOCADO,New,N/A,M,0.01,M,0.01,M,0.015,kg/tree
+180,AVOCADO,New,N/A,H,0.01,H,0.01,H,0.015,kg/tree
+181,AVOCADO,1-3 years,N/A,L,0.1,L,0.1,L,0.3,kg/tree
+182,AVOCADO,1-3 years,N/A,M,0.05,M,0.01,M,0.15,kg/tree
+183,AVOCADO,1-3 years,N/A,H,0.03,H,0.01,H,0.05,kg/tree
+184,AVOCADO,4-6 years,N/A,L,0.2,L,0.2,L,0.45,kg/tree
+185,AVOCADO,4-6 years,N/A,M,0.1,M,0.09,M,0.3,kg/tree
+186,AVOCADO,4-6 years,N/A,H,0.06,H,0.05,H,0.15,kg/tree
+187,AVOCADO,7 up years,N/A,L,0.3,L,0.3,L,0.6,kg/tree
+188,AVOCADO,7 up years,N/A,M,0.2,M,0.18,M,0.45,kg/tree
+189,AVOCADO,7 up years,N/A,H,0.1,H,0.1,H,0.3,kg/tree
+190,CACAO/COFFEE,New,N/A,L,0.003,L,0.004,L,0.003,kg/tree
+191,CACAO/COFFEE,New,N/A,M,0.002,M,0.003,M,0.002,kg/tree
+192,CACAO/COFFEE,New,N/A,H,0.001,H,0.001,H,0.001,kg/tree
+193,CACAO/COFFEE,Young (1-3 years),N/A,L,0.075,L,0.15,L,0.1,kg/tree
+194,CACAO/COFFEE,Young (1-3 years),N/A,M,0.045,M,0.073,M,0.075,kg/tree
+195,CACAO/COFFEE,Young (1-3 years),N/A,H,0.03,H,0.025,H,0.036,kg/tree
+196,CACAO/COFFEE,Bearing,N/A,L,0.1,L,0.12,L,0.12,kg/tree
+197,CACAO/COFFEE,Bearing,N/A,M,0.06,M,0.095,M,0.09,kg/tree
+198,CACAO/COFFEE,Bearing,N/A,H,0.035,H,0.045,H,0.045,kg/tree
+199,CAIMITO/DUHAT/SANTOL,New,N/A,L,0.01,L,0.01,L,0.015,kg/tree
+200,CAIMITO/DUHAT/SANTOL,New,N/A,M,0.01,M,0.009,M,0.009,kg/tree
+201,CAIMITO/DUHAT/SANTOL,New,N/A,H,0.01,H,0.005,H,0.003,kg/tree
+202,CAIMITO/DUHAT/SANTOL,1-3 years,N/A,L,0.1,L,0.1,L,0.15,kg/tree
+203,CAIMITO/DUHAT/SANTOL,1-3 years,N/A,M,0.05,M,0.04,M,0.09,kg/tree
+204,CAIMITO/DUHAT/SANTOL,1-3 years,N/A,H,0.02,H,0.02,H,0.06,kg/tree
+205,CAIMITO/DUHAT/SANTOL,4-6 years,N/A,L,0.15,L,0.2,L,0.3,kg/tree
+206,CAIMITO/DUHAT/SANTOL,4-6 years,N/A,M,0.1,M,0.075,M,0.15,kg/tree
+207,CAIMITO/DUHAT/SANTOL,4-6 years,N/A,H,0.05,H,0.03,H,0.09,kg/tree
+208,CAIMITO/DUHAT/SANTOL,7-10 years,N/A,L,0.3,L,0.3,L,0.45,kg/tree
+209,CAIMITO/DUHAT/SANTOL,7-10 years,N/A,M,0.15,M,0.15,M,0.3,kg/tree
+210,CAIMITO/DUHAT/SANTOL,7-10 years,N/A,H,0.1,H,0.05,H,0.15,kg/tree
+211,CAIMITO/DUHAT/SANTOL,10 up years,N/A,L,0.4,L,0.4,L,0.6,kg/tree
+212,CAIMITO/DUHAT/SANTOL,10 up years,N/A,M,0.3,M,0.25,M,0.45,kg/tree
+213,CAIMITO/DUHAT/SANTOL,10 up years,N/A,H,0.15,H,0.1,H,0.3,kg/tree
+214,COFFEE,New/Seedlings,N/A,L,0.003,L,0.004,L,0.003,kg/tree
+215,COFFEE,New/Seedlings,N/A,M,0.002,M,0.003,M,0.002,kg/tree
+216,COFFEE,New/Seedlings,N/A,H,0.001,H,0.001,H,0.001,kg/tree
+217,COFFEE,Young,N/A,L,0.07,L,0.135,L,0.06,kg/tree
+218,COFFEE,Young,N/A,M,0.04,M,0.068,M,0.04,kg/tree
+219,COFFEE,Young,N/A,H,0.025,H,0.025,H,0.027,kg/tree
+220,COFFEE,Matured,N/A,L,0.16,L,0.13,L,0.36,kg/tree
+221,COFFEE,Matured,N/A,M,0.1,M,0.27,M,0.12,kg/tree
+222,COFFEE,Matured,N/A,H,0.07,H,0.02,H,0.06,kg/tree
+223,DRAGON FRUIT,New,N/A,L,0.01,L,0.01,L,0.01,kg/tree
+224,DRAGON FRUIT,New,N/A,M,0.01,M,0.01,M,0.01,kg/tree
+225,DRAGON FRUIT,New,N/A,H,0.01,H,0.01,H,0.01,kg/tree
+226,DRAGON FRUIT,2-3 years,N/A,L,0.03,L,0.03,L,0.03,kg/tree
+227,DRAGON FRUIT,2-3 years,N/A,M,0.03,M,0.03,M,0.03,kg/tree
+228,DRAGON FRUIT,2-3 years,N/A,H,0.03,H,0.03,H,0.03,kg/tree
+229,DRAGON FRUIT,4th year,N/A,L,0.035,L,0.035,L,0.035,kg/tree
+230,DRAGON FRUIT,4th year,N/A,M,0.035,M,0.035,M,0.035,kg/tree
+231,DRAGON FRUIT,4th year,N/A,H,0.035,H,0.035,H,0.035,kg/tree
+232,DURIAN,New Transplant,N/A,L,0.075,L,1.075,L,0.015,kg/tree
+233,DURIAN,New Transplant,N/A,M,0.038,M,0.029,M,0.038,kg/tree
+234,DURIAN,New Transplant,N/A,H,0.019,H,0.001,H,0.003,kg/tree
+235,DURIAN,1-3 years,N/A,L,0.15,L,0.15,L,0.15,kg/tree
+236,DURIAN,1-3 years,N/A,M,0.075,M,0.053,M,0.075,kg/tree
+237,DURIAN,1-3 years,N/A,H,0.038,H,0.003,H,0.038,kg/tree
+238,DURIAN,4-6 years,N/A,L,0.3,L,0.3,L,0.3,kg/tree
+239,DURIAN,4-6 years,N/A,M,0.15,M,0.098,M,0.15,kg/tree
+240,DURIAN,4-6 years,N/A,H,0.075,H,0.05,H,0.075,kg/tree
+241,DURIAN,7 and up,N/A,L,0.45,L,0.45,L,0.45,kg/tree
+242,DURIAN,7 and up,N/A,M,0.22,M,0.17,M,0.22,kg/tree
+243,DURIAN,7 and up,N/A,H,0.11,H,0.01,H,0.11,kg/tree
+244,MUSKMELON/HONEY DEW/GRAPE VINE,N/A,N/A,L,60,L,100,L,90,kg/ha
+245,MUSKMELON/HONEY DEW/GRAPE VINE,N/A,N/A,M,40,M,50,M,60,kg/ha
+246,MUSKMELON/HONEY DEW/GRAPE VINE,N/A,N/A,H,20,H,25,H,30,kg/ha
+247,WATERMELON,N/A,N/A,L,90,L,120,L,60,kg/ha
+248,WATERMELON,N/A,N/A,M,60,M,60,M,45,kg/ha
+249,WATERMELON,N/A,N/A,H,40,H,30,H,30,kg/ha
+250,GUAVA,1-3 years,N/A,L,0.02,L,0.1,L,0.3,kg/tree
+251,GUAVA,1-3 years,N/A,M,0.01,M,0.04,M,0.15,kg/tree
+252,GUAVA,1-3 years,N/A,H,0.005,H,0.01,H,0.05,kg/tree
+253,GUAVA,4-6 years,N/A,L,0.04,L,0.2,L,0.45,kg/tree
+254,GUAVA,4-6 years,N/A,M,0.02,M,0.04,M,0.3,kg/tree
+255,GUAVA,4-6 years,N/A,H,0.01,H,0.01,H,0.15,kg/tree
+256,GUAVA,7 and up,N/A,L,0.05,L,0.3,L,0.6,kg/tree
+257,GUAVA,7 and up,N/A,M,0.03,M,0.18,M,0.45,kg/tree
+258,GUAVA,7 and up,N/A,H,0.02,H,0.1,H,0.3,kg/tree
+259,GUYABANO,New Transplant,N/A,L,0.01,L,0.01,L,0.015,kg/tree
+260,GUYABANO,New Transplant,N/A,M,0.01,M,0.01,M,0.015,kg/tree
+261,GUYABANO,New Transplant,N/A,H,0.01,H,0.01,H,0.015,kg/tree
+262,GUYABANO,1-3 years,N/A,L,0.1,L,0.1,L,0.3,kg/tree
+263,GUYABANO,1-3 years,N/A,M,0.05,M,0.04,M,0.15,kg/tree
+264,GUYABANO,1-3 years,N/A,H,0.03,H,0.01,H,0.05,kg/tree
+265,GUYABANO,4-6 years,N/A,L,0.2,L,0.2,L,0.45,kg/tree
+266,GUYABANO,4-6 years,N/A,M,0.1,M,0.09,M,0.3,kg/tree
+267,GUYABANO,4-6 years,N/A,H,0.06,H,0.05,H,0.15,kg/tree
+268,GUYABANO,7 and up,N/A,L,0.3,L,0.3,L,0.6,kg/tree
+269,GUYABANO,7 and up,N/A,M,0.2,M,0.18,M,0.45,kg/tree
+270,GUYABANO,7 and up,N/A,H,0.1,H,0.1,H,0.3,kg/tree
+271,JACKFRUIT,New Transplant,N/A,L,0.01,L,0.01,L,0.015,kg/tree
+272,JACKFRUIT,New Transplant,N/A,M,0.01,M,0.01,M,0.015,kg/tree
+273,JACKFRUIT,New Transplant,N/A,H,0.01,H,0.01,H,0.015,kg/tree
+274,JACKFRUIT,1-3 years,N/A,L,0.1,L,0.1,L,0.3,kg/tree
+275,JACKFRUIT,1-3 years,N/A,M,0.05,M,0.04,M,0.15,kg/tree
+276,JACKFRUIT,1-3 years,N/A,H,0.03,H,0.01,H,0.05,kg/tree
+277,JACKFRUIT,4-6 years,N/A,L,0.2,L,0.2,L,0.45,kg/tree
+278,JACKFRUIT,4-6 years,N/A,M,0.1,M,0.09,M,0.3,kg/tree
+279,JACKFRUIT,4-6 years,N/A,H,0.06,H,0.05,H,0.15,kg/tree
+280,JACKFRUIT,7 and up,N/A,L,0.3,L,0.3,L,0.6,kg/tree
+281,JACKFRUIT,7 and up,N/A,M,0.2,M,0.2,M,0.45,kg/tree
+282,JACKFRUIT,7 and up,N/A,H,0.1,H,0.1,H,0.3,kg/tree
+283,LANZONES/RAMBUTAN,New,N/A,L,0.01,L,0.02,L,0.015,kg/tree
+284,LANZONES/RAMBUTAN,New,N/A,M,0.01,M,0.02,M,0.009,kg/tree
+285,LANZONES/RAMBUTAN,New,N/A,H,0.01,H,0.01,H,0.003,kg/tree
+286,LANZONES/RAMBUTAN,1-2 years,N/A,L,0.1,L,0.2,L,0.3,kg/tree
+287,LANZONES/RAMBUTAN,1-2 years,N/A,M,0.05,M,0.075,M,0.15,kg/tree
+288,LANZONES/RAMBUTAN,1-2 years,N/A,H,0.03,H,0.03,H,0.09,kg/tree
+289,LANZONES/RAMBUTAN,4-6 years,N/A,L,0.2,L,0.4,L,0.9,kg/tree
+290,LANZONES/RAMBUTAN,4-6 years,N/A,M,0.1,M,0.25,M,0.6,kg/tree
+291,LANZONES/RAMBUTAN,4-6 years,N/A,H,0.05,H,0.1,H,0.3,kg/tree
+292,LANZONES/RAMBUTAN,7 and up,N/A,L,0.4,L,0.8,L,1.2,kg/tree
+293,LANZONES/RAMBUTAN,7 and up,N/A,M,0.3,M,0.5,M,0.9,kg/tree
+294,LANZONES/RAMBUTAN,7 and up,N/A,H,0.2,H,0.2,H,0.6,kg/tree
+295,MANGO/MANGOSTEEN,New,N/A,L,0.01,L,0.01,L,0.015,kg/tree
+296,MANGO/MANGOSTEEN,New,N/A,M,0.01,M,0.009,M,0.009,kg/tree
+297,MANGO/MANGOSTEEN,New,N/A,H,0.01,H,0.005,H,0.003,kg/tree
+298,MANGO/MANGOSTEEN,1-3 years,N/A,L,0.1,L,0.1,L,0.15,kg/tree
+299,MANGO/MANGOSTEEN,1-3 years,N/A,M,0.05,M,0.04,M,0.09,kg/tree
+300,MANGO/MANGOSTEEN,1-3 years,N/A,H,0.02,H,0.02,H,0.06,kg/tree
+301,MANGO/MANGOSTEEN,4-6 years,N/A,L,0.15,L,0.2,L,0.3,kg/tree
+302,MANGO/MANGOSTEEN,4-6 years,N/A,M,0.1,M,0.075,M,0.15,kg/tree
+303,MANGO/MANGOSTEEN,4-6 years,N/A,H,0.05,H,0.03,H,0.09,kg/tree
+304,MANGO/MANGOSTEEN,7-10 years,N/A,L,0.2,L,0.3,L,0.4,kg/tree
+305,MANGO/MANGOSTEEN,7-10 years,N/A,M,0.15,M,0.15,M,0.3,kg/tree
+306,MANGO/MANGOSTEEN,7-10 years,N/A,H,0.1,H,0.05,H,0.15,kg/tree
+307,MANGO/MANGOSTEEN,10 and up,N/A,L,0.4,L,0.4,L,0.6,kg/tree
+308,MANGO/MANGOSTEEN,10 and up,N/A,M,0.3,M,0.25,M,0.45,kg/tree
+309,MANGO/MANGOSTEEN,10 and up,N/A,H,0.15,H,0.1,H,0.3,kg/tree
+310,PAPAYA,2-4 months,N/A,L,0.024,L,0.048,L,0.03,kg/tree
+311,PAPAYA,2-4 months,N/A,M,0.016,M,0.028,M,0.021,kg/tree
+312,PAPAYA,2-4 months,N/A,H,0.012,H,0.012,H,0.015,kg/tree
+313,PAPAYA,6-12 months,N/A,L,0.08,L,0.16,L,0.11,kg/tree
+314,PAPAYA,6-12 months,N/A,M,0.05,M,0.086,M,0.09,kg/tree
+315,PAPAYA,6-12 months,N/A,H,0.04,H,0.035,H,0.06,kg/tree
+316,PAPAYA,1-2 years,N/A,L,0.2,L,0.4,L,0.27,kg/tree
+317,PAPAYA,1-2 years,N/A,M,0.1,M,0.22,M,0.2,kg/tree
+318,PAPAYA,1-2 years,N/A,H,0.1,H,0.09,H,0.14,kg/tree
+319,JUTE,N/A,N/A,L,60,L,30,L,90,kg/ha
+320,JUTE,N/A,N/A,M,40,M,15,M,30,kg/ha
+321,JUTE,N/A,N/A,H,20,H,0,H,30,kg/ha
+322,COCONUT,New Transplant,N/A,L,0.06,L,0.05,L,0.2,kg/tree
+323,COCONUT,New Transplant,N/A,M,0.04,M,0.25,M,0.13,kg/tree
+324,COCONUT,New Transplant,N/A,H,0.02,H,0.01,H,0.1,kg/tree
+325,COCONUT,1-5 years,N/A,L,0.3,L,0.2,L,0.6,kg/tree
+326,COCONUT,1-5 years,N/A,M,0.2,M,0.075,M,0.45,kg/tree
+327,COCONUT,1-5 years,N/A,H,0.1,H,0.02,H,0.3,kg/tree
+328,COCONUT,6-8 years,N/A,L,0.4,L,0.3,L,1.2,kg/tree
+329,COCONUT,6-8 years,N/A,M,0.3,M,0.15,M,0.9,kg/tree
+330,COCONUT,6-8 years,N/A,H,0.2,H,0.05,H,0.6,kg/tree
+331,COCONUT,9 and above,N/A,L,0.5,L,0.4,L,1.8,kg/tree
+332,COCONUT,9 and above,N/A,M,0.4,M,0.25,M,1.5,kg/tree
+333,COCONUT,9 and above,N/A,H,0.3,H,0.1,H,1.2,kg/tree
+334,PALM DATE (African Oil),New,N/A,L,0.03,L,0.03,L,0.02,kg/tree
+335,PALM DATE (African Oil),New,N/A,M,0.02,M,0.015,M,0.15,kg/tree
+336,PALM DATE (African Oil),New,N/A,H,0.01,H,0.01,H,0.09,kg/tree
+337,PALM DATE (African Oil),Young,N/A,L,0.2,L,0.2,L,0.06,kg/tree
+338,PALM DATE (African Oil),Young,N/A,M,0.1,M,0.25,M,0.45,kg/tree
+339,PALM DATE (African Oil),Young,N/A,H,0.05,H,0.04,H,0.3,kg/tree
+340,PALM DATE (African Oil),Bearing,N/A,L,0.3,L,0.25,L,0.09,kg/tree
+341,PALM DATE (African Oil),Bearing,N/A,M,0.2,M,0.18,M,0.6,kg/tree
+342,PALM DATE (African Oil),Bearing,N/A,H,0.1,H,0.08,H,0.45,kg/tree
+343,RUBBER,1 year,N/A,L,0.04,L,0.08,L,0.135,kg/tree
+344,RUBBER,1 year,N/A,M,0.03,M,0.05,M,0.09,kg/tree
+345,RUBBER,1 year,N/A,H,0.02,H,0.02,H,0.06,kg/tree
+346,RUBBER,2-6 years,N/A,L,0.06,L,0.13,L,0.225,kg/tree
+347,RUBBER,2-6 years,N/A,M,0.05,M,0.075,M,0.15,kg/tree
+348,RUBBER,2-6 years,N/A,H,0.03,H,0.03,H,0.1,kg/tree
+349,RUBBER,7 and up,N/A,L,0.05,L,0.11,L,0.18,kg/tree
+350,RUBBER,7 and up,N/A,M,0.04,M,0.068,M,0.12,kg/tree
+351,RUBBER,7 and up,N/A,H,0.02,H,0.025,H,0.08,kg/tree
+352,SOYBEAN,N/A,N/A,L,30,L,40,L,40,kg/ha
+353,SOYBEAN,N/A,N/A,M,25,M,25,M,30,kg/ha
+354,SOYBEAN,N/A,N/A,H,20,H,10,H,20,kg/ha
+355,SUGARCANE,N/A,N/A,L,150,L,60,L,120,kg/ha
+356,SUGARCANE,N/A,N/A,M,100,M,35,M,90,kg/ha
+357,SUGARCANE,N/A,N/A,H,75,H,20,H,60,kg/ha
+358,TOBACCO,Wrapper,N/A,L,60,L,40,L,90,kg/ha
+359,TOBACCO,Wrapper,N/A,M,40,M,25,M,60,kg/ha
+360,TOBACCO,Wrapper,N/A,H,20,H,10,H,45,kg/ha
+361,TOBACCO,Filler,N/A,L,40,L,40,L,90,kg/ha
+362,TOBACCO,Filler,N/A,M,30,M,25,M,60,kg/ha
+363,TOBACCO,Filler,N/A,H,10,H,10,H,45,kg/ha
+364,TOBACCO,Virginia,N/A,L,20,L,40,L,60,kg/ha
+365,TOBACCO,Virginia,N/A,M,10,M,25,M,45,kg/ha
+366,TOBACCO,Virginia,N/A,H,7,H,10,H,30,kg/ha
+367,PINEAPPLE,Planted,N/A,L,300,L,80,L,180,kg/ha
+368,PINEAPPLE,Planted,N/A,M,200,M,50,M,120,kg/ha
+369,PINEAPPLE,Planted,N/A,H,100,H,20,H,60,kg/ha
+370,PINEAPPLE,Ratoon,N/A,L,150,L,40,L,120,kg/ha
+371,PINEAPPLE,Ratoon,N/A,M,100,M,25,M,75,kg/ha
+372,PINEAPPLE,Ratoon,N/A,H,80,H,10,H,45,kg/ha
+373,Narra/Fukien Tea Pine Trees,New,N/A,L,0.012,L,0.004,L,0.015,kg/tree
+374,Narra/Fukien Tea Pine Trees,New,N/A,M,0.012,M,0.004,M,0.015,kg/tree
+375,Narra/Fukien Tea Pine Trees,New,N/A,H,0.01,H,0.002,H,0.009,kg/tree
+376,Narra/Fukien Tea Pine Trees,1-3 years,N/A,L,0.025,L,0.007,L,0.027,kg/tree
+377,Narra/Fukien Tea Pine Trees,1-3 years,N/A,M,0.018,M,0.005,M,0.021,kg/tree
+378,Narra/Fukien Tea Pine Trees,1-3 years,N/A,H,0.015,H,0.003,H,0.015,kg/tree
+379,Narra/Fukien Tea Pine Trees,4-6 years,N/A,L,0.04,L,0.01,L,0.039,kg/tree
+380,Narra/Fukien Tea Pine Trees,4-6 years,N/A,M,0.025,M,0.006,M,0.027,kg/tree
+381,Narra/Fukien Tea Pine Trees,4-6 years,N/A,H,0.018,H,0.004,H,0.021,kg/tree
+382,Narra/Fukien Tea Pine Trees,Over 6 years,N/A,L,0.05,L,0.012,L,0.048,kg/tree
+383,Narra/Fukien Tea Pine Trees,Over 6 years,N/A,M,0.04,M,0.009,M,0.039,kg/tree
+384,Narra/Fukien Tea Pine Trees,Over 6 years,N/A,H,0.03,H,0.005,H,0.027,kg/tree
+385,PULP TREES,New,N/A,L,0.025,L,0.003,L,0.015,kg/tree
+386,PULP TREES,New,N/A,M,0.025,M,0.003,M,0.015,kg/tree
+387,PULP TREES,New,N/A,H,0.02,H,0.001,H,0.009,kg/tree
+388,PULP TREES,1-3 years,N/A,L,0.1,L,0.006,L,0.027,kg/tree
+389,PULP TREES,1-3 years,N/A,M,0.08,M,0.004,M,0.021,kg/tree
+390,PULP TREES,1-3 years,N/A,H,0.06,H,0.002,H,0.018,kg/tree
+391,PULP TREES,4-6 years,N/A,L,0.16,L,0.008,L,0.042,kg/tree
+392,PULP TREES,4-6 years,N/A,M,0.1,M,0.005,M,0.027,kg/tree
+393,PULP TREES,4-6 years,N/A,H,0.08,H,0.042,H,0.021,kg/tree
+394,PULP TREES,Over 6 years,N/A,L,0.2,L,0.01,L,0.015,kg/tree
+395,PULP TREES,Over 6 years,N/A,M,0.16,M,0.007,M,0.042,kg/tree
+396,PULP TREES,Over 6 years,N/A,H,0.1,H,0.004,H,0.027,kg/tree
+397,IPIL-IPIL/KAKAWATE,N/A,N/A,L,0.088,L,0.014,L,0.022,kg/tree
+398,IPIL-IPIL/KAKAWATE,N/A,N/A,M,0.032,M,0.023,M,0.008,kg/tree
+399,IPIL-IPIL/KAKAWATE,N/A,N/A,H,0.06,H,0.01,H,0.015,kg/tree
+400,HERBS/BAMBOO/LAGUNDI/SAMBONG,Soft Med,N/A,L,0.02,L,0.002,L,0.008,kg/tree
+401,HERBS/BAMBOO/LAGUNDI/SAMBONG,Soft Med,N/A,M,0.02,M,0.002,M,0.006,kg/tree
+402,HERBS/BAMBOO/LAGUNDI/SAMBONG,Soft Med,N/A,H,0.015,H,0.001,H,0.003,kg/tree
+403,HERBS/BAMBOO/LAGUNDI/SAMBONG,1-3 years,N/A,L,0.04,L,0.004,L,0.005,kg/tree
+404,HERBS/BAMBOO/LAGUNDI/SAMBONG,1-3 years,N/A,M,0.03,M,0.002,M,0.009,kg/tree
+405,HERBS/BAMBOO/LAGUNDI/SAMBONG,1-3 years,N/A,H,0.02,H,0.001,H,0.006,kg/tree
+406,HERBS/BAMBOO/LAGUNDI/SAMBONG,4-6 years,N/A,L,0.08,L,0.005,L,0.018,kg/tree
+407,HERBS/BAMBOO/LAGUNDI/SAMBONG,4-6 years,N/A,M,0.04,M,0.004,M,0.015,kg/tree
+408,HERBS/BAMBOO/LAGUNDI/SAMBONG,4-6 years,N/A,H,0.03,H,0.002,H,0.009,kg/tree
+409,HERBS/BAMBOO/LAGUNDI/SAMBONG,Over 6 years,N/A,L,0.1,L,0.006,L,0.024,kg/tree
+410,HERBS/BAMBOO/LAGUNDI/SAMBONG,Over 6 years,N/A,M,0.08,M,0.005,M,0.018,kg/tree
+411,HERBS/BAMBOO/LAGUNDI/SAMBONG,Over 6 years,N/A,H,0.04,H,0.003,H,0.015,kg/tree
+412,KULITIS (SPINACH),N/A,N/A,L,120,L,60,L,75,kg/ha
+413,KULITIS (SPINACH),N/A,N/A,M,80,M,40,M,60,kg/ha
+414,KULITIS (SPINACH),N/A,N/A,H,40,H,20,H,30,kg/ha
+415,MAGUEY (SISAL),N/A,N/A,L,50,L,60,L,60,kg/ha
+416,MAGUEY (SISAL),N/A,N/A,M,30,M,40,M,45,kg/ha
+417,MAGUEY (SISAL),N/A,N/A,H,20,H,20,H,30,kg/ha
+418,MALUNGAY,N/A,N/A,L,0.04,L,0.003,L,0.02,kg/tree
+419,MALUNGAY,N/A,N/A,M,0.03,M,0.002,M,0.01,kg/tree
+420,MALUNGAY,N/A,N/A,H,0.02,H,0.001,H,0.01,kg/tree
+421,ARROW ROOT,N/A,N/A,L,60,L,60,L,90,kg/ha
+422,ARROW ROOT,N/A,N/A,M,50,M,35,M,60,kg/ha
+423,ARROW ROOT,N/A,N/A,H,40,H,20,H,30,kg/ha
+424,CAMOTE,N/A,N/A,L,60,L,60,L,90,kg/ha
+425,CAMOTE,N/A,N/A,M,50,M,35,M,60,kg/ha
+426,CAMOTE,N/A,N/A,H,40,H,20,H,30,kg/ha
+427,CASSAVA,N/A,N/A,L,60,L,60,L,90,kg/ha
+428,CASSAVA,N/A,N/A,M,50,M,35,M,60,kg/ha
+429,CASSAVA,N/A,N/A,H,40,H,20,H,30,kg/ha
+430,GABI,N/A,N/A,L,60,L,50,L,90,kg/ha
+431,GABI,N/A,N/A,M,50,M,35,M,60,kg/ha
+432,GABI,N/A,N/A,H,40,H,20,H,30,kg/ha
+433,TUGUI,N/A,N/A,L,60,L,40,L,90,kg/ha
+434,TUGUI,N/A,N/A,M,50,M,50,M,60,kg/ha
+435,TUGUI,N/A,N/A,H,40,H,30,H,30,kg/ha
+436,YAM (Ubi),N/A,N/A,L,120,L,60,L,120,kg/ha
+437,YAM (Ubi),N/A,N/A,M,80,M,35,M,80,kg/ha
+438,YAM (Ubi),N/A,N/A,H,60,H,20,H,60,kg/ha
+439,Flowering SHRUBS,N/A,N/A,L,0.031,L,0.04,L,0.06,kg/ha
+440,Flowering SHRUBS,N/A,N/A,M,0.031,M,0.04,M,0.06,kg/ha
+441,Flowering SHRUBS,N/A,N/A,H,0.031,H,0.04,H,0.06,kg/ha
+442,Non Flowering SHRUBS,N/A,N/A,L,0.03,L,0.02,L,0.03,kg/ha
+443,Non Flowering SHRUBS,N/A,N/A,M,0.03,M,0.02,M,0.03,kg/ha
+444,Non Flowering SHRUBS,N/A,N/A,H,0.03,H,0.02,H,0.03,kg/ha
+445,ALGAE,fishpond,N/A,L,45,L,60,L,60,kg/ha
+446,ALGAE,fishpond,N/A,M,40,M,35,M,45,kg/ha
+447,ALGAE,fishpond,N/A,H,30,H,20,H,30,kg/ha
