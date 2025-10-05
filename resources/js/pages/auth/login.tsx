@@ -57,6 +57,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                         <InputError message={errors.email} />
                     </div>
 
+
                     <div className="grid gap-2">
                         <div className="flex items-center">
                             <Label htmlFor="password">Password</Label>

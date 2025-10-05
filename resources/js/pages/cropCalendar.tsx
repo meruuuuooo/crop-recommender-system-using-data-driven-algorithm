@@ -218,13 +218,13 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                 {hasPlantingData ? (
                     <div className="space-y-6">
                         {/* Calendar Grid */}
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
                             <div className="min-w-[600px]">
                                 {/* Month Headers */}
-                                <div className="mb-3 grid grid-cols-12 gap-2">
+                                <div className="mb-2 grid grid-cols-12 gap-1 sm:mb-3 sm:gap-2">
                                     {months.map((month) => (
                                         <div key={month} className="text-center">
-                                            <div className="rounded-lg !bg-[#d7eec8] py-2 text-xs font-semibold text-gray-700">
+                                            <div className="rounded-lg !bg-[#d7eec8] py-1.5 text-[10px] font-semibold text-gray-700 sm:py-2 sm:text-xs">
                                                 {month}
                                             </div>
                                         </div>
@@ -232,7 +232,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                 </div>
 
                                 {/* Calendar Bars */}
-                                <div className="grid grid-cols-12 gap-2">
+                                <div className="grid grid-cols-12 gap-1 sm:gap-2">
                                     {months.map((month, index) => {
                                         const status = getMonthStatus(index);
                                         const isPlanting = status === 'planting';
@@ -242,7 +242,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                         return (
                                             <div key={month} className="relative">
                                                 <div
-                                                    className={`h-16 rounded-lg border-2 transition-all duration-300 hover:scale-105 ${getMonthColor(status)} ${
+                                                    className={`h-12 rounded-lg border-2 transition-all duration-300 active:scale-95 sm:h-16 sm:hover:scale-105 ${getMonthColor(status)} ${
                                                         status !== 'inactive' ? 'shadow-md' : ''
                                                     }`}
                                                     title={`${month}: ${
@@ -257,20 +257,20 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                                 >
                                                     {isBoth ? (
                                                         <div className="flex h-full flex-col items-center justify-center gap-0.5">
-                                                            <Sprout className="h-3 w-3 text-white" />
-                                                            <div className="text-[8px] font-bold text-white">BOTH</div>
+                                                            <Sprout className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
+                                                            <div className="text-[7px] font-bold text-white sm:text-[8px]">BOTH</div>
                                                         </div>
                                                     ) : isPlanting ? (
                                                         <div className="flex h-full flex-col items-center justify-center">
-                                                            <Sprout className="h-4 w-4 text-white" />
-                                                            <div className="mt-0.5 text-[8px] font-semibold text-white/90">PLANT</div>
+                                                            <Sprout className="h-3 w-3 text-white sm:h-4 sm:w-4" />
+                                                            <div className="mt-0.5 text-[7px] font-semibold text-white/90 sm:text-[8px]">PLANT</div>
                                                         </div>
                                                     ) : isHarvesting ? (
                                                         <div className="flex h-full flex-col items-center justify-center">
-                                                            <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                            <svg className="h-3 w-3 text-white sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z" />
                                                             </svg>
-                                                            <div className="mt-0.5 text-[8px] font-semibold text-white/90">HARVEST</div>
+                                                            <div className="mt-0.5 text-[7px] font-semibold text-white/90 sm:text-[8px]">HARVEST</div>
                                                         </div>
                                                     ) : null}
                                                 </div>
@@ -279,51 +279,55 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                     })}
                                 </div>
                             </div>
+                            {/* Scroll hint for mobile */}
+                            <div className="mt-2 text-center text-[10px] text-gray-500 sm:hidden">
+                                ← Swipe to view all months →
+                            </div>
                         </div>
 
                         {/* Legend */}
-                        <div className="flex flex-wrap items-center justify-center gap-6 rounded-lg bg-gray-50 p-4">
-                            <div className="flex items-center gap-2">
-                                <div className="flex h-6 w-6 items-center justify-center rounded border border-[#619154] bg-[#619154]">
-                                    <Sprout className="h-3 w-3 text-white" />
+                        <div className="flex flex-wrap items-center justify-center gap-3 rounded-lg bg-gray-50 p-3 sm:gap-6 sm:p-4">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <div className="flex h-5 w-5 items-center justify-center rounded border border-[#619154] bg-[#619154] sm:h-6 sm:w-6">
+                                    <Sprout className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
                                 </div>
-                                <span className="text-sm font-medium text-gray-700">Planting Season</span>
+                                <span className="text-xs font-medium text-gray-700 sm:text-sm">Planting Season</span>
                             </div>
                             {hasHarvestData && (
                                 <>
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex h-6 w-6 items-center justify-center rounded border border-[#d4a017] bg-[#d4a017]">
-                                            <svg className="h-3 w-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <div className="flex h-5 w-5 items-center justify-center rounded border border-[#d4a017] bg-[#d4a017] sm:h-6 sm:w-6">
+                                            <svg className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM10 15a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 15zM10 7a3 3 0 100 6 3 3 0 000-6zM15.657 5.404a.75.75 0 10-1.06-1.06l-1.061 1.06a.75.75 0 001.06 1.06l1.06-1.06zM6.464 14.596a.75.75 0 10-1.06-1.06l-1.06 1.06a.75.75 0 001.06 1.06l1.06-1.06zM18 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0118 10zM5 10a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 015 10zM14.596 15.657a.75.75 0 001.06-1.06l-1.06-1.061a.75.75 0 10-1.06 1.06l1.06 1.06zM5.404 6.464a.75.75 0 001.06-1.06l-1.06-1.06a.75.75 0 10-1.061 1.06l1.06 1.06z" />
                                             </svg>
                                         </div>
-                                        <span className="text-sm font-medium text-gray-700">Harvesting Season</span>
+                                        <span className="text-xs font-medium text-gray-700 sm:text-sm">Harvesting Season</span>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="h-6 w-6 rounded border border-[#619154] bg-gradient-to-br from-[#619154] to-[#d4a017]"></div>
-                                        <span className="text-sm font-medium text-gray-700">Plant & Harvest</span>
+                                    <div className="flex items-center gap-1.5 sm:gap-2">
+                                        <div className="h-5 w-5 rounded border border-[#619154] bg-gradient-to-br from-[#619154] to-[#d4a017] sm:h-6 sm:w-6"></div>
+                                        <span className="text-xs font-medium text-gray-700 sm:text-sm">Plant & Harvest</span>
                                     </div>
                                 </>
                             )}
-                            <div className="flex items-center gap-2">
-                                <div className="h-6 w-6 rounded border border-gray-300 bg-gray-200"></div>
-                                <span className="text-sm font-medium text-gray-700">Inactive Period</span>
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <div className="h-5 w-5 rounded border border-gray-300 bg-gray-200 sm:h-6 sm:w-6"></div>
+                                <span className="text-xs font-medium text-gray-700 sm:text-sm">Inactive Period</span>
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center py-8">
-                        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-                            <Sprout className="h-6 w-6 text-gray-400" />
+                    <div className="py-6 text-center sm:py-8">
+                        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 sm:mb-4 sm:h-12 sm:w-12">
+                            <Sprout className="h-5 w-5 text-gray-400 sm:h-6 sm:w-6" />
                         </div>
-                        <h4 className="text-sm font-medium text-gray-500 mb-1">No Planting Schedule</h4>
-                        <p className="text-xs text-gray-400">Planting time not specified</p>
+                        <h4 className="mb-1 text-xs font-medium text-gray-500 sm:text-sm">No Planting Schedule</h4>
+                        <p className="text-[10px] text-gray-400 sm:text-xs">Planting time not specified</p>
                     </div>
                 )}
 
                 {/* Calendar Summary Info */}
-                <div className="mt-6 rounded-lg border border-[#D6E3D4] bg-gradient-to-r from-[#F8FAF8] to-white p-4">
-                    <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2 lg:grid-cols-4">
+                <div className="mt-4 rounded-lg border border-[#D6E3D4] bg-gradient-to-r from-[#F8FAF8] to-white p-3 sm:mt-6 sm:p-4">
+                    <div className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-2 sm:gap-3 sm:text-sm lg:grid-cols-4">
                         <div>
                             <span className="font-medium text-[#619154]">Planting Season:</span>
                             <div className="mt-1 text-gray-700">
@@ -364,7 +368,7 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                                     : 'Not specified'}
                             </div>
                         </div>
-                        <div className="md:col-span-2 lg:col-span-4">
+                        <div className="sm:col-span-2 lg:col-span-4">
                             <span className="font-medium text-[#619154]">Soil Requirement:</span>
                             <div className="mt-1 text-gray-700">
                                 {crop.soil_requirement &&
@@ -376,8 +380,8 @@ const CropCalendarView = ({ crop }: { crop: Crop }) => {
                         </div>
                     </div>
                     {hasPlantingData && (
-                        <div className="mt-3 border-t border-[#D6E3D4]/50 pt-3">
-                            <p className="text-xs text-gray-600 italic">
+                        <div className="mt-2 border-t border-[#D6E3D4]/50 pt-2 sm:mt-3 sm:pt-3">
+                            <p className="text-[10px] italic text-gray-600 sm:text-xs">
                                 <span className="font-medium">Note:</span> Green months indicate optimal planting periods for this crop.
                                 {hasHarvestData && (
                                     <> Gold months show the harvesting season for this crop.</>
@@ -458,22 +462,22 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Crop Calendar" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-3 sm:gap-6 sm:p-4">
                 {/* Best Crops for Current Month Section - Horizontal Scrollable */}
                 {cropsForCurrentMonth.length > 0 && (
-                    <div className={`rounded-xl border-2 border-[#619154] bg-gradient-to-r from-[#F8FAF8] to-white p-4 shadow-sm transition-all duration-500 ${
-                        isInitialLoad ? 'opacity-0 translate-y-4' : 'opacity-100 translate-y-0'
+                    <div className={`rounded-xl border-2 border-[#619154] bg-gradient-to-r from-[#F8FAF8] to-white p-3 shadow-sm transition-all duration-500 sm:p-4 ${
+                        isInitialLoad ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
                     }`}>
-                        <div className="mb-3 flex items-center justify-between">
+                        <div className="mb-2 flex items-center justify-between sm:mb-3">
                             <div className="flex items-center gap-2">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#619154] animate-pulse">
-                                    <Sprout className="h-4 w-4 text-white" />
+                                <div className="flex h-7 w-7 animate-pulse items-center justify-center rounded-lg bg-[#619154] sm:h-8 sm:w-8">
+                                    <Sprout className="h-3.5 w-3.5 text-white sm:h-4 sm:w-4" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-800">
+                                    <h3 className="text-xs font-bold text-gray-800 sm:text-sm">
                                         Best to Plant in {currentMonthName}
                                     </h3>
-                                    <p className="text-xs text-gray-600">
+                                    <p className="text-[10px] text-gray-600 sm:text-xs">
                                         {cropsForCurrentMonth.length} crop{cropsForCurrentMonth.length !== 1 ? 's' : ''} recommended
                                     </p>
                                 </div>
@@ -481,7 +485,7 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                         </div>
                         <div className="relative">
                             <div className="overflow-x-auto pb-2">
-                                <div className="flex gap-3" style={{ minWidth: 'min-content' }}>
+                                <div className="flex gap-2 sm:gap-3" style={{ minWidth: 'min-content' }}>
                                     {cropsForCurrentMonth.map((crop, index) => (
                                         <button
                                             key={crop.id}
@@ -500,21 +504,21 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                                                     }
                                                 }, 100);
                                             }}
-                                            className={`group flex-shrink-0 w-48 rounded-lg border border-[#D6E3D4] bg-white p-3 text-left transition-all hover:border-[#619154] hover:shadow-md hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 ${
-                                                isInitialLoad ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'
+                                            className={`group w-40 flex-shrink-0 rounded-lg border border-[#D6E3D4] bg-white p-2.5 text-left transition-all hover:border-[#619154] hover:cursor-pointer hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[#619154] focus:ring-offset-2 active:scale-95 sm:w-48 sm:p-3 ${
+                                                isInitialLoad ? 'translate-x-4 opacity-0' : 'translate-x-0 opacity-100'
                                             }`}
                                             style={{ transitionDelay: `${index * 50}ms` }}
                                         >
-                                            <div className="flex items-start gap-2">
-                                                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded bg-[#619154]/10 group-hover:bg-[#619154] transition-colors">
-                                                    <Sprout className="h-4 w-4 text-[#619154] group-hover:text-white transition-colors" />
+                                            <div className="flex items-start gap-1.5 sm:gap-2">
+                                                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded bg-[#619154]/10 transition-colors group-hover:bg-[#619154] sm:h-8 sm:w-8">
+                                                    <Sprout className="h-3.5 w-3.5 text-[#619154] transition-colors group-hover:text-white sm:h-4 sm:w-4" />
                                                 </div>
                                                 <div className="min-w-0 flex-1">
-                                                    <h4 className="truncate text-sm font-semibold text-gray-900 group-hover:text-[#619154]" title={crop.name}>
+                                                    <h4 className="truncate text-xs font-semibold text-gray-900 group-hover:text-[#619154] sm:text-sm" title={crop.name}>
                                                         {crop.name}
                                                     </h4>
                                                     {crop.category && (
-                                                        <p className="truncate text-xs text-gray-500" title={crop.category.name}>
+                                                        <p className="truncate text-[10px] text-gray-500 sm:text-xs" title={crop.category.name}>
                                                             {crop.category.name}
                                                         </p>
                                                     )}
@@ -523,7 +527,7 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                                             {crop.growing_duration_days &&
                                              crop.growing_duration_days.toLowerCase() !== 'none' &&
                                              crop.growing_duration_days.toLowerCase() !== 'n/a' && (
-                                                <div className="mt-2 flex items-center gap-1 text-xs text-gray-600">
+                                                <div className="mt-1.5 flex items-center gap-1 text-[10px] text-gray-600 sm:mt-2 sm:text-xs">
                                                     <span className="font-medium">Duration:</span>
                                                     <span>{crop.growing_duration_days} days</span>
                                                 </div>
@@ -533,8 +537,8 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                                 </div>
                             </div>
                             {/* Scroll indicator */}
-                            {cropsForCurrentMonth.length > 4 && (
-                                <div className="mt-1 text-center text-xs text-gray-500">
+                            {cropsForCurrentMonth.length > 2 && (
+                                <div className="mt-1 text-center text-[10px] text-gray-500">
                                     ← Scroll to see more crops →
                                 </div>
                             )}
@@ -542,18 +546,18 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                     </div>
                 )}
 
-                <Card id="calendar-section" className="flex flex-col gap-6 rounded-xl bg-white p-8 dark:border-sidebar-border">
+                <Card id="calendar-section" className="flex flex-col gap-4 rounded-xl bg-white p-4 dark:border-sidebar-border sm:gap-6 sm:p-8">
                     {/* Header Section */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <HeadingSmall title="Crop Calendar" description="Visual timeline showing planting seasons for all crops" />
                     </div>
 
                     {/* Filter Section */}
-                    <div className="flex flex-col gap-4 md:flex-row md:items-end">
-                        <div className="grid w-full max-w-xs items-center gap-1.5">
-                            <Label htmlFor="category-filter">Category</Label>
+                    <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-end">
+                        <div className="grid w-full items-center gap-1.5 sm:max-w-xs">
+                            <Label htmlFor="category-filter" className="text-xs sm:text-sm">Category</Label>
                             <Select onValueChange={handleCategoryChange} value={selectedCategoryId}>
-                                <SelectTrigger id="category-filter">
+                                <SelectTrigger id="category-filter" className="h-9 text-xs sm:h-10 sm:text-sm">
                                     <SelectValue placeholder="Select a category" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -566,10 +570,10 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="grid w-full max-w-xs items-center gap-1.5">
-                            <Label htmlFor="crop-filter">Crop</Label>
+                        <div className="grid w-full items-center gap-1.5 sm:max-w-xs">
+                            <Label htmlFor="crop-filter" className="text-xs sm:text-sm">Crop</Label>
                             <Select onValueChange={handleCropChange} value={selectedCropId} disabled={selectedCategoryId === 'all'}>
-                                <SelectTrigger id="crop-filter">
+                                <SelectTrigger id="crop-filter" className="h-9 text-xs sm:h-10 sm:text-sm">
                                     <SelectValue placeholder="Select a crop" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -585,34 +589,34 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                     </div>
 
                     {isLoading ? (
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             {/* Loading skeletons */}
                             {[1, 2, 3].map((i) => (
                                 <Card key={i} className="rounded-xl">
                                     <CardHeader>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 animate-pulse rounded-lg bg-gray-200"></div>
-                                            <div className="flex-1 space-y-2">
-                                                <div className="h-6 w-48 animate-pulse rounded bg-gray-200"></div>
-                                                <div className="h-4 w-32 animate-pulse rounded bg-gray-200"></div>
+                                        <div className="flex items-center gap-2 sm:gap-3">
+                                            <div className="h-8 w-8 animate-pulse rounded-lg bg-gray-200 sm:h-10 sm:w-10"></div>
+                                            <div className="flex-1 space-y-1.5 sm:space-y-2">
+                                                <div className="h-5 w-36 animate-pulse rounded bg-gray-200 sm:h-6 sm:w-48"></div>
+                                                <div className="h-3.5 w-24 animate-pulse rounded bg-gray-200 sm:h-4 sm:w-32"></div>
                                             </div>
                                         </div>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-12 gap-2">
+                                        <div className="space-y-3 sm:space-y-4">
+                                            <div className="grid grid-cols-12 gap-1 sm:gap-2">
                                                 {Array.from({ length: 12 }).map((_, index) => (
-                                                    <div key={index} className="h-16 animate-pulse rounded-lg bg-gray-200"></div>
+                                                    <div key={index} className="h-12 animate-pulse rounded-lg bg-gray-200 sm:h-16"></div>
                                                 ))}
                                             </div>
-                                            <div className="h-32 animate-pulse rounded-lg bg-gray-100"></div>
+                                            <div className="h-24 animate-pulse rounded-lg bg-gray-100 sm:h-32"></div>
                                         </div>
                                     </CardContent>
                                 </Card>
                             ))}
                         </div>
                     ) : filteredCrops.length > 0 ? (
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                             {filteredCrops.map((crop, index) => (
                                 <div
                                     key={crop.id}
@@ -624,10 +628,10 @@ export default function CropCalendar({ crops, categories }: CroppingCalendarProp
                             ))}
                         </div>
                     ) : (
-                        <div className="flex h-64 flex-col items-center justify-center text-center">
-                            <Sprout className="mb-4 h-12 w-12 text-gray-300" />
-                            <h3 className="mb-2 text-lg font-medium text-gray-900">No Crops Found</h3>
-                            <p className="max-w-md text-gray-500">
+                        <div className="flex h-48 flex-col items-center justify-center text-center sm:h-64">
+                            <Sprout className="mb-3 h-10 w-10 text-gray-300 sm:mb-4 sm:h-12 sm:w-12" />
+                            <h3 className="mb-1.5 text-base font-medium text-gray-900 sm:mb-2 sm:text-lg">No Crops Found</h3>
+                            <p className="max-w-md px-4 text-xs text-gray-500 sm:text-sm">
                                 There are no crops with planting information for the selected filters.
                             </p>
                         </div>
