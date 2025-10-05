@@ -365,7 +365,7 @@ export default function PesticideTable({
         { label: '4 - Practically Non-Toxic', value: '4' },
     ];
 
-    
+
 
     const onDownload = (pesticide: Pesticide) => {
         toast.promise(
@@ -409,22 +409,22 @@ export default function PesticideTable({
 
     return (
         <TooltipProvider>
-            <Card className="rounded-sm" role="region" aria-labelledby="pesticides-table-heading">
-                <CardHeader>
+            <Card className="rounded-sm shadow-sm" role="region" aria-labelledby="pesticides-table-heading">
+                <CardHeader className="p-4 sm:p-6">
                     <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
-                            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                                <div className="relative w-full sm:w-80">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:flex-1">
+                                <div className="relative w-full sm:flex-1 sm:max-w-md">
                                     <Label htmlFor="pesticide-search" className="sr-only">
                                         Search pesticides
                                     </Label>
                                     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden="true" />
                                     <Input
                                         id="pesticide-search"
-                                        placeholder="Search by product name, company, active ingredient..."
+                                        placeholder="Search pesticides..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="pl-10 focus:border-[#619154] focus:ring-[#619154]"
+                                        className="h-10 pl-10 text-sm focus:border-[#619154] focus:ring-[#619154]"
                                         aria-describedby="search-hint"
                                     />
                                 </div>
@@ -432,7 +432,7 @@ export default function PesticideTable({
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setShowFilters(!showFilters)}
-                                    className="hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                    className="w-full shrink-0 hover:border-[#619154] hover:bg-[#F8FAF8] sm:w-auto"
                                 >
                                     <Filter className="mr-2 h-4 w-4" />
                                     Filters
@@ -446,25 +446,25 @@ export default function PesticideTable({
                                         </Badge>
                                     )}
                                 </Button>
-                                {pagination && (
-                                    <div className="text-sm text-gray-500">
-                                        Showing {pagination.from}-{pagination.to} of {pagination.total} pesticides
-                                    </div>
-                                )}
                             </div>
+                            {pagination && (
+                                <div className="text-xs text-gray-500 sm:text-sm">
+                                    Showing {pagination.from}-{pagination.to} of {pagination.total}
+                                </div>
+                            )}
                         </div>
 
                         {showFilters && (
-                            <Card className="rounded-sm bg-[#F8FAF8]">
-                                <CardHeader>
-                                    <div className="flex items-center justify-between">
-                                        <CardTitle className="text-lg">Advanced Filters</CardTitle>
+                            <Card className="rounded-sm bg-[#F8FAF8] shadow-sm">
+                                <CardHeader className="p-4 sm:p-6">
+                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                        <CardTitle className="text-base sm:text-lg">Advanced Filters</CardTitle>
                                         {hasActiveFilters() && (
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={handleClear}
-                                                className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                                className="w-full text-red-600 hover:bg-red-50 hover:text-red-700 sm:w-auto"
                                             >
                                                 <X className="mr-1 h-4 w-4" />
                                                 Clear All
@@ -472,11 +472,11 @@ export default function PesticideTable({
                                         )}
                                     </div>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                         <div className="space-y-2">
-                                            <Label htmlFor="crop-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Sprout className="h-4 w-4 text-[#619154]" />
+                                            <Label htmlFor="crop-search" className="flex items-center gap-2 text-xs font-medium sm:text-sm">
+                                                <Sprout className="h-3.5 w-3.5 text-[#619154] sm:h-4 sm:w-4" />
                                                 Crops
                                             </Label>
                                             <SearchableSelect
@@ -493,8 +493,8 @@ export default function PesticideTable({
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Biohazard className="h-4 w-4 text-yellow-600" />
+                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-xs font-medium sm:text-sm">
+                                                <Biohazard className="h-3.5 w-3.5 text-yellow-600 sm:h-4 sm:w-4" />
                                                 Type of Pesticide
                                             </Label>
                                             <SearchableSelect
@@ -511,8 +511,8 @@ export default function PesticideTable({
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Shield className="h-4 w-4 text-yellow-600" />
+                                            <Label htmlFor="toxicity-search" className="flex items-center gap-2 text-xs font-medium sm:text-sm">
+                                                <Shield className="h-3.5 w-3.5 text-yellow-600 sm:h-4 sm:w-4" />
                                                 Toxicity Category
                                             </Label>
                                             <SearchableSelect
@@ -530,8 +530,8 @@ export default function PesticideTable({
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="pest-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Bug className="h-4 w-4 text-orange-600" />
+                                            <Label htmlFor="pest-search" className="flex items-center gap-2 text-xs font-medium sm:text-sm">
+                                                <Bug className="h-3.5 w-3.5 text-orange-600 sm:h-4 sm:w-4" />
                                                 Pests
                                             </Label>
                                             <SearchableSelect
@@ -548,8 +548,8 @@ export default function PesticideTable({
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="weed-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <Leaf className="h-4 w-4 text-green-600" />
+                                            <Label htmlFor="weed-search" className="flex items-center gap-2 text-xs font-medium sm:text-sm">
+                                                <Leaf className="h-3.5 w-3.5 text-green-600 sm:h-4 sm:w-4" />
                                                 Weeds
                                             </Label>
                                             <SearchableSelect
@@ -566,8 +566,8 @@ export default function PesticideTable({
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="disease-search" className="flex items-center gap-2 text-sm font-medium">
-                                                <AlertTriangle className="h-4 w-4 text-red-600" />
+                                            <Label htmlFor="disease-search" className="flex items-center gap-2 text-xs font-medium sm:text-sm">
+                                                <AlertTriangle className="h-3.5 w-3.5 text-red-600 sm:h-4 sm:w-4" />
                                                 Diseases
                                             </Label>
                                             <SearchableSelect
@@ -591,16 +591,21 @@ export default function PesticideTable({
 
                 <CardContent className="p-0">
                     {pesticides.length === 0 ? (
-                        <div className="flex h-64 flex-col items-center justify-center text-center">
-                            <Bug className="mb-4 h-12 w-12 text-gray-300" />
-                            <h3 className="mb-2 text-lg font-medium text-gray-900">No pesticides found</h3>
-                            <p className="max-w-md text-gray-500">
+                        <div className="flex flex-col items-center justify-center py-8 text-center sm:h-64 sm:py-12">
+                            <Bug className="mb-3 h-10 w-10 text-gray-300 sm:mb-4 sm:h-12 sm:w-12" />
+                            <h3 className="mb-2 text-base font-medium text-gray-900 sm:text-lg">No pesticides found</h3>
+                            <p className="max-w-md px-4 text-xs text-gray-500 sm:text-sm">
                                 {hasActiveFilters()
                                     ? 'No pesticides match your search criteria. Try adjusting your filters.'
                                     : 'There are no pesticides registered in the system yet.'}
                             </p>
                             {hasActiveFilters() && (
-                                <Button variant="outline" size="sm" onClick={handleClear} className="mt-4 hover:border-[#619154] hover:bg-[#F8FAF8]">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleClear}
+                                    className="mt-4 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                >
                                     Clear all filters
                                 </Button>
                             )}
@@ -751,7 +756,7 @@ export default function PesticideTable({
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-1.5 sm:gap-2">
                                                     {onView && (
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
@@ -759,14 +764,14 @@ export default function PesticideTable({
                                                                     size="sm"
                                                                     variant="outline"
                                                                     onClick={() => onView(pesticide)}
-                                                                    className="h-8 w-8 p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    className="h-7 w-7 p-0 hover:border-[#619154] hover:bg-[#F8FAF8] sm:h-8 sm:w-8"
                                                                     aria-label={`View details for ${pesticide.product_name}`}
                                                                 >
-                                                                    <Eye className="h-4 w-4 text-[#619154]" />
+                                                                    <Eye className="h-3.5 w-3.5 text-[#619154] sm:h-4 sm:w-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
-                                                                <p>View pesticide details</p>
+                                                                <p className="text-xs">View details</p>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     )}
@@ -777,14 +782,14 @@ export default function PesticideTable({
                                                                     size="sm"
                                                                     variant="outline"
                                                                     onClick={() => onDownload(pesticide)}
-                                                                    className="h-8 w-8 p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    className="h-7 w-7 p-0 hover:border-[#619154] hover:bg-[#F8FAF8] sm:h-8 sm:w-8"
                                                                     aria-label={`Download details for ${pesticide.product_name}`}
                                                                 >
-                                                                    <Download className="h-4 w-4 text-[#619154]" />
+                                                                    <Download className="h-3.5 w-3.5 text-[#619154] sm:h-4 sm:w-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
-                                                                <p>Download pesticide details</p>
+                                                                <p className="text-xs">Download details</p>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     )}
@@ -798,7 +803,7 @@ export default function PesticideTable({
                     )}
 
                     {pagination && pagination.totalPages > 1 && onPageChange && (
-                        <div className="border-t border-[#005a23] px-6 pt-6">
+                        <div className="border-t border-[#005a23] px-4 pt-4 sm:px-6 sm:pt-6">
                             <PaginationData currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={onPageChange} />
                         </div>
                     )}

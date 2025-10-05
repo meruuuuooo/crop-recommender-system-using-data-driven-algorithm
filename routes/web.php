@@ -10,6 +10,10 @@ use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Public Status Page
+Route::get('/', function () {
+    return Inertia::render('status');
+})->name('status');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

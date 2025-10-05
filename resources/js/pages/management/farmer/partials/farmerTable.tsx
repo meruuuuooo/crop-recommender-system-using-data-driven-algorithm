@@ -10,7 +10,8 @@ import { type Farmer, type FarmerIndexProps } from '@/types/farmer';
 import { router } from '@inertiajs/react';
 import { Calendar, MapPin, Phone, Search, User, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import EditFarmerFormDialog from './editFarmerFormDialog';
+// import EditFarmerFormDialog from './editFarmerFormDialog';
+import EditFarmerSheet from './editFarmerSheet';
 
 export interface FarmerTableProps {
     farmers: FarmerIndexProps['farmers'];
@@ -227,19 +228,17 @@ export default function FarmerTable({ farmers, filters, onView }: FarmerTablePro
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    
+
 
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <div onClick={(e) => e.stopPropagation()}>
-                                                                <EditFarmerFormDialog
+                                                                {/* <EditFarmerFormDialog
                                                                     farmer={farmer}
-                                                                />
+                                                                /> */}
+                                                                <EditFarmerSheet farmer={farmer} asMenuItem={false} />
                                                             </div>
                                                         </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>Edit farmer</p>
-                                                        </TooltipContent>
                                                     </Tooltip>
                                                 </div>
                                             </TableCell>

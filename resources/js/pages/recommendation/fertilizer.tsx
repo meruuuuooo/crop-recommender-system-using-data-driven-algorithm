@@ -224,22 +224,22 @@ export default function Fertilizer({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Fertilizer" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto p-4">
-                <Card className="rounded-xl px-6" role="region" aria-labelledby="fertilizers-form-heading">
-                    <form onSubmit={handleSubmit} className="space-y-2">
-                        <div>
-                            <h3 id="fertilizers-form-heading" className="text-lg font-semibold text-gray-900">
+            <div className="flex h-full flex-1 flex-col gap-4 p-3 sm:p-4 md:p-6">
+                <Card className="rounded-xl shadow-sm" role="region" aria-labelledby="fertilizers-form-heading">
+                    <form onSubmit={handleSubmit} className="space-y-4 p-4 sm:p-6">
+                        <div className="space-y-1">
+                            <h3 id="fertilizers-form-heading" className="text-base font-semibold text-gray-900 sm:text-lg">
                                 Generate Fertilizer Recommendations
                             </h3>
-                            <p className="mb-2 text-sm text-gray-600">
+                            <p className="text-xs text-gray-600 sm:text-sm">
                                 Select crop criteria and soil nutrient levels to get fertilizer rate recommendations.
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {/* CROP */}
                             <div className="space-y-2">
-                                <Label htmlFor="crop-filter" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="crop-filter" className="text-xs font-medium text-gray-700 sm:text-sm">
                                     Crop
                                 </Label>
                                 <SearchableSelect
@@ -257,7 +257,7 @@ export default function Fertilizer({
 
                             {/* GROWTH STAGE */}
                             <div className="space-y-2">
-                                <Label htmlFor="growth-stage-filter" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="growth-stage-filter" className="text-xs font-medium text-gray-700 sm:text-sm">
                                     Variety/Growth Stage
                                 </Label>
                                 <Select
@@ -267,7 +267,7 @@ export default function Fertilizer({
                                 >
                                     <SelectTrigger
                                         id="growth-stage-filter"
-                                        className="border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154] disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="h-10 border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154] disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         <SelectValue
                                             placeholder={
@@ -293,7 +293,7 @@ export default function Fertilizer({
 
                             {/* SOIL TYPE */}
                             <div className="space-y-2">
-                                <Label htmlFor="soil-type-filter" className="text-sm font-medium text-gray-700">
+                                <Label htmlFor="soil-type-filter" className="text-xs font-medium text-gray-700 sm:text-sm">
                                     Soil Type
                                 </Label>
                                 <Select
@@ -303,7 +303,7 @@ export default function Fertilizer({
                                 >
                                     <SelectTrigger
                                         id="soil-type-filter"
-                                        className="border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154] disabled:cursor-not-allowed disabled:opacity-50"
+                                        className="h-10 border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-[#619154] disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         <SelectValue
                                             placeholder={
@@ -330,34 +330,35 @@ export default function Fertilizer({
 
                         {/* NPK LEVELS */}
                         <fieldset className="space-y-4">
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <legend className="sr-only">Soil Nutrient Levels</legend>
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 
                                 {/* NITROGEN LEVEL */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="nitrogen-level" className="text-sm font-medium text-gray-700">
+                                    <Label htmlFor="nitrogen-level" className="text-xs font-medium text-gray-700 sm:text-sm">
                                         Nitrogen (N)
                                     </Label>
                                     <Select onValueChange={(value) => setData('nitrogen_level', value)} value={data.nitrogen_level}>
-                                        <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-green-600">
+                                        <SelectTrigger className="h-10 w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-green-600">
                                             <SelectValue placeholder="Select Level" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="low">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-green-200"></div>
-                                                    Low
+                                                    <div className="h-3 w-3 rounded-sm bg-green-200 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">Low</span>
                                                 </div>
                                             </SelectItem>
                                             <SelectItem value="medium">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-green-500"></div>
-                                                    Medium
+                                                    <div className="h-3 w-3 rounded-sm bg-green-500 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">Medium</span>
                                                 </div>
                                             </SelectItem>
                                             <SelectItem value="high">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-green-800"></div>
-                                                    High
+                                                    <div className="h-3 w-3 rounded-sm bg-green-800 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">High</span>
                                                 </div>
                                             </SelectItem>
                                         </SelectContent>
@@ -368,30 +369,30 @@ export default function Fertilizer({
 
                                 {/* PHOSPHORUS LEVEL */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="phosphorus-level" className="text-sm font-medium text-gray-700">
+                                    <Label htmlFor="phosphorus-level" className="text-xs font-medium text-gray-700 sm:text-sm">
                                         Phosphorus (P)
                                     </Label>
                                     <Select onValueChange={(value) => setData('phosphorus_level', value)} value={data.phosphorus_level}>
-                                        <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-blue-600">
+                                        <SelectTrigger className="h-10 w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-blue-600">
                                             <SelectValue placeholder="Select Level" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="low">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-blue-200"></div>
-                                                    Low
+                                                    <div className="h-3 w-3 rounded-sm bg-blue-200 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">Low</span>
                                                 </div>
                                             </SelectItem>
                                             <SelectItem value="medium">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-blue-500"></div>
-                                                    Medium
+                                                    <div className="h-3 w-3 rounded-sm bg-blue-500 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">Medium</span>
                                                 </div>
                                             </SelectItem>
                                             <SelectItem value="high">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-blue-800"></div>
-                                                    High
+                                                    <div className="h-3 w-3 rounded-sm bg-blue-800 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">High</span>
                                                 </div>
                                             </SelectItem>
                                         </SelectContent>
@@ -402,30 +403,30 @@ export default function Fertilizer({
 
                                 {/* POTASSIUM LEVEL */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="potassium-level" className="text-sm font-medium text-gray-700">
+                                    <Label htmlFor="potassium-level" className="text-xs font-medium text-gray-700 sm:text-sm">
                                         Potassium (K)
                                     </Label>
                                     <Select onValueChange={(value) => setData('potassium_level', value)} value={data.potassium_level}>
-                                        <SelectTrigger className="w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-orange-600">
+                                        <SelectTrigger className="h-10 w-full border border-[#D6E3D4] focus:border-transparent focus:ring-2 focus:ring-orange-600">
                                             <SelectValue placeholder="Select Level" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="low">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-orange-200"></div>
-                                                    Low
+                                                    <div className="h-3 w-3 rounded-sm bg-orange-200 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">Low</span>
                                                 </div>
                                             </SelectItem>
                                             <SelectItem value="medium">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-orange-500"></div>
-                                                    Medium
+                                                    <div className="h-3 w-3 rounded-sm bg-orange-500 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">Medium</span>
                                                 </div>
                                             </SelectItem>
                                             <SelectItem value="high">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="h-4 w-4 rounded-sm bg-orange-800"></div>
-                                                    High
+                                                    <div className="h-3 w-3 rounded-sm bg-orange-800 sm:h-4 sm:w-4"></div>
+                                                    <span className="text-xs sm:text-sm">High</span>
                                                 </div>
                                             </SelectItem>
                                         </SelectContent>
@@ -436,8 +437,8 @@ export default function Fertilizer({
                             </div>
                         </fieldset>
 
-                        <div className="flex justify-end items-center gap-4 border-t border-gray-200 pt-4">
-                            <Button type="button" onClick={handleReset} variant="outline" className="border-[#D6E3D4] text-gray-700 hover:bg-gray-50">
+                        <div className="flex flex-col items-stretch gap-3 border-t border-gray-200 pt-4 sm:flex-row sm:items-center sm:justify-end">
+                            <Button type="button" onClick={handleReset} variant="outline" className="w-full border-[#D6E3D4] text-gray-700 hover:bg-gray-50 sm:w-auto">
                                 Reset
                             </Button>
                             <Button
@@ -449,7 +450,7 @@ export default function Fertilizer({
                                     !data.potassium_level ||
                                     !data.crop_type
                                 }
-                                className="rounded-md bg-[#619154] px-6 py-2 text-white hover:bg-[#4a7041] disabled:cursor-not-allowed disabled:opacity-50"
+                                className="w-full rounded-md bg-[#619154] px-6 py-2 text-white hover:bg-[#4a7041] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                             >
                                 {processing ? (
                                     <>
@@ -457,7 +458,12 @@ export default function Fertilizer({
                                         Generating...
                                     </>
                                 ) : (
-                                    'Generate Recommendations'
+                                    <>
+                                        <svg className="mr-2 inline-block h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                        Generate Recommendations
+                                    </>
                                 )}
                             </Button>
                         </div>
@@ -469,103 +475,103 @@ export default function Fertilizer({
                     fertilizerRecommendations.nitrogen &&
                     fertilizerRecommendations.phosphorus &&
                     fertilizerRecommendations.potassium && (
-                        <Card className="rounded-xl p-6">
-                            <div className="mb-4 flex items-center justify-between">
-                                <h3 className="text-lg font-semibold text-gray-900">Fertilizer Rate Recommendations</h3>
+                        <Card className="rounded-xl p-4 shadow-sm sm:p-6">
+                            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <h3 className="text-base font-semibold text-gray-900 sm:text-lg">Fertilizer Rate Recommendations</h3>
                                 {/* <Button
                                     onClick={handlePrintPdf}
                                     variant="outline"
-                                    className="flex items-center gap-2 border-[#619154] text-[#619154] hover:bg-[#619154] hover:text-white"
+                                    className="flex w-full items-center justify-center gap-2 border-[#619154] text-[#619154] hover:bg-[#619154] hover:text-white sm:w-auto"
                                 >
                                     <Printer className="h-4 w-4" />
                                     Download PDF
                                 </Button> */}
                             </div>
-                            <div className="grid gap-6 md:grid-cols-3">
+                            <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
                                 {/* Nitrogen Recommendations */}
                                 <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 font-medium text-green-700">
-                                        <div className="h-4 w-4 rounded-sm bg-green-500"></div>
+                                    <h4 className="flex items-center gap-2 text-sm font-medium text-green-700 sm:text-base">
+                                        <div className="h-3 w-3 rounded-sm bg-green-500 sm:h-4 sm:w-4"></div>
                                         Nitrogen ({fertilizerRecommendations.nitrogen.level} Level)
                                     </h4>
                                     {fertilizerRecommendations.nitrogen.crop_fertilizer &&
                                     fertilizerRecommendations.nitrogen.crop_fertilizer.length > 0 ? (
                                         <div className="space-y-2">
                                             {fertilizerRecommendations.nitrogen.crop_fertilizer.map((item) => (
-                                                <div key={item.id} className="rounded-lg border border-green-200 bg-green-50 p-3">
-                                                    <div className="text-sm font-medium">{item.crop_name}</div>
+                                                <div key={item.id} className="rounded-lg border border-green-200 bg-green-50 p-3 transition-shadow hover:shadow-md">
+                                                    <div className="text-xs font-medium sm:text-sm">{item.crop_name}</div>
                                                     {item.growth_stage && item.growth_stage !== 'N/A' && (
                                                         <div className="text-xs text-gray-600">Stage: {item.growth_stage}</div>
                                                     )}
                                                     {item.soil_type && item.soil_type !== 'N/A' && (
                                                         <div className="text-xs text-gray-600">Soil: {item.soil_type}</div>
                                                     )}
-                                                    <div className="mt-1 text-lg font-bold text-green-700">
+                                                    <div className="mt-1 text-base font-bold text-green-700 sm:text-lg">
                                                         {item.nitrogen_rate} {item.unit_of_measure}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-sm text-gray-500 italic">No recommendations available</div>
+                                        <div className="text-xs italic text-gray-500 sm:text-sm">No recommendations available</div>
                                     )}
                                 </div>
 
                                 {/* Phosphorus Recommendations */}
                                 <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 font-medium text-blue-700">
-                                        <div className="h-4 w-4 rounded-sm bg-blue-500"></div>
+                                    <h4 className="flex items-center gap-2 text-sm font-medium text-blue-700 sm:text-base">
+                                        <div className="h-3 w-3 rounded-sm bg-blue-500 sm:h-4 sm:w-4"></div>
                                         Phosphorus ({fertilizerRecommendations.phosphorus.level} Level)
                                     </h4>
                                     {fertilizerRecommendations.phosphorus.crop_fertilizer &&
                                     fertilizerRecommendations.phosphorus.crop_fertilizer.length > 0 ? (
                                         <div className="space-y-2">
                                             {fertilizerRecommendations.phosphorus.crop_fertilizer.map((item) => (
-                                                <div key={item.id} className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-                                                    <div className="text-sm font-medium">{item.crop_name}</div>
+                                                <div key={item.id} className="rounded-lg border border-blue-200 bg-blue-50 p-3 transition-shadow hover:shadow-md">
+                                                    <div className="text-xs font-medium sm:text-sm">{item.crop_name}</div>
                                                     {item.growth_stage && item.growth_stage !== 'N/A' && (
                                                         <div className="text-xs text-gray-600">Stage: {item.growth_stage}</div>
                                                     )}
                                                     {item.soil_type && item.soil_type !== 'N/A' && (
                                                         <div className="text-xs text-gray-600">Soil: {item.soil_type}</div>
                                                     )}
-                                                    <div className="mt-1 text-lg font-bold text-blue-700">
+                                                    <div className="mt-1 text-base font-bold text-blue-700 sm:text-lg">
                                                         {item.phosphorus_rate} {item.unit_of_measure}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-sm text-gray-500 italic">No recommendations available</div>
+                                        <div className="text-xs italic text-gray-500 sm:text-sm">No recommendations available</div>
                                     )}
                                 </div>
 
                                 {/* Potassium Recommendations */}
                                 <div className="space-y-3">
-                                    <h4 className="flex items-center gap-2 font-medium text-orange-700">
-                                        <div className="h-4 w-4 rounded-sm bg-orange-500"></div>
+                                    <h4 className="flex items-center gap-2 text-sm font-medium text-orange-700 sm:text-base">
+                                        <div className="h-3 w-3 rounded-sm bg-orange-500 sm:h-4 sm:w-4"></div>
                                         Potassium ({fertilizerRecommendations.potassium.level} Level)
                                     </h4>
                                     {fertilizerRecommendations.potassium.crop_fertilizer &&
                                     fertilizerRecommendations.potassium.crop_fertilizer.length > 0 ? (
                                         <div className="space-y-2">
                                             {fertilizerRecommendations.potassium.crop_fertilizer.map((item) => (
-                                                <div key={item.id} className="rounded-lg border border-orange-200 bg-orange-50 p-3">
-                                                    <div className="text-sm font-medium">{item.crop_name}</div>
+                                                <div key={item.id} className="rounded-lg border border-orange-200 bg-orange-50 p-3 transition-shadow hover:shadow-md">
+                                                    <div className="text-xs font-medium sm:text-sm">{item.crop_name}</div>
                                                     {item.growth_stage && item.growth_stage !== 'N/A' && (
                                                         <div className="text-xs text-gray-600">Stage: {item.growth_stage}</div>
                                                     )}
                                                     {item.soil_type && item.soil_type !== 'N/A' && (
                                                         <div className="text-xs text-gray-600">Soil: {item.soil_type}</div>
                                                     )}
-                                                    <div className="mt-1 text-lg font-bold text-orange-700">
+                                                    <div className="mt-1 text-base font-bold text-orange-700 sm:text-lg">
                                                         {item.potassium_rate} {item.unit_of_measure}
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-sm text-gray-500 italic">No recommendations available</div>
+                                        <div className="text-xs italic text-gray-500 sm:text-sm">No recommendations available</div>
                                     )}
                                 </div>
                             </div>
@@ -573,7 +579,7 @@ export default function Fertilizer({
                     )}
 
                 {/* Table */}
-                <Card className="rounded-xl p-6" role="region" aria-labelledby="fertilizers-table-heading">
+                <Card className="rounded-xl p-4 shadow-sm sm:p-6" role="region" aria-labelledby="fertilizers-table-heading">
                     <FertilizerTable
                         fertilizers={fertilizerData}
                         onView={handleView}

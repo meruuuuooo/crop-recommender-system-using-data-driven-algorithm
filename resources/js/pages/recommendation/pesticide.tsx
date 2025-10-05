@@ -98,9 +98,9 @@ export default function Pesticide({ pesticides, peste, crops, filters }: Pestici
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pesticide" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
-                <Card className="flex flex-col gap-6 rounded-xl bg-white p-8 dark:border-sidebar-border">
-                    <div className="flex items-center justify-between">
+            <div className="flex h-full flex-1 flex-col gap-4 p-3 sm:p-4 md:p-6">
+                <Card className="flex flex-col gap-4 rounded-xl bg-white p-4 shadow-sm dark:border-sidebar-border sm:gap-6 sm:p-6 md:p-8">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <HeadingSmall
                             title="Pesticide Management"
                             description="View all registered pesticides in the philippines."

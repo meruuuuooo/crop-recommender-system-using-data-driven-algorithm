@@ -61,13 +61,13 @@ const supportedCropList = (supportedCrops: DashboardProps['modelInfo']['data']['
     }
 
     return (
-        <div className="scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 max-h-64 overflow-y-auto">
+        <div className="scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400 max-h-48 overflow-y-auto sm:max-h-64">
             <ul className="space-y-2 pr-2">
                 {supportedCrops.map((cropData, index) => (
-                    <li key={index} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2">
+                    <li key={index} className="flex items-center justify-between rounded-lg bg-gray-50 px-2.5 py-2 sm:px-3">
                         <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-[#619154]" />
-                            <span className="text-sm font-medium text-gray-700">{cropData}</span>
+                            <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#619154] sm:h-2 sm:w-2" />
+                            <span className="text-xs font-medium text-gray-700 sm:text-sm">{cropData}</span>
                         </div>
                     </li>
                 ))}
@@ -84,9 +84,9 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl px-4 py-4">
+            <div className="flex h-full flex-1 flex-col gap-4 p-3 sm:p-4 md:p-6">
                 {/* Metrics Summary Cards */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+                <div className="grid auto-rows-min gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <MetricsSummary metrics={metrics} />
                 </div>
 
@@ -113,15 +113,15 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                 </Card> */}
 
                 {/* Charts Grid */}
-                <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid auto-rows-min gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <ActivityChart data={activityTrend} />
                     <ChartPieSimple data={topRecommendedCrops} />
-                    <Card className="rounded-xl">
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <CardTitle className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">Supported Crops</CardTitle>
-                                    <p className="text-sm text-gray-600">List of crops supported by the recommendation model</p>
+                    <Card className="rounded-xl shadow-sm">
+                        <CardHeader className="p-4 sm:p-6">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                <div className="flex-1 space-y-1">
+                                    <CardTitle className="text-base font-semibold text-gray-900 sm:text-lg">Supported Crops</CardTitle>
+                                    <p className="text-xs text-gray-600 sm:text-sm">List of crops supported by the recommendation model</p>
                                 </div>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
@@ -129,26 +129,26 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                             size="sm"
                                             variant="outline"
                                             onClick={handleReloadAPI}
-                                            className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                            className="h-8 w-8 shrink-0 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
                                             aria-label="Reload API data"
                                         >
                                             <RefreshCw className="h-4 w-4 text-[#619154]" />
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Reload API</p>
+                                        <p className="text-xs">Reload API</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </div>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                             {!modelInfo.success ? (
-                                <div className="py-8 text-center text-amber-600">
+                                <div className="py-6 text-center text-amber-600 sm:py-8">
                                     <div
-                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-50"
+                                        className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 sm:mb-4 sm:h-16 sm:w-16"
                                         aria-hidden="true"
                                     >
-                                        <svg className="h-8 w-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-amber-500 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
@@ -157,19 +157,19 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                             />
                                         </svg>
                                     </div>
-                                    <p className="text-base font-medium">API Service Unavailable</p>
-                                    <p className="mt-1 text-sm text-gray-500">Unable to fetch model information. Please check if the API service is running.</p>
+                                    <p className="text-sm font-medium sm:text-base">API Service Unavailable</p>
+                                    <p className="mt-1 px-4 text-xs text-gray-500 sm:text-sm">Unable to fetch model information. Please check if the API service is running.</p>
                                     {modelInfo.error && (
-                                        <p className="mt-2 text-xs text-gray-400">Error: {modelInfo.error}</p>
+                                        <p className="mt-2 text-xs text-gray-400">{modelInfo.error}</p>
                                     )}
                                 </div>
                             ) : modelInfo.data.available_crops.length === 0 ? (
-                                <div className="py-8 text-center text-gray-500">
+                                <div className="py-6 text-center text-gray-500 sm:py-8">
                                     <div
-                                        className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100"
+                                        className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:mb-4 sm:h-16 sm:w-16"
                                         aria-hidden="true"
                                     >
-                                        <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-gray-400 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
@@ -178,7 +178,7 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                             />
                                         </svg>
                                     </div>
-                                    <p className="text-base">No supported crops data available</p>
+                                    <p className="text-sm sm:text-base">No supported crops data available</p>
                                 </div>
                             ) : (
                                 supportedCropList(modelInfo.data.available_crops)
@@ -187,18 +187,20 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     </Card>
                 </div>
 
-                <Card role="region" className="rounded-xl" aria-labelledby="recent-results-heading">
-                    <CardHeader>
-                        <CardTitle id="recent-results-heading" className="border-b border-gray-200 pb-2 text-lg font-semibold text-gray-900">
-                            Recent Recommendation Results
-                        </CardTitle>
-                        <p className="text-sm text-gray-600">Recent personalized crop recommendations will appear here.</p>
+                <Card role="region" className="rounded-xl shadow-sm" aria-labelledby="recent-results-heading">
+                    <CardHeader className="p-4 sm:p-6">
+                        <div className="space-y-1">
+                            <CardTitle id="recent-results-heading" className="text-base font-semibold text-gray-900 sm:text-lg">
+                                Recent Recommendation Results
+                            </CardTitle>
+                            <p className="text-xs text-gray-600 sm:text-sm">Recent personalized crop recommendations will appear here.</p>
+                        </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                         {recentRecommendations.length === 0 ? (
-                            <div className="py-8 text-center text-gray-500">
-                                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100" aria-hidden="true">
-                                    <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="py-6 text-center text-gray-500 sm:py-8">
+                                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:mb-4 sm:h-16 sm:w-16" aria-hidden="true">
+                                    <svg className="h-6 w-6 text-gray-400 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
@@ -207,47 +209,47 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                         />
                                     </svg>
                                 </div>
-                                <p className="text-base">Click "Generate Recommendation" to see your results</p>
-                                <p className="mt-1 text-sm text-gray-400">All required fields must be completed first</p>
+                                <p className="text-sm font-medium sm:text-base">Click "Generate Recommendation" to see your results</p>
+                                <p className="mt-1 px-4 text-xs text-gray-400 sm:text-sm">All required fields must be completed first</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
-                                <table className="min-w-full text-left text-sm">
+                                <table className="min-w-full text-left text-xs sm:text-sm">
                                     <thead>
                                         <tr className="bg-gray-50">
-                                            <th className="px-4 py-2 font-semibold text-gray-700">Date</th>
-                                            <th className="px-4 py-2 font-semibold text-gray-700">Crop</th>
-                                            <th className="px-4 py-2 font-semibold text-gray-700">Farmer</th>
-                                            <th className="px-4 py-2 font-semibold text-gray-700">Score</th>
-                                            <th className="px-4 py-2 font-semibold text-gray-700">Action</th>
+                                            <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Date</th>
+                                            <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Crop</th>
+                                            <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Farmer</th>
+                                            <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Score</th>
+                                            <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {recentRecommendations.map((item, idx) => (
-                                            <tr key={idx} className="border-b last:border-0">
-                                                <td className="px-4 py-2">{new Date(item.recommendation_date).toLocaleDateString()}</td>
-                                                <td className="px-4 py-2">{item.crop?.name}</td>
-                                                <td className="px-4 py-2">{item.farmer?.lastname}</td>
-                                                <td className="px-4 py-2">
-                                                    <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                            <tr key={idx} className="border-b transition-colors hover:bg-gray-50 last:border-0">
+                                                <td className="px-3 py-2 sm:px-4">{new Date(item.recommendation_date).toLocaleDateString()}</td>
+                                                <td className="px-3 py-2 sm:px-4">{item.crop?.name}</td>
+                                                <td className="px-3 py-2 sm:px-4">{item.farmer?.lastname}</td>
+                                                <td className="px-3 py-2 sm:px-4">
+                                                    <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 sm:px-2.5">
                                                         {item.confidence_score.toFixed(2)}%
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-2">
-                                                    <div className="flex items-center gap-2">
+                                                <td className="px-3 py-2 sm:px-4">
+                                                    <div className="flex items-center gap-1.5 sm:gap-2">
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <Button
                                                                     size="sm"
                                                                     variant="outline"
-                                                                    className="h-8 w-8 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
+                                                                    className="h-7 w-7 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8] sm:h-8 sm:w-8"
                                                                     // aria-label={`View details for ${getFullName(farmer)}`}
                                                                 >
-                                                                    <Eye className="h-4 w-4 text-[#619154]" />
+                                                                    <Eye className="h-3.5 w-3.5 text-[#619154] sm:h-4 sm:w-4" />
                                                                 </Button>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
-                                                                <p>View</p>
+                                                                <p className="text-xs">View</p>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </div>
