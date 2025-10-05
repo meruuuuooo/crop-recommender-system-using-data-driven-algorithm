@@ -16,14 +16,14 @@ class FarmerFarmSeeder extends Seeder
      */
     public function run(): void
     {
-         Farmer::factory(10)->create([
-            'user_id' => User::inRandomOrder()->first()->id,
-            'location_id' => Location::inRandomOrder()->first()->id,
+         Farmer::factory(5)->create([
+            'user_id' => rand(1, 2),
+            'location_id' => rand(1, 20),
         ]);
 
         Farm::factory(10)->create([
-            'farmer_id' => rand(1, 10),
-            'location_id' => rand(1, 5),
+            'farmer_id' => rand(1, 5),
+            'location_id' => rand(1, 20),
         ]);
     }
 }

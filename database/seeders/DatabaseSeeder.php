@@ -14,12 +14,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name' => 'Test User',
-            'firstname' => 'Test',
-            'middlename' => 'Middle',
-            'lastname' => 'User',
+            'name' => 'meruuuuooo',
+            'firstname' => 'Mel',
+            'middlename' => 'David',
+            'lastname' => 'Mailem',
             'contact_number' => '1234567890',
-            'email' => 'test@example.com',
+            'email' => 'mailem.meldavid@gmail.com',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Rusty',
+            'firstname' => 'Rusty',
+            'middlename' => 'E',
+            'lastname' => 'Pelin',
+            'contact_number' => '23241243512',
+            'email' => 'rusty.pelin@gmail.com',
+            'password' => bcrypt('handyRusty123'),
         ]);
 
         (new LocationSeeder)->run();
@@ -31,8 +41,11 @@ class DatabaseSeeder extends Seeder
         (new CropSeeder)->run();
 
         (new SoilClimateSeeder)->run();
-        
+
         (new RecommendationSeeder)->run();
 
+        $this->call([
+            CropFertilizerSeeder::class,
+        ]);
     }
 }

@@ -16,15 +16,24 @@ class FarmerFactory extends Factory
      */
     public function definition(): array
     {
+
+        $farmerName = [
+            'firstname' => ['Juan', 'Pedro', 'Maria', 'Ana', 'Luis', 'Carlos', 'Jose', 'Rosa', 'Marta', 'Carmen'],
+            'lastname' => ['Dela Cruz', 'Santos', 'Reyes', 'Garcia', 'Lopez', 'Martinez', 'Rodriguez', 'Hernandez', 'Gonzalez', 'Perez'],
+            'middlename' => ['A.', 'B.', 'C.', 'D.', 'E.', 'F.', 'G.', 'H.', 'I.', 'J.']
+        ];
+
+
+
         return [
-            'firstname' => fake()->firstName(),
-            'middlename' => fake()->optional()->lastName(),
-            'lastname' => fake()->lastName(),
+            'firstname' => fake()->randomElement($farmerName['firstname']),
+            'middlename' => fake()->optional()->randomElement($farmerName['middlename']),
+            'lastname' => fake()->randomElement($farmerName['lastname']),
             'contact_number' => fake()->phoneNumber(),
             'farming_experience' => fake()->numberBetween(1, 30), // years of experience
             'registration_date' => fake()->date(),
-            'location_id' => \App\Models\Location::factory(),
-            'user_id' => \App\Models\User::factory(),
+            'location_id' => rand(1, 20),
+            'user_id' => rand(1, 2),
         ];
     }
 }

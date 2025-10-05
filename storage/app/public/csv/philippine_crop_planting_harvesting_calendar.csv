@@ -1,0 +1,59 @@
+Crop,Planting_Season_Primary,Harvesting_Period,Growing_Duration_Days,Climate_Type_Suitability,Special_Notes
+Abaca,Start of rainy season (May-June),16-24 months after planting (first harvest),480-720,All types (prefers humid),"Shade-loving, can be intercropped with coconut"
+Amapalaya,"May-July, November-December",2-3 months after planting,60-90,All types,Two seasons: wet and dry season planting
+Banana,Year round,8-12 months after planting,240-360,All types,Continuous production after establishment
+Bataw,"February-April, May-June",60-70 days after planting,60-70,Types 2-4,"Short season legume, good for rotation"
+Bean (Various),"May-June, November-January",60-90 days after planting,60-90,All types,Various types with different seasons
+Broccoli,October-December,3-4 months after planting,90-120,"Types 1,3 (cooler)","Cool season crop, needs lower temperatures"
+Cabbage,"October-December, April-June",2-4 months after planting,60-120,"Types 1,3 (cooler)","Cool season crop, multiple varieties"
+Cacao,Year round,Year round (after 3-5 years),Perennial,All types,Requires 3-5 years before first harvest
+Cantaloupe,"March-June, October-January",2-3 months after planting,60-90,All types,Hot season melon crop
+Carrot,"March-September, October-December",2-3 months after planting,60-90,All types,Cool season root crop
+Cassava,"Start of rainy season (May-June), October-December",8-24 months after planting,240-720,All types,"Drought tolerant, long growing season"
+Cauliflower,"October-December, January-March",3-4 months after planting,90-120,"Types 1,3 (cooler)",Cool season crop
+Celery,"May-July, October-December",2-3 months after planting,60-90,"Types 1,3 (cooler)","Cool season, requires constant moisture"
+Chayote,"February-March, May-June",3-4 months after planting,90-120,All types,Warm season perennial vine
+Chick Pea,"April-June, November-January",3-4 months after planting,90-120,All types,"Legume crop, various planting windows"
+Chinese Cabbage,March-September,2 months after planting,60,All types,Cool season leafy vegetable
+Citrus,Year round (varies by type),Varies by type (6 months-2 years),Varies,All types,Different types have different seasons
+Coffee,Year round,Year round (after establishment),Perennial,All types,"Perennial crop, continuous harvest"
+Corn,"Dry season: October-December, Rainy: April-June",90-120 days after planting,90-120,All types,"Major staple crop, two main seasons"
+Cowpea,"January-March, May-June",60-90 days after planting,60-90,All types,Drought tolerant legume
+Cucumber,"March-April, May-June",2 months after planting,60,All types,Warm season vine crop
+Eggplant,"January-April, May-June",2-5 months after planting,60-150,All types,"Warm season, multiple harvests"
+Garlic,"October-December, November-January",6-7 months after planting,180-210,All types,Cool season bulb crop
+Ginger,April-May (best time),8-11 months after planting,240-330,All types (humid preferred),"Long growing season, harvest for different uses"
+Kangkong,Year round,3-4 weeks after planting,21-28,All types,Fast-growing leafy vegetable
+Lettuce,"March-June, April-May",2-3 months after planting,60-90,All types,Cool season leafy crop
+Mango,November-February (flowering),March-June (120-135 days after flowering),120-135,All types,"Biennial bearer, flowering Nov-Feb"
+Mungbean,February-June,60-90 days after planting,60-90,All types,Short season legume
+Muskmelon,"March-June, November-January",2-3 months after planting,60-90,All types,Warm season melon
+Mustard,"January-March, May-July",1-2 months after planting,30-60,All types,Cool season leafy crop
+Okra,"Year round, May-July","Year round, 60-90 days",60-90,All types,"Heat tolerant, year-round production possible"
+Onion Bulb,"December-March, November-January",6-7 months after planting,180-210,All types,"Cool season bulb crop, long growing period"
+Papaya,Year round,8-12 months after planting,240-360,All types,Warm season fruit tree
+Patani,"May-June, November-December",3-4 months after planting,90-120,All types,"Legume crop, good protein source"
+Patola,"March-September, May-July",60-90 days after planting,60-90,All types,Warm season vine vegetable
+Pea,"April-June, November-January",3-4 months after planting,90-120,All types,Cool season legume
+Peanut,"January-February, May-June",3-4 months after planting,90-120,All types,"Warm season legume, oil crop"
+Pechay,"January-March, May-June",1-2 months after planting,30-60,All types,Fast-growing leafy crop
+Pepper,"February-March, May-June",2-5 months after planting,60-150,All types,"Warm season, multiple varieties"
+Pineapple,"April-June, August-November",18-24 months after planting,540-720,All types,"Long establishment period, continuous harvest"
+Potato,"February-March, October-December",3-4 months after planting,90-120,"Types 1,3 (cooler)",Cool season tuber crop
+Radish,October-December,1-2 months after planting,30-60,All types,Fast-growing root crop
+Rambutan,Year round (varies by region),Varies by region,Perennial,All types,Tropical fruit tree
+Rice,"Wet season: March-August, Dry: September-February",120-150 days after planting,90-150,All types,"Major staple, two main seasons"
+Rubber,Year round (after establishment),5-6 years after planting (tapping),1800+,All types (humid),"Long establishment, 5-6 years to production"
+Sitao,"May-June, November-February",60-90 days after planting,60-90,All types,Warm season legume pod
+Snap Bean,"May-June, October-December",2 months after planting,60,All types,Short season legume
+Soybean,"January-March, May-June",60-90 days after planting,60-90,All types,"Warm season legume, multiple uses"
+Squash,"May-June, October-December",2-3 months after planting,60-90,All types,Warm season vine crop
+Sugarcane,"March-May (recommended), November",12-18 months after planting,360-540,All types,"Industrial crop, 12-18 month cycle"
+Sweet Corn,Year round,2-3 months after planting,60-90,All types,Warm season grain crop
+Sweet Pea,"February-March, April-June",2-3 months after planting,60-90,All types,Cool season legume
+Kamote (Sweet Potato),Year round,6-12 months after planting,Perennial,All types,"Starchy root crop, drought tolerant"
+Taro,Year round (varies by region),7-12 months after planting,210-360,All types,Warm tropical root crop
+Tomato,"January-April, May-June",2-5 months after planting,60-150,All types,Warm season fruit vegetable
+Upo,"November-March, April-May",2-3 months after planting,60-90,All types,Warm season vine crop
+Watermelon,"January-March, April-May",2-3 months after planting,60-90,All types,Warm season vine fruit
+Yam,August-September (varies by type),6-12 months after planting,180-360,All types,"Tropical root crop, various species"

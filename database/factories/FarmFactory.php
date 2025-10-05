@@ -16,12 +16,27 @@ class FarmFactory extends Factory
      */
     public function definition(): array
     {
+
+        $farmnames = [
+            'Hacienda Luisita',
+            'Banaue Rice Terraces',
+            'Palawan Coconut Grove',
+            'Cebu Mango Orchard',
+            'Mindanao Banana Plantation',
+            'Laguna Corn Fields',
+            'Batangas Pineapple Patch',
+            'Ilocos Durian Estate',
+            'Davao Calamansi Grove',
+            'Bohol Sugarcane Farm'
+        ];
+
+
         return [
-            'name' => fake()->words(2, true).' Farm',
+            'name' => fake()->randomElement($farmnames),
             'total_area' => fake()->randomFloat(2, 0.5, 100), // in hectares
             'prev_crops' => implode(', ', fake()->randomElements(['Rice', 'Corn', 'Tomato', 'Cabbage', 'Eggplant'], 2)),
-            'farmer_id' => \App\Models\Farmer::factory(),
-            'location_id' => \App\Models\Location::factory(),
+            'farmer_id' => rand(1, 5),
+            'location_id' => rand(1, 5),
         ];
     }
 }

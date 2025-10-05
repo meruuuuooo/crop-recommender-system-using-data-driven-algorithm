@@ -155,7 +155,7 @@ class LocationSeeder extends Seeder
             }
         }
 
-        Location::factory(10)->create([
+        Location::factory(20)->create([
             'province_id' => $province,
             'municipality_id' => rand(1, count($municipalities)),
             'barangay_id' => rand(1, count($barangays)),

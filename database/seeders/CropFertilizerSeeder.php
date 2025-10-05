@@ -16,7 +16,7 @@ class CropFertilizerSeeder extends Seeder
         $csvFile = Storage::disk('public')->path('csv/fertilizer_recommendation_v2.csv');
 
         if (! file_exists($csvFile)) {
-            $this->command->error('CSV file not found: '.$csvFile);
+            $this->command->error('CSV file not found: ' . $csvFile);
 
             return;
         }
@@ -42,7 +42,8 @@ class CropFertilizerSeeder extends Seeder
 
         fclose($file);
 
-        $this->command->info('Crop Fertilizer data seeded successfully!');
-
+        if ($this->command) {
+            $this->command->info('Crop Fertilizer data seeded successfully!');
+        }
     }
 }
