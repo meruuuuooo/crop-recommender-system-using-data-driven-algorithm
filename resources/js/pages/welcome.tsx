@@ -50,7 +50,7 @@ export default function Welcome() {
                                     <span>
                                         Production Branch
                                         <a
-                                            href="https://croptap.com/login"
+                                            href="https://croptap.site/login"
                                             target="_blank"
                                             className="ml-1 inline-flex items-center space-x-1 font-medium text-[#f53003] underline underline-offset-4 dark:text-[#FF4433]"
                                         >
@@ -81,7 +81,7 @@ export default function Welcome() {
                                     <span>
                                         Staging Branch
                                         <a
-                                            href="https://staging-v2.croptap.com/login"
+                                            href="https://staging.croptap.site/"
                                             target="_blank"
                                             className="ml-1 inline-flex items-center space-x-1 font-medium text-[#f53003] underline underline-offset-4"
                                         >
