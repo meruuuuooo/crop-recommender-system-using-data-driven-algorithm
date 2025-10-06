@@ -12,8 +12,8 @@ use Inertia\Inertia;
 
 // Public Status Page
 Route::get('/', function () {
-    return Inertia::render('status');
-})->name('status');
+    return Inertia::render('welcome');
+})->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');

@@ -10,7 +10,7 @@ import type { Farm, FarmIndexProps, PaginatedFarms } from '@/types/farm';
 import { router } from '@inertiajs/react';
 import { Calendar, MapPin, Search, Tractor, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import EditFarmFormDialog from './editFarmFormDialog';
+import EditFarmSheet from './editFarmSheet';
 
 interface FarmTableProps {
     farms: PaginatedFarms;
@@ -247,12 +247,9 @@ export default function FarmTable({ farms, filters, farmers, onView }: FarmTable
                                                     <Tooltip>
                                                         <TooltipTrigger asChild>
                                                             <div onClick={(e) => e.stopPropagation()}>
-                                                                <EditFarmFormDialog farm={farm} farmers={farmers} />
+                                                                <EditFarmSheet farm={farm} farmers={farmers} />
                                                             </div>
                                                         </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>Edit farm</p>
-                                                        </TooltipContent>
                                                     </Tooltip>
                                                 </div>
                                             </TableCell>
