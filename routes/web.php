@@ -53,11 +53,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // });
 
     Route::prefix('crop-recommender')->group(function () {
-        Route::post('/recommend', [CropRecommendationController::class, 'recommend']);
-        Route::get('/model-info', [CropRecommendationController::class, 'modelInfo']);
-        Route::get('/soil-types', [CropRecommendationController::class, 'getSoilTypes']);
-        Route::get('/crops', [CropRecommendationController::class, 'getCrops']);
+        Route::get('/', [CropRecommendationController::class, 'index'])->name('crop.recommender.api');
+        Route::post('/api/recommend', [CropRecommendationController::class, 'recommend']);
         Route::get('/health', [CropRecommendationController::class, 'health']);
+        Route::get('/docs', [CropRecommendationController::class, 'docs']);
     });
 
     // Recommendation

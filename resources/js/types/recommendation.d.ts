@@ -36,7 +36,7 @@ export type RecommendationFormData = {
     farmer_id: number;
     farm_id: number;
     crop_id: number;
-    confidence_score: number;
+    suitability_score: number;
     recommendation_date: string;
 };
 

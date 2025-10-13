@@ -14,6 +14,7 @@ class Climate extends Model
         'temperature',
         'rainfall',
         'humidity',
+        'season',
         'climate_record_date',
     ];
 
@@ -24,6 +25,7 @@ class Climate extends Model
             'temperature' => 'float',
             'rainfall' => 'float',
             'humidity' => 'float',
+            'season' => 'string',
         ];
     }
 

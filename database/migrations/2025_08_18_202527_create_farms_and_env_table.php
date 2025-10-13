@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->float('total_area')->nullable();
+            $table->string('soil_type')->nullable();
             $table->string('prev_crops')->nullable();
             $table->foreignId('farmer_id')->constrained()->onDelete('cascade');
             $table->foreignId('location_id')->constrained()->onDelete('cascade');
@@ -24,14 +25,10 @@ return new class extends Migration
         Schema::create('soils', function (Blueprint $table) {
             $table->id();
             $table->foreignId('farm_id')->constrained()->onDelete('cascade');
-            $table->string('soil_type');
-            $table->string('nitrogen_level');
-            $table->string('phosphorus_level')->nullable();
-            $table->string('potassium_level')->nullable();
-            $table->float('nitrogen');
-            $table->float('phosphorus');
-            $table->float('potassium');
-            $table->float('pH');
+            $table->string('n_level');
+            $table->string('p_level');
+            $table->string('k_level');
+            $table->string('ph');
             $table->date('test_date');
             $table->timestamps();
         });
@@ -42,6 +39,7 @@ return new class extends Migration
             $table->float('temperature');
             $table->float('rainfall');
             $table->float('humidity');
+            $table->string('season');
             $table->date('climate_record_date');
             $table->timestamps();
         });

@@ -1,4 +1,4 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+// import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -46,7 +46,6 @@ export default function Crop({
     });
 
     const [isFetchingClimate, setIsFetchingClimate] = useState(false);
-    const [isRetrievingSoilTest, setIsRetrievingSoilTest] = useState(false);
 
     // Get farms for the selected farmer
     const selectedFarmer = farmers.find((farmer) => farmer.id === Number(data.farmer_id));
@@ -159,51 +158,6 @@ export default function Crop({
         }
     };
 
-    const getSoilTest = (farmer_id: string, farm_id: string) => {
-        const farmer = farmers.find((farmer) => farmer.id === Number(farmer_id));
-        if (!farmer) {
-            console.log('Farmer not found');
-            setIsRetrievingSoilTest(false);
-            return;
-        }
-
-        const farm = farmer.farms?.find((farm) => farm.id === Number(farm_id));
-        if (!farm || !farm.soils || farm.soils.length === 0) {
-            console.log('Farm or soil data not found');
-            toast.error('No soil test data found', {
-                description: 'No soil test records found for this farm.',
-            });
-            setIsRetrievingSoilTest(false);
-            return;
-        }
-
-        // Sort soils by created_at (latest first) and get the most recent one
-        const latestSoilTest = farm.soils.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
-
-        // Update form data with the latest soil test results
-        setData((prevData) => ({
-            ...prevData,
-            soilType: latestSoilTest.soil_type || '',
-            nitrogen_level: latestSoilTest.nitrogen_level || '',
-            phosphorus_level: latestSoilTest.phosphorus_level || '',
-            potassium_level: latestSoilTest.potassium_level || '',
-            ph_level: latestSoilTest.pH || 7.0,
-        }));
-
-        toast.success('Soil test data retrieved', {
-            description: `Using soil test data from ${new Date(latestSoilTest.created_at).toLocaleDateString()} at ${new Date(
-                latestSoilTest.created_at,
-            ).toLocaleTimeString()}`,
-        });
-
-        setIsRetrievingSoilTest(false);
-    };
-
-    const handleRetrieveSoilTest = () => {
-        setIsRetrievingSoilTest(true);
-        getSoilTest(data.farmer_id, data.farm_id);
-    };
-
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Crop Recommendation" />
@@ -292,36 +246,10 @@ export default function Crop({
                                             Provide your soil test details below for accurate recommendations.
                                         </p>
                                     </div>
-                                    <Button
-                                        onClick={handleRetrieveSoilTest}
-                                        className="w-full shrink-0 bg-green-500 text-sm hover:bg-green-600 sm:w-auto"
-                                        type="button"
-                                        size="sm"
-                                        disabled={isRetrievingSoilTest || !data.farmer_id || !data.farm_id}
-                                    >
-                                        {isRetrievingSoilTest ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Retrieving...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                                                    />
-                                                </svg>
-                                                Retrieve Soil Test
-                                            </>
-                                        )}
-                                    </Button>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4 p-4 pt-0 sm:p-6 sm:pt-0">
-                                <div className="space-y-2">
+                                {/* <div className="space-y-2">
                                     <Label htmlFor="soil-type" className="text-sm font-medium text-gray-700">
                                         Soil Type{' '}
                                         <span className="text-red-500" aria-label="required">
@@ -343,11 +271,11 @@ export default function Crop({
                                     <div id="soil-type-help" className="text-xs text-gray-500">
                                         Select the primary soil type of your farm
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <fieldset className="space-y-4">
                                     <legend className="sr-only">Nutrient Levels</legend>
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                    <div className="grid grid-cols-3 gap-4 sm:grid-cols-1">
                                         {/* --- Nitrogen with Tooltip --- */}
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2">
@@ -370,19 +298,19 @@ export default function Crop({
                                                     <SelectValue placeholder="Select Level" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="low">
+                                                    <SelectItem value="Low">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-yellow-400 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">Low</span>
                                                         </div>
                                                     </SelectItem>
-                                                    <SelectItem value="medium">
+                                                    <SelectItem value="Medium">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-lime-500 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">Medium</span>
                                                         </div>
                                                     </SelectItem>
-                                                    <SelectItem value="high">
+                                                    <SelectItem value="High">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-green-800 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">High</span>
@@ -415,19 +343,19 @@ export default function Crop({
                                                     <SelectValue placeholder="Select Level" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="low">
+                                                    <SelectItem value="Low">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-blue-100 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">Low</span>
                                                         </div>
                                                     </SelectItem>
-                                                    <SelectItem value="medium">
+                                                    <SelectItem value="Medium">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-blue-500 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">Medium</span>
                                                         </div>
                                                     </SelectItem>
-                                                    <SelectItem value="high">
+                                                    <SelectItem value="High">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-blue-900 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">High</span>
@@ -460,19 +388,19 @@ export default function Crop({
                                                     <SelectValue placeholder="Select Level" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="low">
+                                                    <SelectItem value="Low">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-red-800 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">Low</span>
                                                         </div>
                                                     </SelectItem>
-                                                    <SelectItem value="medium">
+                                                    <SelectItem value="Medium">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-amber-800 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">Medium</span>
                                                         </div>
                                                     </SelectItem>
-                                                    <SelectItem value="high">
+                                                    <SelectItem value="High">
                                                         <div className="flex items-center gap-2">
                                                             <div className="h-3 w-3 rounded-sm bg-amber-400 sm:h-4 sm:w-4"></div>
                                                             <span className="text-xs sm:text-sm">High</span>
@@ -481,37 +409,36 @@ export default function Crop({
                                                 </SelectContent>
                                             </Select>
                                         </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="ph-level" className="text-sm font-medium text-gray-700">
+                                                pH Level{' '}
+                                                <span className="text-red-500" aria-label="required">
+                                                    *
+                                                </span>
+                                            </Label>
+                                            <div className="flex items-center gap-3 sm:gap-4">
+                                                <Input
+                                                    id="ph-level"
+                                                    name="ph_level"
+                                                    className="flex-1 text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
+                                                    value={data.ph_level}
+                                                    onChange={(e) => setData('ph_level', Number(e.target.value))}
+                                                    required
+                                                    type="range"
+                                                    step="0.1"
+                                                    min="0"
+                                                    max="14"
+                                                />
+                                                <span className="w-10 shrink-0 text-center text-base font-bold text-gray-900 sm:w-12 sm:text-lg">
+                                                    {Number(data.ph_level).toFixed(1)}
+                                                </span>
+                                            </div>
+                                            <div id="ph-help" className="text-xs text-gray-500">
+                                                Soil acidity/alkalinity level (0-14 scale)
+                                            </div>
+                                        </div>
                                     </div>
                                 </fieldset>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="ph-level" className="text-sm font-medium text-gray-700">
-                                        pH Level{' '}
-                                        <span className="text-red-500" aria-label="required">
-                                            *
-                                        </span>
-                                    </Label>
-                                    <div className="flex items-center gap-3 sm:gap-4">
-                                        <Input
-                                            id="ph-level"
-                                            name="ph_level"
-                                            className="flex-1 text-[#619154] focus:border-transparent focus:ring-2 focus:ring-[#619154]"
-                                            value={data.ph_level}
-                                            onChange={(e) => setData('ph_level', Number(e.target.value))}
-                                            required
-                                            type="range"
-                                            step="0.1"
-                                            min="0"
-                                            max="14"
-                                        />
-                                        <span className="w-10 shrink-0 text-center text-base font-bold text-gray-900 sm:w-12 sm:text-lg">
-                                            {Number(data.ph_level).toFixed(1)}
-                                        </span>
-                                    </div>
-                                    <div id="ph-help" className="text-xs text-gray-500">
-                                        Soil acidity/alkalinity level (0-14 scale)
-                                    </div>
-                                </div>
                             </CardContent>
                         </Card>
 
@@ -676,7 +603,6 @@ export default function Crop({
                                         processing ||
                                         !data.farmer_id ||
                                         !data.farm_id ||
-                                        !data.soilType ||
                                         !data.nitrogen_level ||
                                         !data.potassium_level ||
                                         !data.phosphorus_level ||
@@ -721,7 +647,7 @@ export default function Crop({
                                 </p>
 
                                 {/* Hybrid Crop Recommendation Guideline */}
-                                <div className="rounded-lg border border-blue-200 bg-blue-50 transition-all duration-300 hover:shadow-md">
+                                {/* <div className="rounded-lg border border-blue-200 bg-blue-50 transition-all duration-300 hover:shadow-md">
                                     <Accordion type="single" collapsible className="w-full">
                                         <AccordionItem value="hybrid-guideline" className="border-none">
                                             <AccordionTrigger className="px-3 py-3 transition-all duration-200 hover:no-underline sm:px-4 [&[data-state=open]>div>svg]:rotate-180">
@@ -785,7 +711,7 @@ export default function Crop({
                                             </AccordionContent>
                                         </AccordionItem>
                                     </Accordion>
-                                </div>
+                                </div> */}
                             </div>
                         </CardHeader>
                         <CardContent className="p-4 sm:p-6">
@@ -814,7 +740,7 @@ export default function Crop({
                                             <tr className="bg-gray-50">
                                                 <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Crop Name</th>
                                                 <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Fertilizer Rate</th>
-                                                <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Confidence</th>
+                                                <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Suitability Score</th>
                                                 <th className="px-3 py-2 font-semibold text-gray-700 sm:px-4">Action</th>
                                             </tr>
                                         </thead>
@@ -823,13 +749,18 @@ export default function Crop({
                                                 <tr key={idx} className="border-b transition-colors last:border-0 hover:bg-gray-50">
                                                     <td className="px-3 py-3 font-medium sm:px-4">{item.crop_name}</td>
                                                     <td className="px-3 py-3 sm:px-4">
-                                                        <span className="text-xs sm:text-sm">
-                                                            {getCropFertilizerRate(item.fertilizer_recommendations)}
-                                                        </span>
+                                                        {getCropFertilizerRate(item.fertilizer_recommendations) === '0-0-0' ||
+                                                        getCropFertilizerRate(item.fertilizer_recommendations).startsWith('0-0-0') ? (
+                                                            <span className="text-xs text-gray-400 italic sm:text-sm">No fertilizer required</span>
+                                                        ) : (
+                                                            <span className="text-xs sm:text-sm">
+                                                                {getCropFertilizerRate(item.fertilizer_recommendations)}
+                                                            </span>
+                                                        )}
                                                     </td>
                                                     <td className="px-3 py-3 sm:px-4">
                                                         <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 sm:px-2.5">
-                                                            {item.confidence_score}%
+                                                            {item.suitability_score.toFixed(2)}%
                                                         </span>
                                                     </td>
                                                     <td className="px-3 py-3 sm:px-4">

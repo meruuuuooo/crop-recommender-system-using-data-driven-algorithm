@@ -17,8 +17,8 @@ class SoilClimateSeeder extends Seeder
     {
         //
 
-        Soil::factory(10)->create();
-        Climate::factory(10)->create();
+        Soil::factory(250)->create();
+        Climate::factory(250)->create();
 
     }
 }

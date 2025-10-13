@@ -14,27 +14,24 @@ class CropRecommenderService
 
     public function __construct()
     {
-        $this->apiUrl = config('services.crop_recommender.api_url', 'http://localhost:5000/api');
+        $this->apiUrl = config('services.crop_recommender.api_url', 'http://localhost:8000/api');
         $this->timeout = config('services.crop_recommender.timeout', 30);
     }
-
-    /**
-     * Get crop recommendation based on soil and environmental conditions
-     *
-     * @return array
-     */
     public function getCropRecommendation(array $data)
     {
         try {
             $response = Http::timeout($this->timeout)
-                ->post($this->apiUrl.'/predict', [
-                    'soil_type' => $data['soil_type'],
-                    'soil_ph' => $data['soil_ph'],
+                ->post($this->apiUrl.'/api/recommend', [
+                    'province' => $data['province'],
+                    'municipality' => $data['municipality'],
                     'temperature' => $data['temperature'],
                     'humidity' => $data['humidity'],
-                    'nitrogen' => $data['nitrogen'],
-                    'phosphorus' => $data['phosphorus'],
-                    'potassium' => $data['potassium'],
+                    'rainfall' => $data['rainfall'],
+                    'ph' => $data['ph'],
+                    'n_level' => $data['n_level'],
+                    'p_level' => $data['p_level'],
+                    'k_level' => $data['k_level'],
+                    'season' => $data['season'],
                 ]);
 
             if ($response->successful()) {
@@ -63,76 +60,58 @@ class CropRecommenderService
             ];
         }
     }
+    // public function getModelInfo()
+    // {
+    //     try {
+    //         $response = Http::timeout($this->timeout)
+    //             ->get($this->apiUrl.'/model-info');
 
-    /**
-     * Get model information
-     *
-     * @return array
-     */
-    public function getModelInfo()
-    {
-        try {
-            $response = Http::timeout($this->timeout)
-                ->get($this->apiUrl.'/model-info');
+    //         if ($response->successful()) {
+    //             return $response->json();
+    //         }
 
-            if ($response->successful()) {
-                return $response->json();
-            }
+    //         return [
+    //             'success' => false,
+    //             'error' => 'Failed to fetch model info',
+    //         ];
 
-            return [
-                'success' => false,
-                'error' => 'Failed to fetch model info',
-            ];
+    //     } catch (Exception $e) {
+    //         return [
+    //             'success' => false,
+    //             'error' => $e->getMessage(),
+    //         ];
+    //     }
+    // }
+    // public function getAvailableSoilTypes()
+    // {
+    //     try {
+    //         $response = Http::timeout($this->timeout)
+    //             ->get($this->apiUrl.'/soil-types');
 
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
+    //         return $response->json();
 
-    /**
-     * Get available soil types
-     *
-     * @return array
-     */
-    public function getAvailableSoilTypes()
-    {
-        try {
-            $response = Http::timeout($this->timeout)
-                ->get($this->apiUrl.'/soil-types');
+    //     } catch (Exception $e) {
+    //         return [
+    //             'success' => false,
+    //             'error' => $e->getMessage(),
+    //         ];
+    //     }
+    // }
+    // public function getAvailableCrops()
+    // {
+    //     try {
+    //         $response = Http::timeout($this->timeout)
+    //             ->get($this->apiUrl.'/crops');
 
-            return $response->json();
+    //         return $response->json();
 
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
-
-    /**
-     * Get available crops
-     *
-     * @return array
-     */
-    public function getAvailableCrops()
-    {
-        try {
-            $response = Http::timeout($this->timeout)
-                ->get($this->apiUrl.'/crops');
-
-            return $response->json();
-
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
+    //     } catch (Exception $e) {
+    //         return [
+    //             'success' => false,
+    //             'error' => $e->getMessage(),
+    //         ];
+    //     }
+    // }
 
     /**
      * Check API health

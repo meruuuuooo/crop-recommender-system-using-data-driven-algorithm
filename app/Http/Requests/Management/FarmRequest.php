@@ -24,6 +24,7 @@ class FarmRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:30'],
             'total_area' => ['nullable', 'numeric'],
+            'soil_type' => ['nullable', 'string', 'max:30'],
             'prev_crops' => ['nullable', 'string'],
             'farmer_id' => ['required', 'exists:farmers,id'],
             'province_id' => ['required', 'exists:provinces,id'],
@@ -37,7 +38,9 @@ class FarmRequest extends FormRequest
         return [
             'name.required' => 'Farm name is required.',
             'total_area.required' => 'Total area is required.',
+            'name.max' => 'Farm name may not be greater than 30 characters.',
             'prev_crops.max' => 'Previous crops may not be greater than 30 characters.',
+            'soil_type.max' => 'Soil type may not be greater than 30 characters.',
             'farmer_id.required' => 'Farmer is required.',
             'province_id.required' => 'Province is required.',
             'municipality_id.required' => 'Municipality is required.',

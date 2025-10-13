@@ -16,7 +16,7 @@ class RecommendationSeeder extends Seeder
     {
         //
 
-        Recommendation::factory(10)->create();
+        Recommendation::factory(250)->create();
 
     }
 }

@@ -37,7 +37,7 @@ return new class extends Migration
             $table->foreignId('crop_id')->constrained()->onDelete('cascade');
             $table->foreignId('soil_id')->constrained('soils')->onDelete('cascade');
             $table->foreignId('climate_id')->constrained('climates')->onDelete('cascade');
-            $table->float('confidence_score');
+            $table->float('suitability_score');
             $table->date('recommendation_date');
             $table->timestamps();
         });

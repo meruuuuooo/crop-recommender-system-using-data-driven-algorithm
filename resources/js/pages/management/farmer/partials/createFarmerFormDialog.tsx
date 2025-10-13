@@ -43,6 +43,7 @@ export default function CreateFarmFormDialog() {
         farm: {
             name: '',
             total_area: '',
+            soil_type: '',
             prev_crops: '',
             province_id: '',
             municipality_id: '',
@@ -376,6 +377,31 @@ export default function CreateFarmFormDialog() {
                                     Enter area in hectares (0.01 - 1000)
                                 </div>
                                 <InputError message={errors['farm.total_area']} id="total-area-error" />
+                            </div>
+                            <div>
+                                 <div className="space-y-2">
+                                    <Label htmlFor="soil-type" className="text-sm font-medium text-gray-700">
+                                        Soil Type{' '}
+                                        <span className="text-red-500" aria-label="required">
+                                            *
+                                        </span>
+                                    </Label>
+                                    <Select onValueChange={(value) => setData('farm.soil_type', value)}>
+                                        <SelectTrigger className="h-10 border-[#005a23] focus:ring-2 focus:ring-[#619154]">
+                                            <SelectValue placeholder="Select Soil Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Clay">Clay</SelectItem>
+                                            <SelectItem value="Loamy">Loamy</SelectItem>
+                                            <SelectItem value="Peaty">Peaty</SelectItem>
+                                            <SelectItem value="Saline">Saline</SelectItem>
+                                            <SelectItem value="Sandy">Sandy</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <div id="soil-type-help" className="text-xs text-gray-500">
+                                        Select the primary soil type of your farm
+                                    </div>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="prevcrops" className="text-sm font-medium text-gray-700">

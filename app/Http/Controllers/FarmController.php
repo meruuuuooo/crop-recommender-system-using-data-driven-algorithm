@@ -75,7 +75,6 @@ class FarmController extends Controller
     public function store(FarmRequest $request): RedirectResponse
     {
         $validated = $request->validated();
-
         DB::beginTransaction();
         try {
             $location = Location::create([
@@ -84,23 +83,19 @@ class FarmController extends Controller
                 'barangay_id' => $validated['barangay_id'],
                 'street' => $validated['street'] ?? null,
             ]);
-
             $farmer_id = Farmer::find($validated['farmer_id']);
-
             Farm::create([
                 'name' => $validated['name'],
                 'total_area' => $validated['total_area'],
+                'soil_type' => $validated['soil_type'] ?? null,
                 'prev_crops' => $validated['prev_crops'],
                 'farmer_id' => $farmer_id->id,
                 'location_id' => $location->id,
             ]);
-
             DB::commit();
-
             return redirect()->route('management.farm.index')->with('success', 'Farm created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-
             return redirect()->back()->withErrors(['error' => 'An error occurred while creating the farm. Please try again.']);
         }
     }

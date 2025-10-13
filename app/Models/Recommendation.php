@@ -15,7 +15,7 @@ class Recommendation extends Model
         'crop_id',
         'soil_id',
         'climate_id',
-        'confidence_score',
+        'suitability_score',
         'recommendation_date'
     ];
 
@@ -23,7 +23,7 @@ class Recommendation extends Model
     {
         return [
             'recommendation_date' => 'datetime',
-            'confidence_score' => 'float',
+            'suitability_score' => 'float',
         ];
     }
 

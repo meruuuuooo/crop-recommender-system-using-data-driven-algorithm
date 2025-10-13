@@ -16,14 +16,20 @@ class FarmerFarmSeeder extends Seeder
      */
     public function run(): void
     {
-         Farmer::factory(5)->create([
-            'user_id' => rand(1, 2),
-            'location_id' => rand(1, 20),
-        ]);
+        Farmer::factory(250)->create()->each(function (Farmer $farmer) {
+            // Assign a random location to each farmer
+            $farmer->location_id = rand(1, 20);
+            $farmer->user_id = rand(1, 2);
+            $farmer->save();
 
-        Farm::factory(10)->create([
-            'farmer_id' => rand(1, 5),
+            // Create a farm for each farmer
+            Farm::factory()->create([
+            'farmer_id' => $farmer->id,
             'location_id' => rand(1, 20),
-        ]);
+            ]);
+        });
+
+        // If you want exactly 250 farms, the above will create 250 farms (one per farmer).
+        // If you want more farms per farmer, adjust the Farm::factory() call accordingly.
     }
 }

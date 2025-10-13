@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router } from '@inertiajs/react';
-import { Eye, RefreshCw } from 'lucide-react';
+import { Head } from '@inertiajs/react';
+import { Eye } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -37,23 +37,83 @@ interface DashboardProps {
         recommendation_date: string;
         crop: { name: string } | null;
         farmer: { lastname: string } | null;
-        confidence_score: number;
+        suitability_score: number;
     }>;
     modelInfo: {
         data: {
             available_crops: string[];
-        available_soil_types: string[];
-        features: string[];
-        model_type: string;
-        n_estimators: number;
-        }
+            available_soil_types: string[];
+            features: string[];
+            model_type: string;
+            n_estimators: number;
+        };
         success: boolean;
         error?: string;
-    }
-
+    };
 }
 
-const supportedCropList = (supportedCrops: DashboardProps['modelInfo']['data']['available_crops']) => {
+const supportedCrops = [
+    'Abaca',
+    'Amapalaya',
+    'Banana',
+    'Bataw',
+    'Bean',
+    'Broccoli',
+    'Cabbage',
+    'Cacao',
+    'Cantaloupe',
+    'Carrot',
+    'Cassava',
+    'Cauliflower',
+    'Celery',
+    'Chayote',
+    'Chick Pea',
+    'Chinese Cabbage',
+    'Citrus',
+    'Coffee',
+    'Corn',
+    'Cowpea',
+    'Cucumber',
+    'Eggplant',
+    'Garlic',
+    'Ginger',
+    'Kangkong',
+    'Lettuce',
+    'Mango',
+    'Mungbean',
+    'Muskmelon',
+    'Mustard',
+    'Okra',
+    'Onion Bulb',
+    'Papaya',
+    'Patani',
+    'Patola',
+    'Pea',
+    'Peanut',
+    'Pechay',
+    'Pepper',
+    'Pineapple',
+    'Potato',
+    'Radish',
+    'Rambutan',
+    'Rice',
+    'Rubber',
+    'Sitao',
+    'Snap Bean',
+    'Soybean',
+    'Squash',
+    'Sugarcane',
+    'Sweet Corn',
+    'Sweet Pea',
+    'Kamote',
+    'Taro',
+    'Tomato',
+    'Upo',
+    'Watermelon',
+    'Yam',
+];
+
+const supportedCropList = () => {
     // Ensure supportedCrops is an array before mapping
     if (!Array.isArray(supportedCrops)) {
         console.log('supportedCrops is not an array:', typeof supportedCrops, supportedCrops);
@@ -76,10 +136,7 @@ const supportedCropList = (supportedCrops: DashboardProps['modelInfo']['data']['
     );
 };
 
-export default function Dashboard({ metrics, topRecommendedCrops, activityTrend, recentRecommendations, modelInfo }: DashboardProps) {
-    const handleReloadAPI = () => {
-        router.reload({ only: ['modelInfo'] });
-    };
+export default function Dashboard({ metrics, topRecommendedCrops, activityTrend, recentRecommendations }: DashboardProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -123,67 +180,9 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                     <CardTitle className="text-base font-semibold text-gray-900 sm:text-lg">Supported Crops</CardTitle>
                                     <p className="text-xs text-gray-600 sm:text-sm">List of crops supported by the recommendation model</p>
                                 </div>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={handleReloadAPI}
-                                            className="h-8 w-8 shrink-0 border-[#D6E3D4] p-0 hover:border-[#619154] hover:bg-[#F8FAF8]"
-                                            aria-label="Reload API data"
-                                        >
-                                            <RefreshCw className="h-4 w-4 text-[#619154]" />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p className="text-xs">Reload API</p>
-                                    </TooltipContent>
-                                </Tooltip>
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
-                            {!modelInfo.success ? (
-                                <div className="py-6 text-center text-amber-600 sm:py-8">
-                                    <div
-                                        className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 sm:mb-4 sm:h-16 sm:w-16"
-                                        aria-hidden="true"
-                                    >
-                                        <svg className="h-6 w-6 text-amber-500 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <p className="text-sm font-medium sm:text-base">API Service Unavailable</p>
-                                    <p className="mt-1 px-4 text-xs text-gray-500 sm:text-sm">Unable to fetch model information. Please check if the API service is running.</p>
-                                    {modelInfo.error && (
-                                        <p className="mt-2 text-xs text-gray-400">{modelInfo.error}</p>
-                                    )}
-                                </div>
-                            ) : modelInfo.data.available_crops.length === 0 ? (
-                                <div className="py-6 text-center text-gray-500 sm:py-8">
-                                    <div
-                                        className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:mb-4 sm:h-16 sm:w-16"
-                                        aria-hidden="true"
-                                    >
-                                        <svg className="h-6 w-6 text-gray-400 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                            />
-                                        </svg>
-                                    </div>
-                                    <p className="text-sm sm:text-base">No supported crops data available</p>
-                                </div>
-                            ) : (
-                                supportedCropList(modelInfo.data.available_crops)
-                            )}
-                        </CardContent>
+                        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">{supportedCropList()}</CardContent>
                     </Card>
                 </div>
 
@@ -199,7 +198,10 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                     <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
                         {recentRecommendations.length === 0 ? (
                             <div className="py-6 text-center text-gray-500 sm:py-8">
-                                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:mb-4 sm:h-16 sm:w-16" aria-hidden="true">
+                                <div
+                                    className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 sm:mb-4 sm:h-16 sm:w-16"
+                                    aria-hidden="true"
+                                >
                                     <svg className="h-6 w-6 text-gray-400 sm:h-8 sm:w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
                                             strokeLinecap="round"
@@ -226,13 +228,13 @@ export default function Dashboard({ metrics, topRecommendedCrops, activityTrend,
                                     </thead>
                                     <tbody>
                                         {recentRecommendations.map((item, idx) => (
-                                            <tr key={idx} className="border-b transition-colors hover:bg-gray-50 last:border-0">
+                                            <tr key={idx} className="border-b transition-colors last:border-0 hover:bg-gray-50">
                                                 <td className="px-3 py-2 sm:px-4">{new Date(item.recommendation_date).toLocaleDateString()}</td>
                                                 <td className="px-3 py-2 sm:px-4">{item.crop?.name}</td>
                                                 <td className="px-3 py-2 sm:px-4">{item.farmer?.lastname}</td>
                                                 <td className="px-3 py-2 sm:px-4">
                                                     <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 sm:px-2.5">
-                                                        {item.confidence_score.toFixed(2)}%
+                                                        {item.suitability_score.toFixed(2)}%
                                                     </span>
                                                 </td>
                                                 <td className="px-3 py-2 sm:px-4">

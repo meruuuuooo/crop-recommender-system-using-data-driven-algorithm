@@ -18,14 +18,10 @@ class SoilFactory extends Factory
     {
         return [
             'farm_id' => \App\Models\Farm::factory(),
-            'soil_type' => fake()->randomElement(['Clay', 'Sandy', 'Loam', 'Silt', 'Peat', 'Chalk']),
-            'nitrogen_level' => fake()->randomElement(['Low', 'Medium', 'High']),
-            'phosphorus_level' => fake()->randomElement(['Low', 'Medium', 'High']),
-            'potassium_level' => fake()->randomElement(['Low', 'Medium', 'High']),
-            'nitrogen' => fake()->randomFloat(2, 0, 300), // ppm
-            'phosphorus' => fake()->randomFloat(2, 0, 200), // ppm
-            'potassium' => fake()->randomFloat(2, 0, 400), // ppm
-            'pH' => fake()->randomFloat(1, 4.0, 9.0),
+            'n_level' => fake()->randomElement(['Low', 'Medium', 'High']),
+            'p_level' => fake()->randomElement(['Low', 'Medium', 'High']),
+            'k_level' => fake()->randomElement(['Low', 'Medium', 'High']),
+            'ph' => fake()->randomFloat(1, 4.0, 9.0),
             'test_date' => fake()->date(),
         ];
     }

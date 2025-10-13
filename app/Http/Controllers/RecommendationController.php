@@ -10,6 +10,7 @@ use App\Models\Crop;
 use App\Models\CropFertilizer;
 use App\Models\Farmer;
 use App\Models\Fertilizer;
+use App\Models\Location;
 use App\Models\Pesticide;
 use App\Models\Recommendation;
 use App\Models\Soil;
@@ -18,6 +19,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
+use App\Models\Farm;
 
 class RecommendationController extends Controller
 {
@@ -63,14 +65,11 @@ class RecommendationController extends Controller
             if (! $reco) {
                 return back()->withErrors(['pdf_error' => 'No recommendation found.'])->withStatus(404);
             }
-
             $soil = $reco->soil;
             $nitrogen = $this->mapSoilLevel($soil->nitrogen_level ?? '') ?: 'L';
             $phosphorus = $this->mapSoilLevel($soil->phosphorus_level ?? '') ?: 'L';
             $potassium = $this->mapSoilLevel($soil->potassium_level ?? '') ?: 'L';
-
             $reco_crop = $reco->crop->name;
-
             $fertilizer_recommendations = $this->getFertilizerRecommendations(
                 $reco_crop,
                 $nitrogen,
@@ -78,16 +77,12 @@ class RecommendationController extends Controller
                 $potassium,
                 $reco->soil->soil_type ?? null
             );
-
-            $farmerName = trim($reco->farmer->firstname.' '.$reco->farmer->lastname);
-
+            $farmerName = trim($reco->farmer->firstname . ' ' . $reco->farmer->lastname);
             $pdf = Pdf::loadView('pdf.recommendation', [
                 'recommendation' => $reco,
                 'fertilizer_recommendations' => $fertilizer_recommendations,
             ])->setPaper('a4', 'portrait');
-
-            $fileName = 'Crop_Recommendation_'.preg_replace('/\s+/', '_', $farmerName).'_'.now()->format('Ymd_His').'.pdf';
-
+            $fileName = 'Crop_Recommendation_' . preg_replace('/\s+/', '_', $farmerName) . '_' . now()->format('Ymd_His') . '.pdf';
             return $pdf->download($fileName)->withHeaders([
                 'Content-Type' => 'application/pdf',
             ])->setStatusCode(200);
@@ -133,200 +128,139 @@ class RecommendationController extends Controller
         return array_unique($variations);
     }
 
-    private function getFertilizerRecommendations(string $cropName, string $nLevel, string $pLevel, string $kLevel, ?string $soilType = null, ?string $growthStage = null): array
-    {
-        // Define soil type categories based on what's in the database
+    private function getFertilizerRecommendations(
+        string $cropName,
+        string $nLevel,
+        string $pLevel,
+        string $kLevel,
+        ?string $soilType = null,
+        ?string $growthStage = null
+    ): array {
+        // Define soil type categories
         $lightSoils = ['Sandy loam', 'Loamy sand'];
         $mediumHeavySoils = ['Clay loam', 'Silty clay loam', 'Sandy clay loam'];
         $heavySoils = ['Clay', 'Silty clay'];
 
-        // Map crop names - try to find matching fertilizer data
-        $fertilizers = collect();
+        // 🔹 Normalize crop name for case-insensitive matching
+        $cropName = trim(strtolower($cropName));
 
-        // Try exact match first
-        $exactMatch = CropFertilizer::where('crop_name', $cropName)->exists();
+        // 🔹 Find best matching crop name
+        $cropRecord = CropFertilizer::whereRaw('LOWER(crop_name) = ?', [$cropName])->first();
 
-        if (! $exactMatch) {
-            // Try partial matches for common crop name variations
-            $cropVariations = $this->getCropNameVariations($cropName);
-            foreach ($cropVariations as $variation) {
-                if (CropFertilizer::where('crop_name', 'LIKE', "%{$variation}%")->exists()) {
-                    $cropName = CropFertilizer::where('crop_name', 'LIKE', "%{$variation}%")->first()->crop_name;
-                    break;
-                }
-            }
+        if (! $cropRecord) {
+            // Try fuzzy / partial match
+            $cropRecord = CropFertilizer::whereRaw('LOWER(crop_name) LIKE ?', ["%{$cropName}%"])->first();
         }
 
-        // Build the query
-        $query = CropFertilizer::where('crop_name', $cropName);
+        if (! $cropRecord) {
+            return [
+                'nitrogen' => ['level' => $nLevel, 'crop_fertilizer' => []],
+                'phosphorus' => ['level' => $pLevel, 'crop_fertilizer' => []],
+                'potassium' => ['level' => $kLevel, 'crop_fertilizer' => []],
+            ];
+        }
 
-        // Add soil type filter if provided
+        $finalCropName = $cropRecord->crop_name;
+
+        // 🔹 Build main query
+        $query = CropFertilizer::where('crop_name', $finalCropName);
+
+        // 🔹 Apply soil type filter
         if ($soilType) {
-            $query->where(function ($subQuery) use ($soilType, $lightSoils, $mediumHeavySoils, $heavySoils) {
-                // Always include records with null soil_type or 'N/A' string (generic recommendations)
-                $subQuery->whereNull('soil_type')
+            $query->where(function ($sub) use ($soilType, $lightSoils, $mediumHeavySoils, $heavySoils) {
+                $sub->whereNull('soil_type')
                     ->orWhere('soil_type', 'N/A');
 
-                // Check if the soil type is already in database format
-                if ($soilType === 'LIGHT SOILS' || $soilType === 'MED-HEAVY SOILS') {
-                    $subQuery->orWhere('soil_type', $soilType);
-                }
-                // Map input soil type to database categories
-                elseif (in_array($soilType, $lightSoils)) {
-                    $subQuery->orWhere('soil_type', 'LIGHT SOILS');
-                } elseif (in_array($soilType, $mediumHeavySoils)) {
-                    $subQuery->orWhere('soil_type', 'MED-HEAVY SOILS');
-                } elseif (in_array($soilType, $heavySoils)) {
-                    $subQuery->orWhere('soil_type', 'MED-HEAVY SOILS'); // Heavy soils also use med-heavy category
-                } else {
-                    // If no category match, include all soil types
-                    $subQuery->orWhere('soil_type', 'LIGHT SOILS')
-                        ->orWhere('soil_type', 'MED-HEAVY SOILS');
+                // Map soil types
+                if (in_array($soilType, $lightSoils)) {
+                    $sub->orWhere('soil_type', 'LIGHT SOILS');
+                } elseif (in_array($soilType, $mediumHeavySoils) || in_array($soilType, $heavySoils)) {
+                    $sub->orWhere('soil_type', 'MED-HEAVY SOILS');
+                } elseif (in_array(strtoupper($soilType), ['LIGHT SOILS', 'MED-HEAVY SOILS'])) {
+                    $sub->orWhere('soil_type', strtoupper($soilType));
                 }
             });
         }
 
-        // Add growth stage filter if provided
+        // 🔹 Apply growth stage filter
         if ($growthStage) {
-            $query->where(function ($subQuery) use ($growthStage) {
-                // Include exact matches and generic recommendations (null or 'N/A')
-                $subQuery->where('growth_stage', $growthStage)
+            $query->where(function ($sub) use ($growthStage) {
+                $sub->where('growth_stage', $growthStage)
                     ->orWhereNull('growth_stage')
                     ->orWhere('growth_stage', 'N/A');
             });
         }
 
-        // Get fertilizer recommendations for all nutrient levels at once
-        $fertilizers = $query->where(function ($subQuery) use ($nLevel, $pLevel, $kLevel) {
-            $subQuery->where('nitrogen_level', $nLevel)
-                ->orWhere('phosphorus_level', $pLevel)
-                ->orWhere('potassium_level', $kLevel);
-        })->get();
+        // 🔹 Retrieve fertilizers matching any of the NPK levels
+        $fertilizers = $query
+            ->where(function ($sub) use ($nLevel, $pLevel, $kLevel) {
+                $sub->where('nitrogen_level', $nLevel)
+                    ->orWhere('phosphorus_level', $pLevel)
+                    ->orWhere('potassium_level', $kLevel);
+            })
+            ->get();
 
-        // Group by nutrient levels for organized output
-        $nitrogenRecommendations = $fertilizers->filter(function ($fertilizer) use ($nLevel) {
-            return $fertilizer->nitrogen_level === $nLevel;
-        });
-
-        $phosphorusRecommendations = $fertilizers->filter(function ($fertilizer) use ($pLevel) {
-            return $fertilizer->phosphorus_level === $pLevel;
-        });
-
-        $potassiumRecommendations = $fertilizers->filter(function ($fertilizer) use ($kLevel) {
-            return $fertilizer->potassium_level === $kLevel;
-        });
-
-        return [
+        // 🔹 Group by nutrient level
+        $grouped = [
             'nitrogen' => [
                 'level' => $nLevel,
-                'crop_fertilizer' => $nitrogenRecommendations->map(function ($fertilizer) {
-                    return [
-                        'id' => $fertilizer->id,
-                        'crop_name' => $fertilizer->crop_name,
-                        'growth_stage' => $fertilizer->growth_stage,
-                        'soil_type' => $fertilizer->soil_type,
-                        'nitrogen_level' => $fertilizer->nitrogen_level,
-                        'nitrogen_rate' => $fertilizer->nitrogen_rate,
-                        'unit_of_measure' => $fertilizer->unit_of_measure,
-                    ];
-                })->values()->toArray(),
+                'crop_fertilizer' => $fertilizers
+                    ->where('nitrogen_level', $nLevel)
+                    ->map(fn($f) => [
+                        'id' => $f->id,
+                        'crop_name' => $f->crop_name,
+                        'growth_stage' => $f->growth_stage,
+                        'soil_type' => $f->soil_type,
+                        'nitrogen_level' => $f->nitrogen_level,
+                        'nitrogen_rate' => $f->nitrogen_rate,
+                        'unit_of_measure' => $f->unit_of_measure,
+                    ])->values()->toArray(),
             ],
             'phosphorus' => [
                 'level' => $pLevel,
-                'crop_fertilizer' => $phosphorusRecommendations->map(function ($fertilizer) {
-                    return [
-                        'id' => $fertilizer->id,
-                        'crop_name' => $fertilizer->crop_name,
-                        'growth_stage' => $fertilizer->growth_stage,
-                        'soil_type' => $fertilizer->soil_type,
-                        'phosphorus_level' => $fertilizer->phosphorus_level,
-                        'phosphorus_rate' => $fertilizer->phosphorus_rate,
-                        'unit_of_measure' => $fertilizer->unit_of_measure,
-                    ];
-                })->values()->toArray(),
+                'crop_fertilizer' => $fertilizers
+                    ->where('phosphorus_level', $pLevel)
+                    ->map(fn($f) => [
+                        'id' => $f->id,
+                        'crop_name' => $f->crop_name,
+                        'growth_stage' => $f->growth_stage,
+                        'soil_type' => $f->soil_type,
+                        'phosphorus_level' => $f->phosphorus_level,
+                        'phosphorus_rate' => $f->phosphorus_rate,
+                        'unit_of_measure' => $f->unit_of_measure,
+                    ])->values()->toArray(),
             ],
             'potassium' => [
                 'level' => $kLevel,
-                'crop_fertilizer' => $potassiumRecommendations->map(function ($fertilizer) {
-                    return [
-                        'id' => $fertilizer->id,
-                        'crop_name' => $fertilizer->crop_name,
-                        'growth_stage' => $fertilizer->growth_stage,
-                        'soil_type' => $fertilizer->soil_type,
-                        'potassium_level' => $fertilizer->potassium_level,
-                        'potassium_rate' => $fertilizer->potassium_rate,
-                        'unit_of_measure' => $fertilizer->unit_of_measure,
-                    ];
-                })->values()->toArray(),
+                'crop_fertilizer' => $fertilizers
+                    ->where('potassium_level', $kLevel)
+                    ->map(fn($f) => [
+                        'id' => $f->id,
+                        'crop_name' => $f->crop_name,
+                        'growth_stage' => $f->growth_stage,
+                        'soil_type' => $f->soil_type,
+                        'potassium_level' => $f->potassium_level,
+                        'potassium_rate' => $f->potassium_rate,
+                        'unit_of_measure' => $f->unit_of_measure,
+                    ])->values()->toArray(),
             ],
         ];
+
+        return $grouped;
     }
+
 
     private function mapSoilLevel($level)
     {
         switch (strtolower($level)) {
-            case 'low':
+            case 'Low':
                 return 'L';
-            case 'medium':
+            case 'Medium':
                 return 'M';
-            case 'high':
+            case 'High':
                 return 'H';
             default:
                 return 'L'; // Default to Low instead of null
-        }
-    }
-
-    private function convertNitrogenToKgHa($level)
-    {
-        switch (strtolower($level)) {
-            case 'very low':
-                return ['min' => 0, 'max' => 20];
-            case 'low':
-                return ['min' => 21, 'max' => 40];
-            case 'medium':
-                return ['min' => 41, 'max' => 60];
-            case 'high':
-                return ['min' => 61, 'max' => 80];
-            case 'very high':
-                return ['min' => 81, 'max' => 100];
-            default:
-                return ['min' => 0, 'max' => 0];
-        }
-    }
-
-    private function convertPhosphorusToKgHa($level)
-    {
-        switch (strtolower($level)) {
-            case 'very low':
-                return ['min' => 0, 'max' => 15];
-            case 'low':
-                return ['min' => 16, 'max' => 30];
-            case 'medium':
-                return ['min' => 31, 'max' => 45];
-            case 'high':
-                return ['min' => 46, 'max' => 60];
-            case 'very high':
-                return ['min' => 61, 'max' => 75];
-            default:
-                return ['min' => 0, 'max' => 0];
-        }
-    }
-
-    private function convertPotassiumToKgHa($level)
-    {
-        switch (strtolower($level)) {
-            case 'very low':
-                return ['min' => 0, 'max' => 25];
-            case 'low':
-                return ['min' => 26, 'max' => 50];
-            case 'medium':
-                return ['min' => 51, 'max' => 75];
-            case 'high':
-                return ['min' => 76, 'max' => 100];
-            case 'very high':
-                return ['min' => 101, 'max' => 125];
-            default:
-                return ['min' => 0, 'max' => 0];
         }
     }
 
@@ -334,116 +268,124 @@ class RecommendationController extends Controller
     {
         $validated = $request->validated();
 
-        $nitrogen = $this->convertNitrogenToKgHa($validated['nitrogen_level']);
-        $phosphorus = $this->convertPhosphorusToKgHa($validated['phosphorus_level']);
-        $potassium = $this->convertPotassiumToKgHa($validated['potassium_level']);
+        // 🔹 Get location info
+        $getLocation = Location::where('id', Farm::where('id', $validated['farm_id'])->value('location_id'))->first();
+        $provinceName = $getLocation?->province?->name ?? null;
+        $municipalityName = $getLocation?->municipality?->name ?? null;
 
+        // 🔹 Determine current season
+        $month = now()->month;
+        $wetMonths = [5, 6, 7, 8, 9, 10];
+        $season = in_array($month, $wetMonths) ? 'wet' : 'dry';
+
+        $farmSoilType = Farm::where('id', $validated['farm_id'])->value('soil_type');
+
+
+        // 🔹 Build API input
         $apiInput = [
-            'soil_type' => $validated['soilType'],
-            'soil_ph' => (float) $validated['ph_level'],
-            'temperature' => (float) $validated['temperature'],
-            'humidity' => (float) $validated['humidity'],
-            'nitrogen' => $nitrogen['max'] ?? 0,
-            'phosphorus' => $phosphorus['max'] ?? 0,
-            'potassium' => $potassium['max'] ?? 0,
+            'province' => $provinceName,
+            'municipality' => $municipalityName,
+            'temperature' => $validated['temperature'],
+            'humidity' => $validated['humidity'],
+            'rainfall' => $validated['rainfall'],
+            'ph' => (float) $validated['ph_level'],
+            'n_level' => $validated['nitrogen_level'],
+            'p_level' => $validated['phosphorus_level'],
+            'k_level' => $validated['potassium_level'],
+            'season' => $season,
         ];
 
         try {
-            $recommendations = $this->cropRecommender->getCropRecommendation($apiInput);
+            $response = $this->cropRecommender->getCropRecommendation($apiInput);
+
             $recommendedCrops = [];
 
-            // Check if API response was successful and has data
-            if (($recommendations['success'] ?? false) && isset($recommendations['data'])) {
-                $data = $recommendations['data'];
+            // ✅ Check success and recommendations
+            if (($response['success'] ?? false) && isset($response['recommendations'])) {
 
-                // Save soil and climate records once (not per recommendation)
+                // 🔹 Create soil record
                 $soil = Soil::create([
-                    'soil_type' => $validated['soilType'],
-                    'pH' => $validated['ph_level'],
-                    'nitrogen_level' => $validated['nitrogen_level'],
-                    'phosphorus_level' => $validated['phosphorus_level'],
-                    'potassium_level' => $validated['potassium_level'],
-                    'nitrogen' => $apiInput['nitrogen'],
-                    'phosphorus' => $apiInput['phosphorus'],
-                    'potassium' => $apiInput['potassium'],
+                    'ph' => $response['soil_conditions']['ph'] ?? $validated['ph_level'],
+                    'n_level' => $response['soil_conditions']['n_level'] ?? $apiInput['n_level'],
+                    'p_level' => $response['soil_conditions']['p_level'] ?? $apiInput['p_level'],
+                    'k_level' => $response['soil_conditions']['k_level'] ?? $apiInput['k_level'],
                     'farm_id' => $validated['farm_id'],
                     'test_date' => now(),
                 ]);
 
+                // 🔹 Create climate record
                 $climate = Climate::create([
                     'farm_id' => $validated['farm_id'],
-                    'temperature' => $validated['temperature'],
-                    'rainfall' => $validated['rainfall'],
-                    'humidity' => $validated['humidity'],
+                    'temperature' => $response['climate_conditions']['temperature'] ?? $validated['temperature'],
+                    'rainfall' => $response['climate_conditions']['rainfall'] ?? $validated['rainfall'],
+                    'humidity' => $response['climate_conditions']['humidity'] ?? $validated['humidity'],
+                    'season' => ucfirst($season),
                     'climate_record_date' => now(),
                 ]);
 
-                // Get soil level mappings for fertilizer recommendations
-                $nLevel = $this->mapSoilLevel($validated['nitrogen_level']);
-                $pLevel = $this->mapSoilLevel($validated['phosphorus_level']);
-                $kLevel = $this->mapSoilLevel($validated['potassium_level']);
+                // 🔹 Iterate over API recommendations
+                foreach ($response['recommendations'] as $rec) {
+                    $cropName = $rec['Crop'] ?? null;
+                    $suitabilityScore = $rec['Predicted_Suitability_Score'] ?? 0;
+                    $suitabilityClass = $rec['Predicted_Suitability_Class'] ?? 'Unknown';
+                    $avgYield = $rec['Avg_Yield'] ?? null;
+                    $yieldTrend = $rec['Yield_Trend_Pct'] ?? null;
 
-                // Process top recommendations array
-                if (isset($data['top_recommendations']) && is_array($data['top_recommendations'])) {
-                    foreach ($data['top_recommendations'] as $rec) {
-                        $cropName = $rec['crop'] ?? null;
-                        // API returns 'probability' not 'confidence' in top_recommendations
-                        $probability = $rec['probability'] ?? $rec['confidence'] ?? 0;
+                    if (! $cropName) continue;
 
-                        if (! $cropName) {
-                            continue;
-                        }
+                    $crop = Crop::where('name', $cropName)->first();
 
-                        $crop = Crop::where('name', $cropName)->first();
+                    if ($crop) {
+                        // 🔹 Save recommendation
+                        $reco = Recommendation::create([
+                            'farmer_id' => $validated['farmer_id'],
+                            'farm_id' => $validated['farm_id'],
+                            'crop_id' => $crop->id,
+                            'soil_id' => $soil->id,
+                            'climate_id' => $climate->id,
+                            'suitability_score' => $suitabilityScore,
+                            'recommendation_date' => now(),
+                        ]);
 
-                        if ($crop) {
-                            // Save recommendation to database
-                            $reco = Recommendation::create([
-                                'farmer_id' => $validated['farmer_id'],
-                                'farm_id' => $validated['farm_id'],
-                                'crop_id' => $crop->id,
-                                'soil_id' => $soil->id,
-                                'climate_id' => $climate->id,
-                                'confidence_score' => $probability, // Store as decimal (0-1)
-                                'recommendation_date' => now(),
-                            ]);
+                        // 🔹 Get fertilizer advice
+                        $fertilizer_recommendations = $this->getFertilizerRecommendations(
+                            $crop->name,
+                            $this->mapSoilLevel($apiInput['n_level']),
+                            $this->mapSoilLevel($apiInput['p_level']),
+                            $this->mapSoilLevel($apiInput['k_level']),
+                            $farmSoilType
+                        );
 
-                            // Get detailed fertilizer recommendations
-                            $fertilizer_recommendations = $this->getFertilizerRecommendations(
-                                $crop->name,
-                                $nLevel,
-                                $pLevel,
-                                $kLevel,
-                                $validated['soilType']
-                            );
-
-                            // Add to the array for frontend display
-                            $recommendedCrops[] = [
-                                'recommendation_id' => $reco->id,
-                                'farmer_id' => $validated['farmer_id'],
-                                'crop_name' => $crop->name,
-                                'fertilizer_recommendations' => $fertilizer_recommendations,
-                                'confidence_score' => $probability * 100, // Convert to percentage for display
-                                'probability' => $probability, // Keep original probability
-                            ];
-                        }
+                        // 🔹 Add formatted result for frontend
+                        $recommendedCrops[] = [
+                            'recommendation_id' => $reco->id,
+                            'farmer_id' => $validated['farmer_id'],
+                            'crop_name' => $crop->name,
+                            'suitability_class' => $suitabilityClass,
+                            'avg_yield' => $avgYield,
+                            'yield_trend' => $yieldTrend,
+                            'fertilizer_recommendations' => $fertilizer_recommendations,
+                            'suitability_score' => round($suitabilityScore, 2),
+                        ];
                     }
                 }
             }
 
             // dd($recommendedCrops);
 
+
+            // ✅ Return data to Inertia view
             return Inertia::render('recommendation/crop', [
                 'farmers' => Farmer::with('farms')->get(),
                 'recent_recommendations' => Recommendation::with('farmer', 'crop', 'farm')->latest()->take(5)->get(),
                 'recommendationResult' => $recommendedCrops,
             ]);
         } catch (\Exception $e) {
-            Log::error('Crop recommendation error: '.$e->getMessage());
-
             return back()->withErrors(['api_error' => $e->getMessage()]);
         }
     }
+
+
 
     public function showCropRecommendation($recommendation)
     {
@@ -491,7 +433,7 @@ class RecommendationController extends Controller
 
             return $pdf->stream();
         } catch (\Exception $e) {
-            Log::error('PDF Generation Error: '.$e->getMessage());
+            Log::error('PDF Generation Error: ' . $e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
         }
@@ -1007,9 +949,9 @@ class RecommendationController extends Controller
                 'pesticide' => $pesticide,
             ])->setPaper('a4', 'portrait');
 
-            return $pdf->download('Pesticide_'.preg_replace('/\s+/', '_', $pesticide->product_name).'.pdf');
+            return $pdf->download('Pesticide_' . preg_replace('/\s+/', '_', $pesticide->product_name) . '.pdf');
         } catch (\Exception $e) {
-            Log::error('Pesticide PDF Generation Error: '.$e->getMessage());
+            Log::error('Pesticide PDF Generation Error: ' . $e->getMessage());
 
             return back()->withErrors(['pdf_error' => 'An error occurred while generating the PDF. Please try again later.']);
         }
@@ -1030,9 +972,9 @@ class RecommendationController extends Controller
     private function mapNutrientLevel(string $level): string
     {
         return match ($level) {
-            'low' => 'L',
-            'medium' => 'M',
-            'high' => 'H',
+            'Low' => 'L',
+            'Medium' => 'M',
+            'High' => 'H',
             default => 'L'
         };
     }

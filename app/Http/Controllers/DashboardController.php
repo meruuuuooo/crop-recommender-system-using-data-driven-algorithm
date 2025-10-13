@@ -58,22 +58,22 @@ class DashboardController extends Controller
             ];
         });
 
-        $modelInfo = $this->cropRecommender->getModelInfo();
+        // $modelInfo = $this->cropRecommender->getModelInfo();
 
         // Provide default structure if API call failed
-        if (isset($modelInfo['success']) && $modelInfo['success'] === false) {
-            $modelInfo = [
-                'success' => false,
-                'data' => [
-                    'available_crops' => [],
-                    'available_soil_types' => [],
-                    'features' => [],
-                    'model_type' => '',
-                    'n_estimators' => 0,
-                ],
-                'error' => $modelInfo['error'] ?? 'API unavailable',
-            ];
-        }
+        // if (isset($modelInfo['success']) && $modelInfo['success'] === false) {
+        //     $modelInfo = [
+        //         'success' => false,
+        //         'data' => [
+        //             'available_crops' => [],
+        //             'available_soil_types' => [],
+        //             'features' => [],
+        //             'model_type' => '',
+        //             'n_estimators' => 0,
+        //         ],
+        //         'error' => $modelInfo['error'] ?? 'API unavailable',
+        //     ];
+        // }
 
         return Inertia::render('dashboard', [
             'metrics' => [
@@ -85,7 +85,7 @@ class DashboardController extends Controller
             'topRecommendedCrops' => $topRecommendedCrops,
             'activityTrend' => $activityTrend,
             'recentRecommendations' => $recentRecommendations,
-            'modelInfo' => $modelInfo,
+            // 'modelInfo' => $modelInfo,
         ]);
     }
 }

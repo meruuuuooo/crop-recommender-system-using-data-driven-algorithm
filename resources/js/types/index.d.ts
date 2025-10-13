@@ -120,6 +120,7 @@ export interface Farm {
     id: number;
     name: string;
     total_area: number;
+    soil_type?: string;
     prev_crops?: string;
     farmer_id: number;
     location_id: number;
@@ -168,9 +169,14 @@ export interface RecommendationResult {
     recommendation_id: number;
     farmer_id: number;
     crop_name: string;
+    suitability_class: number;
+    avg_yield: number;
+    yield_trend: number;
     fertilizer_recommendations: Fertilizer_recommendations;
-    confidence_score: number;
+    suitability_score: number;
 }
+
+
 
 export interface Recommendation {
     id: number;

@@ -11,14 +11,10 @@ class Soil extends Model
 
     protected $fillable = [
         'farm_id',
-        'soil_type',
-        'nitrogen_level',
-        'phosphorus_level',
-        'potassium_level',
-        'nitrogen',
-        'phosphorus',
-        'potassium',
-        'pH',
+        'n_level',
+        'p_level',
+        'k_level',
+        'ph',
         'test_date',
     ];
 
@@ -26,10 +22,10 @@ class Soil extends Model
     {
         return [
             'test_date' => 'datetime',
-            'pH' => 'float',
-            'nitrogen' => 'float',
-            'phosphorus' => 'float',
-            'potassium' => 'float',
+            'ph' => 'float',
+            'n_level' => 'string',
+            'p_level' => 'string',
+            'k_level' => 'string',
         ];
     }
 

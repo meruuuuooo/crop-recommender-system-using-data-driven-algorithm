@@ -220,10 +220,10 @@
 
         </tr>
         <tr>
-            <td>{{ $recommendation->soil->pH }}</td>
-            <td>{{ strtoupper($recommendation->soil->nitrogen_level ?? 'N/A') }}</td>
-            <td>{{ strtoupper($recommendation->soil->phosphorus_level ?? 'N/A') }}</td>
-            <td>{{ strtoupper($recommendation->soil->potassium_level ?? 'N/A') }}</td>
+            <td>{{ $recommendation->soil->ph ?? 'N/A' }}</td>
+            <td>{{ strtoupper($recommendation->soil->n_level ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->soil->p_level ?? 'N/A') }}</td>
+            <td>{{ strtoupper($recommendation->soil->k_level ?? 'N/A') }}</td>
             <td>{{ strtoupper($recommendation->climate->temperature ?? 'N/A') }}</td>
             <td>{{ strtoupper($recommendation->climate->rainfall ?? 'N/A') }}</td>
             <td>{{ strtoupper($recommendation->climate->humidity ?? 'N/A') }}</td>
